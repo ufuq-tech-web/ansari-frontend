@@ -1,5 +1,6 @@
 import HeroSection from "../components/HeroSection";
 import CategorySection from "../components/CategorySection";
+import FeaturedCategories from "../components/FeaturedCategories";
 import NewArrivals from "../components/NewArrival";
 import FeaturedCollections from "../components/FeaturedCollections";
 import BestSellers from "../components/BestSellers";
@@ -31,6 +32,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <CategorySection />
+        <FeaturedCategories />
         <NewArrivals />
         <BestSellers />
         <ShopByBrand />
