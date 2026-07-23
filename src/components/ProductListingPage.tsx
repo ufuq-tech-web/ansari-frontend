@@ -10,6 +10,8 @@ import MobileFilterSheet from './category/MobileFilterSheet';
 import SortBar from './category/SortBar';
 import CategoryProductGrid from './category/CategoryProductGrid';
 import QuickViewModal from './category/QuickViewModal';
+import RecentlyViewed from './RecentlyViewed';
+import Newsletter from './Newsletter';
 import type { Product } from '../lib/catalog-helpers';
 
 interface Props {
@@ -74,11 +76,11 @@ export default function ProductListingPage({ title, subtitle, products, heroImag
             <section className="relative overflow-hidden bg-charcoal-800" aria-label={`${title} hero`}>
                 {heroImage && (
                     <div className="absolute inset-0">
-                        <img src={heroImage} alt={title} loading="eager" className="w-full h-full object-cover opacity-30" />
+                        <img src={heroImage} alt={title} loading="eager" className="w-full h-full object-cover object-[center_35%] opacity-40" />
                         <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
                     </div>
                 )}
-                <div className="relative container-main py-10 sm:py-14 lg:py-16">
+                <div className="relative container-main py-10 sm:py-14 lg:py-20 min-h-[320px] sm:min-h-[400px] lg:min-h-[450px] flex flex-col justify-center">
                     <nav aria-label="Breadcrumb" className="mb-5">
                         <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
                             <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
@@ -139,6 +141,8 @@ export default function ProductListingPage({ title, subtitle, products, heroImag
                 </div>
             </div>
 
+            <RecentlyViewed />
+            <Newsletter />
             <QuickViewModal product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
         </div>
     );
