@@ -1,7 +1,7 @@
 import { Truck, Package } from 'lucide-react';
 import type { Order } from '../lib/orders';
 
-const PAYMENT_LABELS: Record<Order['paymentMethod'], string> = {
+const PAYMENT_LABELS: Record<string, string> = {
     cod: 'Cash on Delivery',
     card: 'Credit / Debit Card',
     upi: 'UPI',
@@ -53,6 +53,12 @@ export default function OrderSummaryCard({ order, showDelivery = true }: { order
                     <span>Shipping</span>
                     <span className="text-charcoal-900 font-manrope font-medium">{order.shipping === 0 ? 'Free' : `₹${order.shipping}`}</span>
                 </div>
+                {order.discount > 0 && (
+                    <div className="flex items-center justify-between text-brand-green">
+                        <span>Coupon Discount{order.couponCode ? ` (${order.couponCode})` : ''}</span>
+                        <span className="font-manrope font-medium">−₹{order.discount.toLocaleString('en-IN')}</span>
+                    </div>
+                )}
                 <div className="flex items-center justify-between pt-2">
                     <span className="font-poppins font-semibold text-charcoal-900">Total</span>
                     <span className="font-manrope font-bold text-charcoal-900 text-lg">₹{order.total.toLocaleString('en-IN')}</span>
@@ -62,7 +68,7 @@ export default function OrderSummaryCard({ order, showDelivery = true }: { order
             <div className="pt-4 grid sm:grid-cols-2 gap-4 text-sm font-inter">
                 <div>
                     <p className="font-poppins font-semibold text-charcoal-900 text-xs uppercase tracking-wide mb-1">Shipping to</p>
-                    <p className="text-charcoal-600">{order.address.fullName}</p>
+                    <p className="text-charcoal-600">{order.address.name}</p>
                     <p className="text-charcoal-600">{order.address.line1}</p>
                     <p className="text-charcoal-600">{order.address.city}, {order.address.state} {order.address.pincode}</p>
                     <p className="text-charcoal-600">{order.address.phone}</p>
@@ -70,7 +76,7 @@ export default function OrderSummaryCard({ order, showDelivery = true }: { order
                 <div>
                     <p className="font-poppins font-semibold text-charcoal-900 text-xs uppercase tracking-wide mb-1">Payment method</p>
                     <p className="text-charcoal-600 flex items-center gap-1.5">
-                        <Package className="w-4 h-4 text-charcoal-400" strokeWidth={2} /> {PAYMENT_LABELS[order.paymentMethod]}
+                        <Package className="w-4 h-4 text-charcoal-400" strokeWidth={2} /> {PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod}
                     </p>
                 </div>
             </div>
