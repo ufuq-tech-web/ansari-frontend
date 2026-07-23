@@ -11,17 +11,17 @@ export default function TrackOrderPage() {
   const [orderNumber, setOrderNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     const trimmed = orderNumber.trim();
     if (!trimmed) return;
 
-    const order = getOrder(trimmed);
+    const order = await getOrder(trimmed);
     if (order) {
       router.push(`/orders/${order.orderNumber}`);
     } else {
-      setError("We couldn't find an order with that number on this device. Double-check the number from your confirmation email, or view your full order history below.");
+      setError("We couldn't find an order with that number on your account. Double-check the number from your confirmation email, or view your full order history below.");
     }
   };
 
@@ -87,7 +87,7 @@ export default function TrackOrderPage() {
         <div className="max-w-lg mx-auto mt-8 grid sm:grid-cols-2 gap-4 text-sm font-inter text-charcoal-600">
           <div className="bg-white rounded-xl border border-charcoal-200 p-4">
             <p className="font-poppins font-semibold text-charcoal-900 mb-1 text-sm">Order not showing up?</p>
-            <p className="text-xs leading-relaxed">Order history is saved on the device and browser you placed the order with — it won't appear if you're checking from a different device.</p>
+            <p className="text-xs leading-relaxed">You'll need to be signed in to the account you placed the order with to look it up.</p>
           </div>
           <div className="bg-white rounded-xl border border-charcoal-200 p-4">
             <p className="font-poppins font-semibold text-charcoal-900 mb-1 text-sm">Need more help?</p>
