@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Settings, Save, CheckCircle2, Shield, CreditCard, Truck, Globe } from "lucide-react";
+import { adminApi } from "../../../lib/admin-api";
 
 interface GeneralSettings {
   storeName: string;
@@ -51,19 +52,16 @@ export default function AdminSettingsPage() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    const savedGen = localStorage.getItem("ansari_settings_general");
-    const savedShip = localStorage.getItem("ansari_settings_shipping");
-    const savedPay = localStorage.getItem("ansari_settings_payments");
-    if (savedGen) setGeneral(JSON.parse(savedGen));
-    if (savedShip) setShipping(JSON.parse(savedShip));
-    if (savedPay) setPayments(JSON.parse(savedPay));
+    adminApi.get<{ general: GeneralSettings; shipping: ShippingSettings; payments: PaymentSettings }>("/settings").then((data) => {
+      setGeneral(data.general);
+      setShipping(data.shipping);
+      setPayments(data.payments);
+    });
   }, []);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("ansari_settings_general", JSON.stringify(general));
-    localStorage.setItem("ansari_settings_shipping", JSON.stringify(shipping));
-    localStorage.setItem("ansari_settings_payments", JSON.stringify(payments));
+    await adminApi.patch("/settings", { general, shipping, payments });
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
   };
