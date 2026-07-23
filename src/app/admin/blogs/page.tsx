@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, FileText, Image as ImageIcon, Calendar, Clock, X } from "lucide-react";
+import { adminApi } from "../../../lib/admin-api";
 
 interface BlogPost {
   id: string;
@@ -13,29 +14,6 @@ interface BlogPost {
   author: string;
   createdAt: string;
 }
-
-const DEFAULT_POSTS: BlogPost[] = [
-  {
-    id: "1",
-    title: "How to Care for Leather Shoes: A Complete Guide",
-    excerpt: "Learn the secrets to keeping your premium leather shoes looking brand new for years with proper cleaning, conditioning, and polishing.",
-    content: "Leather footwear is a long-term investment. To keep them looking pristine and prevent cracking, you must establish a proper care routine. First, brush away surface dirt. Second, clean with saddlery soap. Third, condition with mink oil or cream to retain natural moisture. Fourth, apply a high-quality wax polish for shine and water resistance. Finally, store them with cedar shoe trees to retain shape and absorb odor.",
-    image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=600&auto=format&fit=crop",
-    readTime: "5 mins read",
-    author: "Ansari Care Desk",
-    createdAt: "2026-07-10",
-  },
-  {
-    id: "2",
-    title: "Finding the Perfect Fit: Shoe Sizing Tips",
-    excerpt: "Stop buying shoes that pinch. Follow our sizing chart guide and learn how to measure your feet correctly at home.",
-    content: "An ill-fitting shoe can ruin your day and damage your feet. When buying online, follow these steps: measure your feet at the end of the day when they are largest, wear the socks you plan to use, and check the measurements of both feet (buy for the larger foot). Our Barlow Semi Condensed and Outfit font styling ensures that size selectors on the storefront are clear and easy to navigate.",
-    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=600&auto=format&fit=crop",
-    readTime: "3 mins read",
-    author: "Fitting Expert",
-    createdAt: "2026-07-08",
-  },
-];
 
 export default function AdminBlogsPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -50,25 +28,18 @@ export default function AdminBlogsPage() {
     author: "Ansari Admin",
   });
 
-  useEffect(() => {
-    const saved = localStorage.getItem("ansari_admin_blogs");
-    if (saved) {
-      setPosts(JSON.parse(saved));
-    } else {
-      setPosts(DEFAULT_POSTS);
-      localStorage.setItem("ansari_admin_blogs", JSON.stringify(DEFAULT_POSTS));
-    }
-  }, []);
-
-  const saveToStorage = (updatedList: BlogPost[]) => {
-    setPosts(updatedList);
-    localStorage.setItem("ansari_admin_blogs", JSON.stringify(updatedList));
+  const loadPosts = () => {
+    adminApi.get<BlogPost[]>("/blog/admin/all").then(setPosts);
   };
 
-  const handleDelete = (id: string, title: string) => {
+  useEffect(() => {
+    loadPosts();
+  }, []);
+
+  const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Delete blog post "${title}"?`)) return;
-    const updated = posts.filter((p) => p.id !== id);
-    saveToStorage(updated);
+    await adminApi.delete(`/blog/${id}`);
+    loadPosts();
   };
 
   const handleStartAdd = () => {
@@ -97,38 +68,16 @@ export default function AdminBlogsPage() {
     setModalOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title) return;
 
     if (editingPost) {
-      const updated = posts.map((p) =>
-        p.id === editingPost.id
-          ? {
-              ...p,
-              title: form.title,
-              excerpt: form.excerpt,
-              content: form.content,
-              image: form.image,
-              readTime: form.readTime,
-              author: form.author,
-            }
-          : p
-      );
-      saveToStorage(updated);
+      await adminApi.patch(`/blog/${editingPost.id}`, form);
     } else {
-      const newPost: BlogPost = {
-        id: String(Date.now()),
-        title: form.title,
-        excerpt: form.excerpt,
-        content: form.content,
-        image: form.image || "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=600&auto=format&fit=crop",
-        readTime: form.readTime,
-        author: form.author,
-        createdAt: new Date().toISOString().split("T")[0],
-      };
-      saveToStorage([...posts, newPost]);
+      await adminApi.post("/blog", form);
     }
+    loadPosts();
     setModalOpen(false);
   };
 
