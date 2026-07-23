@@ -28,7 +28,7 @@ function getProductImages(product: LibProduct) {
     case 'everyday-sandal':
       return { primary: imgHelper('336372'), secondary: imgHelper('336372') };
     case 'heritage-loafer':
-      return { primary: imgHelper('2421374'), secondary: imgHelper('2421374') };
+      return { primary: imgHelper('298863'), secondary: imgHelper('298863') };
     case 'monsoon-gumboot':
       return { primary: imgHelper('1537492'), secondary: imgHelper('1537492') };
     default:
@@ -76,17 +76,15 @@ export default function ProductCard({ product, onWishlist }: Props) {
     : getProductImages(product as LibProduct);
 
   const brandName = 'brand' in product && product.brand ? product.brand : 'Ansari';
-  
-  const reviewsCount = 'reviews' in product && product.reviews !== undefined
-    ? product.reviews
-    : ('reviewCount' in product ? (product as LibProduct).reviewCount : 0);
 
   const productHref = catalogProduct ? buildProductHref(catalogProduct) : undefined;
 
   return (
-    <article className="product-card group bg-white rounded-2xl shadow-card hover:shadow-card-hover overflow-hidden transition-all duration-300 flex flex-col">
+    <article className="product-card group bg-white rounded-2xl overflow-hidden transition-all duration-300 flex flex-col border border-charcoal-100 shadow-card hover:shadow-card-hover hover:border-charcoal-200">
       {/* Image */}
-      <div className="relative aspect-square overflow-hidden bg-charcoal-100">
+      <div className="relative aspect-[4/5] overflow-hidden bg-charcoal-100 group-hover:bg-charcoal-200 transition-colors duration-500">
+        {/* Subtle overlay for better text/button contrast on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/60 via-charcoal-900/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none" />
         {productHref ? (
           <Link href={productHref} className="absolute inset-0 block">
             <img
@@ -122,23 +120,31 @@ export default function ProductCard({ product, onWishlist }: Props) {
         )}
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-          {product.badge && (
-            <span className="bg-charcoal-800 text-white text-[10px] font-poppins font-semibold px-2.5 py-1 rounded-full">
-              {product.badge}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-20">
+          {discount > 0 && (
+            <span className="bg-accent text-white text-[10px] font-manrope font-bold px-2.5 py-1 rounded-md shadow-sm">
+              -{discount}%
             </span>
           )}
-          {discount > 0 && (
-            <span className="bg-brand-orange text-white text-[10px] font-poppins font-semibold px-2.5 py-1 rounded-full">
-              -{discount}%
+          {product.badge && (
+            <span className="bg-primary text-white text-[10px] font-manrope font-bold px-2.5 py-1 rounded-md shadow-sm">
+              {product.badge}
             </span>
           )}
         </div>
 
+        {/* Rating badge — overlaid on the image */}
+        {product.rating > 0 && (
+          <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-primary/90 backdrop-blur-sm text-white text-[11px] font-manrope font-bold px-2 py-1 rounded-md shadow-sm z-20">
+            <Star className="w-3 h-3 fill-brand-orange text-brand-orange" strokeWidth={2} />
+            {product.rating.toFixed(1)}
+          </div>
+        )}
+
         {/* Wishlist */}
         <button
           onClick={handleWishlist}
-          className={`absolute top-3 right-3 w-9 h-9 rounded-full backdrop-blur flex items-center justify-center shadow-sm transition-all active:scale-90 ${wishlisted ? 'bg-brand-orange text-white' : 'bg-white/90 text-charcoal-700 hover:text-brand-orange hover:bg-white'
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full backdrop-blur flex items-center justify-center shadow-sm transition-all active:scale-90 z-20 ${wishlisted ? 'bg-brand-orange text-white' : 'bg-white/90 text-charcoal-700 hover:text-brand-orange hover:bg-white'
             }`}
           aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           aria-pressed={wishlisted}
@@ -147,11 +153,11 @@ export default function ProductCard({ product, onWishlist }: Props) {
         </button>
 
         {/* Quick Add — slides up on hover */}
-        <div className="absolute bottom-0 inset-x-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+        <div className="absolute bottom-0 inset-x-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
           <button
             onClick={handleQuickAdd}
             disabled={!catalogProduct}
-            className={`w-full backdrop-blur font-poppins font-semibold text-sm py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 ${justAdded ? 'bg-brand-green text-white' : 'bg-charcoal-900/95 text-white hover:bg-charcoal-800'
+            className={`w-full backdrop-blur font-manrope font-bold text-sm py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 ${justAdded ? 'bg-brand-green text-white' : 'bg-accent/95 text-white hover:bg-accent'
               }`}
           >
             {justAdded ? (
@@ -170,59 +176,31 @@ export default function ProductCard({ product, onWishlist }: Props) {
       {/* Details */}
       {productHref ? (
         <Link href={productHref} className="p-3 sm:p-4 flex flex-col flex-1">
-          <span className="text-xs text-charcoal-900 font-inter uppercase tracking-wide">{brandName}</span>
-          <h3 className="mt-1 font-poppins font-bold text-charcoal-900 text-sm sm:text-[15px] leading-snug line-clamp-2">
+          <span className="text-xs text-secondary font-manrope font-bold uppercase tracking-wider">{brandName}</span>
+          <h3 className="mt-1 font-sora font-bold text-primary text-sm sm:text-[15px] leading-snug line-clamp-2">
             {product.name}
           </h3>
 
-          {/* Rating */}
-          <div className="mt-2 flex items-center gap-1.5">
-            <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star
-                  key={i}
-                  className={`w-3 h-3 ${i <= Math.round(product.rating) ? 'text-brand-orange fill-brand-orange' : 'text-charcoal-200'}`}
-                  strokeWidth={2}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-charcoal-900 font-inter">({reviewsCount})</span>
-          </div>
-
           {/* Price */}
           <div className="mt-2 flex items-center gap-2 flex-1">
-            <span className="font-manrope font-bold text-charcoal-900 text-base">₹{sellingPrice.toLocaleString('en-IN')}</span>
+            <span className="font-manrope font-bold text-primary text-base">₹{sellingPrice.toLocaleString('en-IN')}</span>
             {originalPrice && originalPrice > sellingPrice && (
-              <span className="text-xs text-charcoal-900 line-through font-manrope">₹{originalPrice.toLocaleString('en-IN')}</span>
+              <span className="text-xs text-primary/60 line-through font-manrope font-bold">₹{originalPrice.toLocaleString('en-IN')}</span>
             )}
           </div>
         </Link>
       ) : (
         <div className="p-3 sm:p-4 flex flex-col flex-1">
-          <span className="text-xs text-charcoal-900 font-inter uppercase tracking-wide">{brandName}</span>
-          <h3 className="mt-1 font-poppins font-bold text-charcoal-900 text-sm sm:text-[15px] leading-snug line-clamp-2">
+          <span className="text-xs text-secondary font-manrope font-bold uppercase tracking-wider">{brandName}</span>
+          <h3 className="mt-1 font-sora font-bold text-primary text-sm sm:text-[15px] leading-snug line-clamp-2">
             {product.name}
           </h3>
 
-          {/* Rating */}
-          <div className="mt-2 flex items-center gap-1.5">
-            <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star
-                  key={i}
-                  className={`w-3 h-3 ${i <= Math.round(product.rating) ? 'text-brand-orange fill-brand-orange' : 'text-charcoal-200'}`}
-                  strokeWidth={2}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-charcoal-900 font-inter">({reviewsCount})</span>
-          </div>
-
           {/* Price */}
           <div className="mt-2 flex items-center gap-2 flex-1">
-            <span className="font-manrope font-bold text-charcoal-900 text-base">₹{sellingPrice.toLocaleString('en-IN')}</span>
+            <span className="font-manrope font-bold text-primary text-base">₹{sellingPrice.toLocaleString('en-IN')}</span>
             {originalPrice && originalPrice > sellingPrice && (
-              <span className="text-xs text-charcoal-900 line-through font-manrope">₹{originalPrice.toLocaleString('en-IN')}</span>
+              <span className="text-xs text-primary/60 line-through font-manrope font-bold">₹{originalPrice.toLocaleString('en-IN')}</span>
             )}
           </div>
         </div>
