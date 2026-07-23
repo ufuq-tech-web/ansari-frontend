@@ -77,7 +77,7 @@ export default function CategoryPage({ category, activeSubcategory, onCategoryCh
             />
 
             {/* Main content: sidebar + grid */}
-            <div id="products" className="container-main py-8">
+            <div id="products" className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto py-8">
                 <div className="flex gap-8">
                     {/* Desktop sidebar */}
                     <aside className="hidden lg:block w-64 flex-shrink-0">

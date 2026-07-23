@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { X, Plus, Trash2, Info, Layers, Pencil } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { X, Plus, Trash2, Info, Layers, Pencil, ImagePlus } from "lucide-react";
 import { adminApi } from "../../lib/admin-api";
+import ImageCropModal from "../shared/ImageCropModal";
 
 interface Subcategory {
   id: string;
@@ -53,7 +54,18 @@ export default function CategoryModal({ categoryKey, onClose, onSaved }: Props) 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = () => adminApi.get<CategoryDetail>(`/categories/${categoryKey}`).then(setCategory);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setCropImageSrc(url);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const load = () => adminApi.get<CategoryDetail>(`/categories/manage/${categoryKey}`).then(setCategory);
 
   useEffect(() => {
     load();
@@ -150,7 +162,18 @@ export default function CategoryModal({ categoryKey, onClose, onSaved }: Props) 
                     </div>
                     <div>
                       <label className={labelClass}>Hero Image URL</label>
-                      <input value={category.heroImage} onChange={(e) => setCategory({ ...category, heroImage: e.target.value })} className={inputClass} />
+                      <div className="flex gap-4 items-start mt-2">
+                        {category.heroImage && (
+                          <img src={category.heroImage} alt="Banner" className="w-32 h-12 rounded-lg bg-charcoal-100 object-cover border border-charcoal-200 flex-shrink-0" />
+                        )}
+                        <div className="flex flex-col gap-2 flex-1">
+                          <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept="image/*" className="hidden" />
+                          <button type="button" onClick={() => fileInputRef.current?.click()} className="flex items-center justify-center gap-2 px-4 py-2 w-full lg:w-auto bg-charcoal-50 hover:bg-charcoal-100 border border-charcoal-200 rounded-lg text-sm font-poppins font-semibold text-charcoal-700 transition-colors">
+                            <ImagePlus className="w-4 h-4" /> {category.heroImage ? "Change Image" : "Upload Image"}
+                          </button>
+                          <input value={category.heroImage} onChange={(e) => setCategory({ ...category, heroImage: e.target.value })} placeholder="Or paste image URL directly..." className={inputClass} />
+                        </div>
+                      </div>
                     </div>
                     {error && <p className="text-sm text-red-600 font-inter">{error}</p>}
                     <button type="submit" disabled={saving} className="self-start bg-brand-orange text-white font-poppins font-semibold px-5 py-2.5 rounded-xl hover:bg-brand-orange-dark transition-colors disabled:opacity-50">
@@ -160,79 +183,22 @@ export default function CategoryModal({ categoryKey, onClose, onSaved }: Props) 
                 </Section>
               </form>
 
-              <Section>
-                <SectionHeader icon={Layers} title="Subcategories" subtitle="Sections shoppers can filter by" />
-
-                <div className="flex flex-col gap-2 mb-5">
-                  {category.subcategories.map((s) => (
-                    <div key={s.id} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${editingSubId === s.id ? "border-brand-orange/30 bg-brand-orange/5" : "border-charcoal-100"}`}>
-                      <img src={s.image} alt="" className="w-10 h-10 rounded-lg object-cover bg-charcoal-100" />
-                      <div className="flex-1">
-                        <div className="font-poppins font-medium text-charcoal-900 text-sm">{s.name}</div>
-                        <div className="text-xs text-charcoal-400 font-inter">{s.count}</div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => handleStartEdit(s)}
-                          className={`p-1.5 transition-colors ${editingSubId === s.id ? "text-brand-orange" : "text-charcoal-400 hover:text-brand-orange"}`}
-                          aria-label="Edit subcategory"
-                        >
-                          <Pencil className="w-4 h-4" strokeWidth={2} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSubcategory(s.id)}
-                          className="p-1.5 text-charcoal-400 hover:text-red-600 transition-colors"
-                          aria-label="Delete subcategory"
-                        >
-                          <Trash2 className="w-4 h-4" strokeWidth={2} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <form onSubmit={handleSubcategorySubmit} className="grid sm:grid-cols-3 gap-3 items-end">
-                  <div className="sm:col-span-3 mb-1">
-                    <p className="text-xs font-poppins font-semibold text-brand-orange uppercase tracking-wider">
-                      {editingSubId ? "Editing Subcategory" : "Add New Subcategory"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className={labelClass}>Name</label>
-                    <input required value={newSub.name} onChange={(e) => setNewSub({ ...newSub, name: e.target.value })} className={inputClass} />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Image URL</label>
-                    <input required value={newSub.image} onChange={(e) => setNewSub({ ...newSub, image: e.target.value })} className={inputClass} />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Count label (e.g. "45+")</label>
-                    <input required value={newSub.count} onChange={(e) => setNewSub({ ...newSub, count: e.target.value })} className={inputClass} />
-                  </div>
-                  <div className="sm:col-span-3 flex gap-2">
-                    <button type="submit" className="flex items-center gap-1.5 bg-charcoal-900 text-white font-poppins font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-charcoal-800 transition-colors">
-                      {editingSubId ? (
-                        <>Save Subcategory</>
-                      ) : (
-                        <>
-                          <Plus className="w-4 h-4" strokeWidth={2} /> Add Subcategory
-                        </>
-                      )}
-                    </button>
-                    {editingSubId && (
-                      <button type="button" onClick={handleCancelEdit} className="text-charcoal-600 font-poppins font-semibold text-sm px-4 py-2.5 rounded-xl border border-charcoal-200 hover:bg-charcoal-50 transition-colors">
-                        Cancel
-                      </button>
-                    )}
-                  </div>
-                </form>
-              </Section>
             </div>
           )}
         </div>
       </div>
+      
+      {cropImageSrc && (
+        <ImageCropModal 
+          imageSrc={cropImageSrc}
+          onClose={() => setCropImageSrc(null)}
+          aspectRatio={21/9}
+          onCropped={(url) => {
+            if (category) setCategory({ ...category, heroImage: url });
+            setCropImageSrc(null);
+          }}
+        />
+      )}
     </div>
   );
 }

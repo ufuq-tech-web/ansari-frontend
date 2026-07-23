@@ -1,5 +1,5 @@
-// Client-side order history, backed by localStorage. No backend — orders live
-// only in this browser, newest first.
+// Order history — backed by the real /api/orders endpoint (requires login).
+import { customerApi, ApiError } from './customer-api';
 
 export interface OrderItem {
     id: string;
@@ -10,8 +10,8 @@ export interface OrderItem {
     salePrice: number;
 }
 
-export interface Address {
-    fullName: string;
+export interface OrderAddress {
+    name: string;
     phone: string;
     line1: string;
     city: string;
@@ -19,36 +19,29 @@ export interface Address {
     pincode: string;
 }
 
-export type PaymentMethod = 'cod' | 'card' | 'upi';
-
 export interface Order {
     orderNumber: string;
     placedAt: string;
+    status: 'PLACED' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+    paymentMethod: string;
     items: OrderItem[];
     subtotal: number;
     shipping: number;
+    discount: number;
+    couponCode: string | null;
     total: number;
-    address: Address;
-    paymentMethod: PaymentMethod;
+    address: OrderAddress;
 }
 
-const ORDERS_KEY = 'ansari_orders';
+export function getOrders(): Promise<Order[]> {
+    return customerApi.get<Order[]>('/orders');
+}
 
-export function getOrders(): Order[] {
+export async function getOrder(orderNumber: string): Promise<Order | undefined> {
     try {
-        const raw = localStorage.getItem(ORDERS_KEY);
-        return raw ? JSON.parse(raw) : [];
-    } catch {
-        return [];
+        return await customerApi.get<Order>(`/orders/${orderNumber}`);
+    } catch (err) {
+        if (err instanceof ApiError && err.status === 404) return undefined;
+        throw err;
     }
-}
-
-export function saveOrder(order: Order) {
-    const orders = getOrders();
-    orders.unshift(order);
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-}
-
-export function getOrder(orderNumber: string): Order | undefined {
-    return getOrders().find((o) => o.orderNumber === orderNumber);
 }

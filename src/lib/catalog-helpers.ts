@@ -34,6 +34,7 @@ export interface Product {
   closureType?: string;
   heelHeight?: string;
   toeShape?: string;
+  gallery?: string[];
 }
 
 export interface ProductWithCategory extends Product {
@@ -52,7 +53,8 @@ export interface RelatedCategory {
 export interface SubcategoryItem {
   name: string;
   image: string;
-  count: string;
+  count?: string;
+  _count?: { products: number };
 }
 
 export interface CategoryConfig {
@@ -113,25 +115,25 @@ export const categories = [
   {
     name: 'Men',
     href: '/men',
-    image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=700&h=850&fit=crop',
+    image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
     count: '320+ Styles',
   },
   {
     name: 'Women',
     href: '/women',
-    image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=700&h=850&fit=crop',
+    image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
     count: '450+ Styles',
   },
   {
     name: 'Kids',
     href: '/kids',
-    image: 'https://images.pexels.com/photos/5275375/pexels-photo-5275375.jpeg?auto=compress&cs=tinysrgb&w=700&h=850&fit=crop',
+    image: 'https://images.pexels.com/photos/5275375/pexels-photo-5275375.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
     count: '180+ Styles',
   },
   {
     name: 'Accessories',
     href: '/accessories',
-    image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=700&h=850&fit=crop',
+    image: 'https://images.pexels.com/photos/915917/pexels-photo-915917.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
     count: '90+ Items',
   },
 ];

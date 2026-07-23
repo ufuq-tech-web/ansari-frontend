@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Info, Tag as TagIcon, Image as ImageIcon, Palette, Users, ImageOff } from "lucide-react";
+import { Info, Tag as TagIcon, Image as ImageIcon, Palette, Users, ImageOff, Upload, X } from "lucide-react";
 import { adminApi } from "../../lib/admin-api";
+import ImageCropModal from "../shared/ImageCropModal";
 import Select from "./Select";
 
 interface CategoryOption {
@@ -22,8 +23,9 @@ export interface ProductFormValues {
   salePrice: number;
   image: string;
   hoverImage: string;
+  gallery: string[];
   badge: string;
-  stock: string;
+  stockQuantity: number;
   isNew: boolean;
   colors: string;
   sizes: string;
@@ -41,8 +43,9 @@ const EMPTY: ProductFormValues = {
   salePrice: 0,
   image: "",
   hoverImage: "",
+  gallery: [],
   badge: "",
-  stock: "IN_STOCK",
+  stockQuantity: 50,
   isNew: false,
   colors: "",
   sizes: "",
@@ -74,23 +77,25 @@ function Section({ children }: { children: React.ReactNode }) {
 export default function ProductForm({ productId, onSuccess, onCancel }: { productId?: string; onSuccess?: () => void; onCancel?: () => void }) {
   const router = useRouter();
   const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [brands, setBrands] = useState<{ name: string }[]>([]);
   const [values, setValues] = useState<ProductFormValues>(EMPTY);
   const [loading, setLoading] = useState(!!productId);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imageError, setImageError] = useState(false);
 
   const finishSuccess = () => (onSuccess ? onSuccess() : router.push("/admin/products"));
   const finishCancel = () => (onCancel ? onCancel() : router.push("/admin/products"));
 
   useEffect(() => {
     adminApi.get<CategoryOption[]>("/categories").then(setCategories);
+    adminApi.get<{ name: string }[]>("/brands").then(setBrands);
   }, []);
 
   useEffect(() => {
     if (!productId) return;
     adminApi
-      .get<any>(`/products/${productId}`)
+      .get<any>(`/products/manage/${productId}`)
       .then((p) =>
         setValues({
           name: p.name,
@@ -102,8 +107,9 @@ export default function ProductForm({ productId, onSuccess, onCancel }: { produc
           salePrice: p.salePrice,
           image: p.image,
           hoverImage: p.hoverImage,
+          gallery: p.gallery ?? [],
           badge: p.badge ?? "",
-          stock: p.stock,
+          stockQuantity: p.stockQuantity ?? 0,
           isNew: p.isNew,
           colors: (p.colors ?? []).join(", "),
           sizes: (p.sizes ?? []).join(", "),
@@ -119,7 +125,17 @@ export default function ProductForm({ productId, onSuccess, onCancel }: { produc
 
   const set = <K extends keyof ProductFormValues>(key: K, val: ProductFormValues[K]) => setValues((v) => ({ ...v, [key]: val }));
 
-  useEffect(() => setImageError(false), [values.image]);
+  const [cropTarget, setCropTarget] = useState<{ src: string; field: "image" | "hoverImage" | "gallery" } | null>(null);
+  
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: "image" | "hoverImage" | "gallery") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => setCropTarget({ src: reader.result as string, field });
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,8 +156,9 @@ export default function ProductForm({ productId, onSuccess, onCancel }: { produc
       salePrice: Number(values.salePrice),
       image: values.image,
       hoverImage: values.hoverImage || values.image,
+      gallery: values.gallery,
       badge: values.badge || undefined,
-      stock: values.stock,
+      stockQuantity: Number(values.stockQuantity),
       isNew: values.isNew,
       colors: values.colors ? values.colors.split(",").map((c) => c.trim()).filter(Boolean) : [],
       sizes: values.sizes ? values.sizes.split(",").map((s) => s.trim()).filter(Boolean) : [],
@@ -179,7 +196,12 @@ export default function ProductForm({ productId, onSuccess, onCancel }: { produc
           </div>
           <div>
             <label className={labelClass}>Brand</label>
-            <input required value={values.brandName} onChange={(e) => set("brandName", e.target.value)} className={inputClass} placeholder="e.g. Heritage" />
+            <Select
+              value={values.brandName}
+              onChange={(v) => set("brandName", v)}
+              placeholder="Select brand"
+              options={brands.map((b) => ({ value: b.name, label: b.name }))}
+            />
           </div>
           <div>
             <label className={labelClass}>Category</label>
@@ -196,7 +218,7 @@ export default function ProductForm({ productId, onSuccess, onCancel }: { produc
               value={values.subcategoryName}
               onChange={(v) => set("subcategoryName", v)}
               disabled={!selectedCategory}
-              options={[{ value: "", label: "None" }, ...(selectedCategory?.subcategories.map((s) => ({ value: s.name, label: s.name })) ?? [])]}
+              options={[{ value: "", label: "None" }, ...(selectedCategory?.subcategories || []).map((s) => ({ value: s.name, label: s.name }))]}
             />
           </div>
         </div>
@@ -222,16 +244,20 @@ export default function ProductForm({ productId, onSuccess, onCancel }: { produc
         </div>
         <div className="grid sm:grid-cols-3 gap-4 mt-4">
           <div>
-            <label className={labelClass}>Stock</label>
-            <Select
-              value={values.stock}
-              onChange={(v) => set("stock", v)}
-              options={[
-                { value: "IN_STOCK", label: "In Stock" },
-                { value: "LOW_STOCK", label: "Low Stock" },
-                { value: "OUT_OF_STOCK", label: "Out of Stock" },
-              ]}
+            <label className={labelClass}>Stock Quantity</label>
+            <input
+              required
+              type="number"
+              min={0}
+              value={values.stockQuantity}
+              onChange={(e) => set("stockQuantity", Number(e.target.value))}
+              className={inputClass}
             />
+            <p className={`mt-1 text-xs font-poppins font-medium ${
+              values.stockQuantity <= 0 ? "text-red-600" : values.stockQuantity <= 5 ? "text-amber-600" : "text-charcoal-400"
+            }`}>
+              {values.stockQuantity <= 0 ? "Out of stock" : values.stockQuantity <= 5 ? "Low stock" : "In stock"}
+            </p>
           </div>
           <div>
             <label className={labelClass}>Badge</label>
@@ -247,24 +273,66 @@ export default function ProductForm({ productId, onSuccess, onCancel }: { produc
       </Section>
 
       <Section>
-        <SectionHeader icon={ImageIcon} title="Media" subtitle="Product photography" />
-        <div className="grid sm:grid-cols-[1fr_1fr_auto] gap-4 items-start">
-          <div>
-            <label className={labelClass}>Image URL</label>
-            <input required value={values.image} onChange={(e) => set("image", e.target.value)} className={inputClass} />
+        <SectionHeader icon={ImageIcon} title="Media" subtitle="Product photography (Upload directly or paste URL)" />
+        <div className="space-y-6">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Main Image</label>
+              <div className="flex gap-4 items-center">
+                <div className="w-24 h-24 rounded-xl border border-charcoal-200 bg-charcoal-50 overflow-hidden flex items-center justify-center flex-shrink-0 relative group">
+                  {values.image ? (
+                    <img src={values.image} alt="Main" className="w-full h-full object-cover" />
+                  ) : (
+                    <ImageOff className="w-6 h-6 text-charcoal-300" strokeWidth={1.5} />
+                  )}
+                  <label className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                    <Upload className="w-5 h-5" />
+                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, "image")} disabled={uploading} />
+                  </label>
+                </div>
+                <div className="flex-1">
+                  <input value={values.image} onChange={(e) => set("image", e.target.value)} className={inputClass} placeholder="Or paste image URL" />
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <label className={labelClass}>Hover Image</label>
+              <div className="flex gap-4 items-center">
+                <div className="w-24 h-24 rounded-xl border border-charcoal-200 bg-charcoal-50 overflow-hidden flex items-center justify-center flex-shrink-0 relative group">
+                  {values.hoverImage ? (
+                    <img src={values.hoverImage} alt="Hover" className="w-full h-full object-cover" />
+                  ) : (
+                    <ImageOff className="w-6 h-6 text-charcoal-300" strokeWidth={1.5} />
+                  )}
+                  <label className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                    <Upload className="w-5 h-5" />
+                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, "hoverImage")} disabled={uploading} />
+                  </label>
+                </div>
+                <div className="flex-1">
+                  <input value={values.hoverImage} onChange={(e) => set("hoverImage", e.target.value)} className={inputClass} placeholder="Or paste hover URL" />
+                </div>
+              </div>
+            </div>
           </div>
+          
           <div>
-            <label className={labelClass}>Hover Image URL</label>
-            <input value={values.hoverImage} onChange={(e) => set("hoverImage", e.target.value)} className={inputClass} placeholder="Same as image if blank" />
-          </div>
-          <div>
-            <label className={labelClass}>Preview</label>
-            <div className="w-16 h-16 rounded-xl border border-charcoal-200 bg-charcoal-50 overflow-hidden flex items-center justify-center">
-              {values.image && !imageError ? (
-                <img src={values.image} alt="" className="w-full h-full object-cover" onError={() => setImageError(true)} />
-              ) : (
-                <ImageOff className="w-5 h-5 text-charcoal-300" strokeWidth={1.5} />
-              )}
+            <label className={labelClass}>Gallery Images (Multiple Views)</label>
+            <div className="flex flex-wrap gap-4 mt-2">
+              {values.gallery.map((url, i) => (
+                <div key={i} className="w-24 h-24 rounded-xl border border-charcoal-200 relative group overflow-hidden">
+                  <img src={url} alt={`Gallery ${i}`} className="w-full h-full object-cover" />
+                  <button type="button" onClick={() => setValues(v => ({ ...v, gallery: v.gallery.filter((_, idx) => idx !== i) }))} className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-sm opacity-0 md:group-hover:opacity-100 transition-opacity text-red-500 hover:bg-red-50">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              <label className={`w-24 h-24 rounded-xl border-2 border-dashed border-charcoal-200 hover:border-brand-orange bg-charcoal-50/50 hover:bg-brand-orange/5 flex flex-col items-center justify-center cursor-pointer transition-colors text-charcoal-400 hover:text-brand-orange ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                <Upload className="w-5 h-5 mb-1" />
+                <span className="text-[10px] font-poppins font-medium uppercase tracking-wider text-center px-2 leading-tight">{uploading ? "Uploading..." : "Add Image"}</span>
+                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, "gallery")} disabled={uploading} />
+              </label>
             </div>
           </div>
         </div>
@@ -328,13 +396,29 @@ export default function ProductForm({ productId, onSuccess, onCancel }: { produc
       {error && <p className="text-sm text-red-600 font-inter">{error}</p>}
 
       <div className="flex gap-3 pt-1 sticky bottom-0 bg-brand-ivory/95 backdrop-blur -mx-1 px-1 py-3 sm:static sm:bg-transparent sm:backdrop-blur-none sm:p-0">
-        <button type="submit" disabled={saving} className="bg-brand-orange text-white font-poppins font-semibold px-6 py-2.5 rounded-xl hover:bg-brand-orange-dark transition-colors disabled:opacity-50">
+        <button type="submit" disabled={saving || uploading} className="bg-brand-orange text-white font-poppins font-semibold px-6 py-2.5 rounded-xl hover:bg-brand-orange-dark transition-colors disabled:opacity-50">
           {saving ? "Saving…" : productId ? "Save Changes" : "Create Product"}
         </button>
         <button type="button" onClick={finishCancel} className="text-charcoal-600 font-poppins font-semibold px-6 py-2.5 rounded-xl border border-charcoal-200 hover:bg-charcoal-50 transition-colors">
           Cancel
         </button>
       </div>
+
+      {cropTarget && (
+        <ImageCropModal 
+          imageSrc={cropTarget.src}
+          onClose={() => setCropTarget(null)}
+          aspectRatio={4/5}
+          onCropped={(url) => {
+            if (cropTarget.field === "gallery") {
+              setValues(v => ({ ...v, gallery: [...v.gallery, url] }));
+            } else {
+              set(cropTarget.field, url);
+            }
+            setCropTarget(null);
+          }}
+        />
+      )}
     </form>
   );
 }

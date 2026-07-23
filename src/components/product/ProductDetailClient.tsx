@@ -59,7 +59,7 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
   const { toggle, isWishlisted } = useWishlist();
 
   const wishlisted = isWishlisted(product.id);
-  const images = [product.image, product.hoverImage].filter((v, i, arr) => arr.indexOf(v) === i);
+  const images = [product.image, product.hoverImage, ...(product.gallery || [])].filter((v, i, arr) => v && arr.indexOf(v) === i);
   const discount = Math.round(((product.price - product.salePrice) / product.price) * 100);
   const description = getProductDescription(product);
   const ratingBreakdown = getRatingBreakdown(product.rating);
@@ -81,7 +81,9 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
   })();
 
   const features = getProductFeatures(product);
-  const canAdd = product.stock !== "out_of_stock" && (!product.sizes?.length || !!selectedSize);
+  const canAdd = product.stock !== "out_of_stock" && 
+    (!product.sizes?.length || !!selectedSize) && 
+    (!product.colors?.length || !!selectedColor);
 
   const handleAdd = () => {
     if (!canAdd) return;
@@ -280,7 +282,7 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
             {product.colors && product.colors.length > 0 && (
               <div>
                 <span className="text-sm font-poppins font-semibold text-charcoal-900 block mb-2">
-                  Color: <span className="font-normal text-charcoal-500">{selectedColor || "Select"}</span>
+                  Color: <span className="font-normal text-charcoal-500">{selectedColor || "Select a color"}</span>
                 </span>
                 <div className="flex gap-2.5">
                   {product.colors.map((c) => (
@@ -295,6 +297,9 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
                     />
                   ))}
                 </div>
+                {!selectedColor && (
+                  <p className="text-xs text-brand-orange font-inter mt-1.5">Please select a color</p>
+                )}
               </div>
             )}
 
@@ -574,31 +579,33 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
       {/* FAQs */}
       {categoryConfig && <CategoryFAQ category={categoryConfig} />}
 
-      <div className="container-main py-10">
-        {/* Same color */}
-        {sameColorProducts.length > 0 && (
-          <div>
-            <h2 className="font-poppins font-bold text-charcoal-900 text-xl sm:text-2xl mb-5">Similar Colors</h2>
+      {/* Same color */}
+      {sameColorProducts.length > 0 && (
+        <section className="py-10 sm:py-16 bg-white border-t border-charcoal-200">
+          <div className="container-main">
+            <h2 className="font-poppins font-bold text-charcoal-900 text-xl sm:text-2xl mb-6">Similar Colors</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
               {sameColorProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </div>
-        )}
+        </section>
+      )}
 
-        {/* Related products */}
-        {relatedProducts.length > 0 && (
-          <div className="mt-14">
-            <h2 className="font-poppins font-bold text-charcoal-900 text-xl sm:text-2xl mb-5">You Might Also Like</h2>
+      {/* Related products */}
+      {relatedProducts.length > 0 && (
+        <section className="py-10 sm:py-16 bg-brand-ivory border-t border-charcoal-200">
+          <div className="container-main">
+            <h2 className="font-poppins font-bold text-charcoal-900 text-xl sm:text-2xl mb-6">You Might Also Like</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
               {relatedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </div>
-        )}
-      </div>
+        </section>
+      )}
 
       {/* Recently viewed */}
       <RecentlyViewed />

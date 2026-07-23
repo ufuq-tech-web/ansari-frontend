@@ -5,6 +5,8 @@ module.exports = {
         extend: {
             fontFamily: {
                 // Headings (H1–H3) and product names.
+                sora: ['Sora', 'sans-serif'],
+                // Legacy fallback for other components using font-poppins that expect Sora.
                 poppins: ['Sora', 'sans-serif'],
                 // Body copy — product descriptions, blog/guide content, footer.
                 inter: ['Inter', 'sans-serif'],
@@ -12,6 +14,14 @@ module.exports = {
                 manrope: ['Manrope', 'sans-serif'],
             },
             colors: {
+                primary: 'rgb(var(--color-primary) / <alpha-value>)',
+                secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
+                accent: 'rgb(var(--color-accent) / <alpha-value>)',
+                success: 'rgb(var(--color-success) / <alpha-value>)',
+                error: 'rgb(var(--color-error) / <alpha-value>)',
+                background: 'rgb(var(--color-background) / <alpha-value>)',
+                surface: 'rgb(var(--color-surface) / <alpha-value>)',
+                border: 'rgb(var(--color-border) / <alpha-value>)',
                 charcoal: {
                     DEFAULT: '#1F2937',
                     50: '#F9FAFB',

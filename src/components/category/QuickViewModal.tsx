@@ -27,6 +27,7 @@ export default function QuickViewModal({ product, onClose }: Props) {
 
   const handleAdd = () => {
     if (product.sizes?.length && !selectedSize) return;
+    if (product.colors?.length && !selectedColor) return;
     addItem(product, 1);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -141,7 +142,7 @@ export default function QuickViewModal({ product, onClose }: Props) {
             {product.colors && product.colors.length > 0 && (
               <div>
                 <span className="text-sm font-poppins font-semibold text-charcoal-900 block mb-2">
-                  Color: <span className="font-normal text-charcoal-500">{selectedColor || 'Select'}</span>
+                  Color: <span className="font-normal text-charcoal-500">{selectedColor || 'Select a color'}</span>
                 </span>
                 <div className="flex gap-2.5">
                   {product.colors.map((c) => (
@@ -157,6 +158,9 @@ export default function QuickViewModal({ product, onClose }: Props) {
                     />
                   ))}
                 </div>
+                {!selectedColor && (
+                  <p className="text-xs text-brand-orange font-inter mt-1.5">Please select a color</p>
+                )}
               </div>
             )}
 
@@ -195,7 +199,7 @@ export default function QuickViewModal({ product, onClose }: Props) {
             <div className="flex gap-3 mt-auto">
               <button
                 onClick={handleAdd}
-                disabled={!!product.sizes?.length && !selectedSize}
+                disabled={(!!product.sizes?.length && !selectedSize) || (!!product.colors?.length && !selectedColor)}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-poppins font-semibold text-sm transition-all ${added
                     ? 'bg-brand-green text-white'
                     : 'bg-brand-orange text-white hover:bg-brand-orange-dark disabled:opacity-50 disabled:cursor-not-allowed'

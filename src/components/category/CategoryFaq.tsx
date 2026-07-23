@@ -19,7 +19,7 @@ export default function CategoryFAQ({ category }: Props) {
                     <div className="text-center mb-8">
                         <span className="text-leather-400 font-poppins font-semibold text-sm uppercase tracking-wide">Need Help?</span>
                         <h2 className="section-heading text-2xl sm:text-3xl mt-1">Frequently Asked Questions</h2>
-                        <p className="mt-2 text-charcoal-500 font-inter">Everything you need to know about shopping {category.name}</p>
+                        <p className="mt-2 text-black font-inter">Everything you need to know about shopping {category.name}</p>
                     </div>
 
                     <div className="divide-y divide-charcoal-200">
@@ -44,7 +44,7 @@ export default function CategoryFAQ({ category }: Props) {
 
                                 {open === i && (
                                     <div className="pl-9 pb-5 pr-4">
-                                        <p className="text-charcoal-600 font-inter text-sm leading-relaxed">{faq.answer}</p>
+                                        <p className="text-black font-inter text-sm leading-relaxed">{faq.answer}</p>
                                     </div>
                                 )}
                             </div>

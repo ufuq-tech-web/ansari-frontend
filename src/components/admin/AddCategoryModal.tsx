@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { X, Upload, ImageOff } from "lucide-react";
 import { adminApi } from "../../lib/admin-api";
+import ImageCropModal from "../shared/ImageCropModal";
 
 interface Props {
   onClose: () => void;
@@ -15,7 +16,9 @@ const labelClass = "text-sm font-poppins font-medium text-charcoal-700 block mb-
 export default function AddCategoryModal({ onClose, onSaved }: Props) {
   const [form, setForm] = useState({ key: "", name: "", description: "", heroImage: "" });
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -23,15 +26,38 @@ export default function AddCategoryModal({ onClose, onSaved }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  const validate = () => {
+    const errs: { [key: string]: string } = {};
+    if (!form.key.trim()) errs.key = "Slug is required.";
+    if (!form.name.trim()) errs.name = "Category name is required.";
+    if (!form.description.trim()) errs.description = "Description is required.";
+    if (!form.heroImage.trim()) errs.heroImage = "Hero Image is required. Please upload or paste a URL.";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setCropImageSrc(url);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
+    
     setSaving(true);
-    setError(null);
+    setGeneralError(null);
     try {
       await adminApi.post("/categories", form);
       onSaved();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create category");
+      setGeneralError(err instanceof Error ? err.message : "Failed to create category");
       setSaving(false);
     }
   };
@@ -55,34 +81,67 @@ export default function AddCategoryModal({ onClose, onSaved }: Props) {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Key (URL slug)</label>
-              <input required value={form.key} onChange={(e) => setForm({ ...form, key: e.target.value })} className={inputClass} placeholder="e.g. men" />
+              <input value={form.key} onChange={(e) => { setForm({ ...form, key: e.target.value }); setErrors({...errors, key: ""}) }} className={inputClass} placeholder="e.g. men" />
+              {errors.key && <p className="text-xs text-red-500 font-inter mt-1.5">{errors.key}</p>}
             </div>
             <div>
               <label className={labelClass}>Display Name</label>
-              <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClass} placeholder="e.g. Men's Footwear" />
+              <input value={form.name} onChange={(e) => { setForm({ ...form, name: e.target.value }); setErrors({...errors, name: ""}) }} className={inputClass} placeholder="e.g. Men's Footwear" />
+              {errors.name && <p className="text-xs text-red-500 font-inter mt-1.5">{errors.name}</p>}
             </div>
           </div>
           <div>
             <label className={labelClass}>Description</label>
-            <input required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputClass} />
+            <input value={form.description} onChange={(e) => { setForm({ ...form, description: e.target.value }); setErrors({...errors, description: ""}) }} className={inputClass} />
+            {errors.description && <p className="text-xs text-red-500 font-inter mt-1.5">{errors.description}</p>}
           </div>
           <div>
-            <label className={labelClass}>Hero Image URL</label>
-            <input required value={form.heroImage} onChange={(e) => setForm({ ...form, heroImage: e.target.value })} className={inputClass} />
+            <label className={labelClass}>Hero Image</label>
+            <div className="w-full aspect-[21/9] bg-charcoal-50 border border-charcoal-200 rounded-xl mb-3 overflow-hidden relative group flex items-center justify-center">
+              {form.heroImage ? (
+                <img src={form.heroImage} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
+                <div className="text-center flex flex-col items-center opacity-50 px-4">
+                   <ImageOff className="w-8 h-8 mb-2 text-charcoal-400" />
+                   <p className="text-xs font-inter text-charcoal-500">No banner selected</p>
+                </div>
+              )}
+              
+              <label className="absolute inset-0 bg-charcoal-900/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-300">
+                <Upload className="w-6 h-6 text-white mb-2" />
+                <span className="text-white text-xs font-semibold font-poppins">{uploading ? "Uploading..." : "Click to Upload Image"}</span>
+                <input type="file" className="hidden" accept="image/*" onChange={handleFileSelect} ref={fileInputRef} disabled={uploading} />
+              </label>
+            </div>
+            <input value={form.heroImage} onChange={(e) => { setForm({ ...form, heroImage: e.target.value }); setErrors({...errors, heroImage: ""}) }} className={inputClass} placeholder="Or paste image URL directly" />
+            {errors.heroImage && <p className="text-xs text-red-500 font-inter mt-1.5">{errors.heroImage}</p>}
           </div>
 
-          {error && <p className="text-sm text-red-600 font-inter">{error}</p>}
+          {generalError && <p className="text-sm text-red-600 font-inter bg-red-50 p-3 rounded-lg border border-red-100">{generalError}</p>}
 
-          <div className="flex gap-3 pt-1">
-            <button type="submit" disabled={saving} className="bg-brand-orange text-white font-poppins font-semibold px-6 py-2.5 rounded-xl hover:bg-brand-orange-dark transition-colors disabled:opacity-50">
+          <div className="flex gap-3 pt-4 border-t border-charcoal-100">
+            <button type="submit" disabled={saving || uploading} className="bg-brand-orange text-white font-poppins font-semibold px-6 py-2.5 rounded-xl hover:bg-brand-orange-dark transition-colors disabled:opacity-50">
               {saving ? "Saving…" : "Create Category"}
             </button>
-            <button type="button" onClick={onClose} className="text-charcoal-600 font-poppins font-semibold px-6 py-2.5 rounded-xl border border-charcoal-200 hover:bg-charcoal-50 transition-colors">
+            <button type="button" onClick={onClose} disabled={saving} className="text-charcoal-600 font-poppins font-semibold px-6 py-2.5 rounded-xl border border-charcoal-200 hover:bg-charcoal-50 transition-colors disabled:opacity-50">
               Cancel
             </button>
           </div>
         </form>
       </div>
+
+      {cropImageSrc && (
+        <ImageCropModal 
+          imageSrc={cropImageSrc}
+          onClose={() => setCropImageSrc(null)}
+          aspectRatio={21/9}
+          onCropped={(url) => {
+            setForm({ ...form, heroImage: url });
+            setErrors({...errors, heroImage: ""});
+            setCropImageSrc(null);
+          }}
+        />
+      )}
     </div>
   );
 }

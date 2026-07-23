@@ -34,7 +34,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
   return res.json();
 }
 
-function mapProduct(p: any): ProductWithCategory {
+export function mapProduct(p: any): ProductWithCategory {
   return {
     id: p.id,
     name: p.name,
@@ -45,6 +45,7 @@ function mapProduct(p: any): ProductWithCategory {
     reviews: p.reviewsCount,
     image: p.image,
     hoverImage: p.hoverImage || p.image,
+    gallery: p.gallery ?? [],
     badge: p.badge || undefined,
     subcategory: p.subcategory?.name || p.subcategory || "",
     category: (p.category?.key || p.category || "") as ProductWithCategory['category'],
@@ -77,10 +78,10 @@ function mapGuide(g: any): BuyingGuideWithCategory {
 }
 
 export const storefrontApi = {
-  async getCategories(): Promise<{ key: string; name: string; heroImage: string; description: string }[]> {
+  async getCategories(): Promise<{ key: string; name: string; heroImage: string; description: string; subcategories: { name: string; slug: string }[] }[]> {
     try {
       const list = await apiFetch<any[]>('/categories');
-      return list.map((c) => ({ key: c.key, name: c.name, heroImage: c.heroImage, description: c.description }));
+      return list.map((c) => ({ key: c.key, name: c.name, heroImage: c.heroImage, description: c.description, subcategories: c.subcategories || [] }));
     } catch (err) {
       console.error("Error loading categories:", err);
       return [];
@@ -205,6 +206,46 @@ export const storefrontApi = {
       return [];
     }
   },
+
+  async getBlogPosts(): Promise<BlogPost[]> {
+    try {
+      return await apiFetch<BlogPost[]>('/blog');
+    } catch (err) {
+      console.error("Error loading blog posts:", err);
+      return [];
+    }
+  },
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+    try {
+      return await apiFetch<BlogPost>(`/blog/${slug}`);
+    } catch (err) {
+      if (!isNotFound(err)) console.error(`Error loading blog post ${slug}:`, err);
+      return null;
+    }
+  },
+
+  async getShippingSettings(): Promise<{ flatRate: number; freeShippingThreshold: number }> {
+    try {
+      const res = await apiFetch<{ shipping: { flatRate: number; freeShippingThreshold: number } }>('/settings');
+      return res.shipping;
+    } catch (err) {
+      console.error("Error loading settings:", err);
+      return { flatRate: 79, freeShippingThreshold: 999 };
+    }
+  },
 };
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  image: string;
+  readTime: string;
+  author: string;
+  createdAt: string;
+}
 
 export type { Product, ProductWithCategory, CategoryConfig, Review, BuyingGuideWithCategory };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { storefrontApi } from '../lib/storefront-api';
 
 export default function ShopByBrand() {
@@ -10,26 +11,46 @@ export default function ShopByBrand() {
     storefrontApi.getBrands().then(setBrandsList);
   }, []);
 
-  return (
-    <section id="brands" className="py-12 sm:py-16 lg:py-20 bg-white" aria-label="Shop by brand">
-      <div className="container-main">
-        <div className="text-center mb-8 lg:mb-10">
-          <h2 className="section-heading text-2xl sm:text-3xl lg:text-4xl">Shop by Brand</h2>
-          <p className="mt-2 text-charcoal-900 font-inter">Trusted brands for every need and budget</p>
-        </div>
+  if (!brandsList.length) return null;
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
-          {brandsList.map((b) => (
-            <a
-              key={b.id}
+  // Quadruple the list to ensure the marquee spans the screen and loops seamlessly
+  const repeatedBrands = [...brandsList, ...brandsList, ...brandsList, ...brandsList];
+
+  return (
+    <section id="brands" className="py-16 sm:py-24 bg-white border-y border-gray-100 overflow-hidden" aria-label="Shop by brand">
+      <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
+        <div>
+          <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Premium Partners</span>
+          <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary">Discover <span className="text-secondary">Brands</span></h2>
+        </div>
+      </div>
+      
+      {/* Infinite scrolling marquee */}
+      <div className="relative flex overflow-x-hidden group py-4">
+        <div className="flex w-max items-center animate-[scrollLeft_30s_linear_infinite] group-hover:[animation-play-state:paused]">
+          {repeatedBrands.map((b, i) => (
+            <Link 
+              key={`${b.id}-${i}`} 
               href={`/brands/${b.slug}`}
-              className="group aspect-[5/3] rounded-xl border border-charcoal-200 bg-white flex items-center justify-center hover:border-charcoal-300 hover:shadow-card transition-all duration-300"
-              aria-label={`Shop ${b.name} brand`}
+              className="flex items-center mx-6 sm:mx-10 transition-transform duration-300 hover:scale-105"
             >
-              <span className="font-poppins font-bold text-lg sm:text-xl text-charcoal-900 group-hover:text-brand-orange transition-colors duration-300">
+              <span 
+                className="text-5xl sm:text-7xl md:text-8xl lg:text-[100px] font-sora font-extrabold uppercase leading-none transition-all duration-300"
+                style={{ WebkitTextStroke: '2px #1F2937', color: 'transparent' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#1F2937';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'transparent';
+                }}
+              >
                 {b.name}
               </span>
-            </a>
+              {/* Brand Separator Star */}
+              <span className="mx-6 sm:mx-10 text-brand-orange text-2xl sm:text-4xl animate-pulse">
+                ✦
+              </span>
+            </Link>
           ))}
         </div>
       </div>

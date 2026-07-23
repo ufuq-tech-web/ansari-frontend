@@ -1,7 +1,11 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Product } from '../lib/catalog-helpers';
+import { customerApi } from './customer-api';
+import { mapProduct } from './storefront-api';
+import { useAuth } from './auth-context';
 
 interface WishlistContextValue {
     items: Product[];
@@ -12,35 +16,47 @@ interface WishlistContextValue {
 }
 
 const WishlistContext = createContext<WishlistContextValue | null>(null);
-const STORAGE_KEY = 'ansari_wishlist';
 
+// Wishlist lives on the backend now (requires login), mirroring cart-context.
 export function WishlistProvider({ children }: { children: ReactNode }) {
+    const { isAuthenticated, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [items, setItems] = useState<Product[]>([]);
     const [hydrated, setHydrated] = useState(false);
 
-    useEffect(() => {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) setItems(JSON.parse(raw));
-        } catch {
-            // ignore corrupt storage
+    const refresh = useCallback(() => {
+        if (!isAuthenticated) {
+            setItems([]);
+            setHydrated(true);
+            return;
         }
-        setHydrated(true);
-    }, []);
+        customerApi
+            .get<any[]>('/wishlist')
+            .then((rows) => setItems(rows.map((r) => mapProduct(r.product))))
+            .finally(() => setHydrated(true));
+    }, [isAuthenticated]);
 
     useEffect(() => {
-        if (hydrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    }, [items, hydrated]);
+        if (authLoading) return;
+        refresh();
+    }, [authLoading, refresh]);
 
     const toggle = (product: Product) => {
-        setItems((prev) =>
-            prev.some((i) => i.id === product.id)
-                ? prev.filter((i) => i.id !== product.id)
-                : [...prev, product]
-        );
+        if (!isAuthenticated) {
+            router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+            return;
+        }
+        const already = items.some((i) => i.id === product.id);
+        const request = already
+            ? customerApi.delete(`/wishlist/${product.id}`)
+            : customerApi.post('/wishlist', { productId: product.id });
+        request.then(refresh);
     };
 
-    const remove = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
+    const remove = (id: string) => {
+        customerApi.delete(`/wishlist/${id}`).then(refresh);
+    };
+
     const isWishlisted = (id: string) => items.some((i) => i.id === id);
 
     return (

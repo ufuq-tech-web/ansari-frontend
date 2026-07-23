@@ -11,13 +11,15 @@ interface Props {
 export default function SubcategoryGrid({ category, activeSubcategory, onSubcategoryClick }: Props) {
   return (
     <section id="subcategories" className="py-10 sm:py-12 bg-white border-b border-charcoal-200">
-      <div className="container-main">
-        <div className="flex items-end justify-between mb-6">
-          <h2 className="section-heading text-xl sm:text-2xl">Shop by Style</h2>
-          <span className="text-sm text-charcoal-500 font-inter hidden sm:block">{category.subcategories.length} subcategories</span>
+      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
+        <div className="flex flex-col items-center text-center gap-4 mb-8 max-w-2xl mx-auto">
+          <div>
+            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Curated Categories</span>
+            <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary">Shop by <span className="text-secondary">Style</span></h2>
+          </div>
         </div>
 
-        <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4 sm:gap-6 lg:gap-8 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-auto lg:px-0 lg:w-max lg:max-w-full">
           {category.subcategories.map((sub) => {
             const isActive = sub.name === activeSubcategory;
             return (
@@ -25,7 +27,7 @@ export default function SubcategoryGrid({ category, activeSubcategory, onSubcate
                 key={sub.name}
                 onClick={() => onSubcategoryClick?.(sub.name)}
                 aria-pressed={isActive}
-                className="group flex flex-col items-center gap-2 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 rounded-xl"
+                className="group flex-shrink-0 snap-start flex flex-col items-center gap-3 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 rounded-xl w-[120px] sm:w-[140px] lg:w-[160px]"
               >
                 <div className={`w-full aspect-square rounded-xl overflow-hidden bg-charcoal-100 shadow-card group-hover:shadow-card-hover transition-all duration-300 ${isActive ? 'ring-2 ring-brand-orange ring-offset-2' : ''}`}>
                   <img
@@ -36,8 +38,8 @@ export default function SubcategoryGrid({ category, activeSubcategory, onSubcate
                   />
                 </div>
                 <div>
-                  <div className={`font-poppins font-medium text-xs sm:text-sm transition-colors ${isActive ? 'text-brand-orange' : 'text-charcoal-900 group-hover:text-brand-orange'}`}>{sub.name}</div>
-                  <div className="text-[10px] sm:text-xs text-charcoal-400 font-inter">{sub.count} items</div>
+                  <div className={`font-manrope font-bold text-xs sm:text-sm transition-colors ${isActive ? 'text-accent' : 'text-primary group-hover:text-accent'}`}>{sub.name}</div>
+                  <div className="text-[10px] sm:text-xs text-primary/60 font-inter mt-0.5">{sub._count?.products || 0} items</div>
                 </div>
               </button>
             );

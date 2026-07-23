@@ -1,0 +1,3 @@
+Name,SKU,Brand,Category,Subcategory,Price,SalePrice,Image,HoverImage,Stock,Colors,Sizes,Gender,AgeGroup,Badge,IsNew
+Heritage Ankle Boots,M-BOOT-101,Heritage,men,Boots,3299,2999,,,,,8;9;10,MEN,,New,true
+Grace Classic Heels,W-HEEL-202,Grace,women,Heels,2599,2199,,,,,5;6;7;8,WOMEN,,Bestseller,false

@@ -1,7 +1,11 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Product } from '../lib/catalog-helpers';
+import { customerApi } from './customer-api';
+import { mapProduct } from './storefront-api';
+import { useAuth } from './auth-context';
 
 export interface CartItem extends Product {
     qty: number;
@@ -19,47 +23,57 @@ interface CartContextValue {
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
-const STORAGE_KEY = 'ansari_cart';
 
+// Cart lives on the backend now (requires login) — this provider is just a
+// thin cache in front of /api/cart so every consumer (Header, ProductCard,
+// cart/checkout pages) keeps working against the same hook shape as before.
 export function CartProvider({ children }: { children: ReactNode }) {
+    const { isAuthenticated, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [items, setItems] = useState<CartItem[]>([]);
     const [hydrated, setHydrated] = useState(false);
 
-    useEffect(() => {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) setItems(JSON.parse(raw));
-        } catch {
-            // ignore corrupt storage
+    const refresh = useCallback(() => {
+        if (!isAuthenticated) {
+            setItems([]);
+            setHydrated(true);
+            return;
         }
-        setHydrated(true);
-    }, []);
+        customerApi
+            .get<any[]>('/cart')
+            .then((rows) => setItems(rows.map((r) => ({ ...mapProduct(r.product), qty: r.qty }))))
+            .finally(() => setHydrated(true));
+    }, [isAuthenticated]);
 
     useEffect(() => {
-        if (hydrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    }, [items, hydrated]);
+        if (authLoading) return;
+        refresh();
+    }, [authLoading, refresh]);
 
-    const addItem = (product: Product, qty = 1) => {
-        setItems((prev) => {
-            const existing = prev.find((i) => i.id === product.id);
-            if (existing) {
-                return prev.map((i) => (i.id === product.id ? { ...i, qty: i.qty + qty } : i));
-            }
-            return [...prev, { ...product, qty }];
-        });
+    const requireLogin = () => {
+        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
     };
 
-    const removeItem = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
+    const addItem = (product: Product, qty = 1) => {
+        if (!isAuthenticated) return requireLogin();
+        customerApi.post('/cart', { productId: product.id, qty }).then(refresh);
+    };
+
+    const removeItem = (id: string) => {
+        customerApi.delete(`/cart/${id}`).then(refresh);
+    };
 
     const updateQty = (id: string, qty: number) => {
         if (qty < 1) {
             removeItem(id);
             return;
         }
-        setItems((prev) => prev.map((i) => (i.id === id ? { ...i, qty } : i)));
+        customerApi.patch(`/cart/${id}`, { qty }).then(refresh);
     };
 
-    const clearCart = () => setItems([]);
+    const clearCart = () => {
+        customerApi.delete('/cart').then(refresh);
+    };
 
     const itemCount = items.reduce((sum, i) => sum + i.qty, 0);
     const subtotal = items.reduce((sum, i) => sum + i.salePrice * i.qty, 0);
