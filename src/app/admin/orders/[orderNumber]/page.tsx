@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, MapPin, CreditCard, Calendar, User, Package } from "lucide-react";
+import { ArrowLeft, MapPin, CreditCard, Calendar, Package } from "lucide-react";
 import { adminApi } from "../../../../lib/admin-api";
-import Select from "../../../../components/admin/Select";
+import StatusDropdown from "../../../../components/admin/StatusDropdown";
 
 interface OrderItem {
   id: string;
@@ -29,20 +29,10 @@ interface OrderDetail {
   user: { name: string; email: string };
 }
 
-const STATUSES = ["PLACED", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"];
-
-const STATUS_STYLES: Record<string, string> = {
-  PLACED: "bg-slate-500/10 text-slate-600 border border-slate-500/20",
-  CONFIRMED: "bg-sky-500/10 text-sky-600 border border-sky-500/20",
-  SHIPPED: "bg-amber-500/10 text-amber-600 border border-amber-500/20",
-  DELIVERED: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20",
-  CANCELLED: "bg-rose-500/10 text-rose-600 border border-rose-500/20",
-};
-
 export default function AdminOrderDetailPage() {
   const params = useParams<{ orderNumber: string }>();
   const [order, setOrder] = useState<OrderDetail | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   const load = () => adminApi.get<OrderDetail>(`/orders/${params.orderNumber}`).then(setOrder);
 
@@ -51,146 +41,166 @@ export default function AdminOrderDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.orderNumber]);
 
-  const handleStatusChange = async (status: string) => {
-    setSaving(true);
-    await adminApi.patch(`/orders/${params.orderNumber}/status`, { status });
-    await load();
-    setSaving(false);
+  const handleStatusChange = async (orderNumber: string, status: string) => {
+    setSavingId(orderNumber);
+    try {
+      await adminApi.patch(`/orders/${orderNumber}/status`, { status });
+      await load();
+    } finally {
+      setSavingId(null);
+    }
   };
 
   if (!order) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-charcoal-400 font-inter text-sm">
-        <div className="w-8 h-8 rounded-full border-2 border-brand-orange border-t-transparent animate-spin mb-3" />
-        <span className="font-poppins font-semibold text-xs tracking-wider uppercase">Loading Order Details…</span>
+      <div className="flex flex-col items-center justify-center py-24 text-charcoal-400 font-inter text-sm w-full h-[60vh]">
+        <div className="w-8 h-8 rounded-full border-2 border-brand-orange border-t-transparent animate-spin mb-4 shadow-sm" />
+        <span className="font-poppins font-semibold text-[11px] tracking-[0.2em] uppercase text-charcoal-500">Loading Order…</span>
       </div>
     );
   }
 
   const customerInitials = order.user.name
-    ? order.user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
+    ? order.user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
 
   return (
-    <div className="max-w-3xl flex flex-col gap-6">
+    <div className="max-w-4xl mx-auto flex flex-col gap-6 lg:gap-8 animate-in fade-in duration-300">
       {/* Navigation Header */}
       <div>
         <Link 
           href="/admin/orders" 
-          className="inline-flex items-center gap-1.5 text-xs text-charcoal-500 hover:text-brand-orange font-poppins font-bold uppercase tracking-wider transition-colors duration-200"
+          className="inline-flex items-center gap-1.5 text-xs text-charcoal-900 hover:text-brand-orange font-poppins font-bold uppercase tracking-wider transition-colors duration-200 group"
         >
-          <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
+          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1 text-charcoal-900" strokeWidth={2.5} />
           <span>Back to Orders</span>
         </Link>
       </div>
 
       {/* Order Identity & Status Control */}
-      <div className="bg-white rounded-2xl border border-charcoal-200/50 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-charcoal-50 border border-charcoal-200/30 flex items-center justify-center text-charcoal-500 shadow-sm flex-shrink-0">
-            <Package className="w-6 h-6 text-charcoal-700" strokeWidth={2} />
+      <div className="bg-white rounded-3xl border border-charcoal-200/50 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+        <div className="flex items-start sm:items-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-charcoal-50 to-charcoal-100 border border-charcoal-200/50 flex items-center justify-center text-charcoal-500 shadow-sm flex-shrink-0">
+            <Package className="w-6 h-6 text-charcoal-700" strokeWidth={1.5} />
           </div>
-          <div className="leading-snug">
-            <div className="flex items-center gap-2">
-              <h2 className="font-poppins font-black text-charcoal-900 text-lg tracking-tight">Order #{order.orderNumber}</h2>
-              <span className={`text-[9px] font-poppins font-bold tracking-wide uppercase px-2 py-0.5 rounded-full border ${STATUS_STYLES[order.status] ?? "bg-charcoal-100 text-charcoal-600 border-charcoal-200/30"}`}>
-                {order.status}
-              </span>
+          <div className="leading-tight">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="font-poppins font-black text-charcoal-950 text-xl tracking-tight">Order #{order.orderNumber}</h2>
             </div>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-charcoal-400 mt-1 font-inter">
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-charcoal-900 mt-2 font-inter font-medium">
+              <span className="flex items-center gap-1.5 bg-charcoal-50 px-2 py-0.5 rounded-md border border-charcoal-200/50">
+                <Calendar className="w-3.5 h-3.5 text-charcoal-900" />
                 {new Date(order.placedAt).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
               </span>
             </div>
           </div>
         </div>
-        <div>
-          <label className="text-[10px] font-poppins font-bold text-charcoal-400 block mb-1 uppercase tracking-wider">Update Status</label>
-          <Select
-            value={order.status}
-            onChange={handleStatusChange}
-            disabled={saving}
-            options={STATUSES.map((s) => ({ value: s, label: s }))}
-            className="w-full sm:w-44"
+        <div className="flex flex-col items-start sm:items-end gap-1.5 border-t sm:border-t-0 sm:border-l border-charcoal-100 pt-4 sm:pt-0 sm:pl-8 mt-2 sm:mt-0">
+          <label className="text-[10px] font-poppins font-bold text-charcoal-900 uppercase tracking-widest">Order Status</label>
+          <StatusDropdown 
+            status={order.status} 
+            orderNumber={order.orderNumber} 
+            updatingId={savingId} 
+            onChange={handleStatusChange} 
+            className="w-full sm:w-auto"
           />
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Items Breakdown */}
-        <div className="bg-white rounded-2xl border border-charcoal-200/50 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] md:col-span-2 flex flex-col justify-between">
+        <div className="bg-white rounded-3xl border border-charcoal-200/50 p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)] lg:col-span-2 flex flex-col justify-between overflow-hidden">
           <div>
-            <h3 className="font-poppins font-bold text-charcoal-800 text-xs tracking-wider uppercase mb-5">Items Summary</h3>
-            <div className="flex flex-col gap-4">
+            <h3 className="font-poppins font-extrabold text-charcoal-900 text-[11px] tracking-widest uppercase mb-6 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-brand-orange rounded-full"></span>
+              Items Summary
+            </h3>
+            <div className="flex flex-col gap-5">
               {order.items.map((item) => (
-                <div key={item.id} className="flex items-center gap-3.5 pb-4 border-b border-charcoal-100 last:pb-0 last:border-b-0">
-                  <img src={item.image} alt="" className="w-12 h-12 rounded-xl object-cover bg-charcoal-100 border border-charcoal-200/20 shadow-sm" />
-                  <div className="flex-1 leading-snug">
-                    <div className="font-poppins font-bold text-charcoal-900 text-xs">{item.name}</div>
-                    <div className="text-[10px] text-charcoal-400 font-poppins font-bold tracking-wide uppercase mt-0.5">{item.brand}</div>
-                    <div className="text-[11px] text-charcoal-400 font-inter mt-0.5">Qty {item.qty} · ₹{item.salePrice.toLocaleString("en-IN")}</div>
+                <div key={item.id} className="flex items-start gap-4 pb-5 border-b border-charcoal-100/60 last:pb-0 last:border-b-0 group">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-charcoal-50 border border-charcoal-200/50 shadow-sm flex-shrink-0">
+                    <img src={item.image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
-                  <div className="font-manrope font-extrabold text-charcoal-900 text-sm">₹{(item.salePrice * item.qty).toLocaleString("en-IN")}</div>
+                  <div className="flex-1 leading-snug pt-0.5">
+                    <div className="font-poppins font-bold text-charcoal-950 text-sm tracking-tight">{item.name}</div>
+                    <div className="text-[10px] text-charcoal-500 font-poppins font-bold tracking-widest uppercase mt-1.5">{item.brand}</div>
+                    <div className="text-xs text-charcoal-500 font-inter mt-1.5 font-medium flex items-center gap-1.5">
+                      <span className="bg-charcoal-50 px-1.5 py-0.5 rounded text-[11px]">Qty: {item.qty}</span>
+                      <span>·</span>
+                      <span>₹{item.salePrice.toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+                  <div className="font-manrope font-extrabold text-charcoal-950 text-base pt-0.5">
+                    ₹{(item.salePrice * item.qty).toLocaleString("en-IN")}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="mt-6 pt-4 border-t border-charcoal-100 flex flex-col gap-1.5 text-xs font-inter">
-            <div className="flex justify-between text-charcoal-500">
+          <div className="mt-8 pt-5 border-t border-charcoal-100/60 flex flex-col gap-2.5 text-xs font-inter">
+            <div className="flex justify-between items-center text-charcoal-900 font-medium">
               <span>Subtotal</span>
-              <span className="font-manrope font-semibold">₹{order.subtotal.toLocaleString("en-IN")}</span>
+              <span className="font-manrope font-semibold text-charcoal-900 text-sm">₹{order.subtotal.toLocaleString("en-IN")}</span>
             </div>
-            <div className="flex justify-between text-charcoal-500">
+            <div className="flex justify-between items-center text-charcoal-900 font-medium">
               <span>Shipping</span>
-              <span className="font-manrope font-semibold">{order.shipping === 0 ? "Free" : `₹${order.shipping}`}</span>
+              <span className="font-manrope font-semibold text-charcoal-900 text-sm">{order.shipping === 0 ? "Free" : `₹${order.shipping}`}</span>
             </div>
-            <div className="flex justify-between font-manrope font-black text-charcoal-900 text-base mt-2 pt-2 border-t border-charcoal-100">
-              <span>Total</span>
+            <div className="flex justify-between items-end font-manrope font-black text-charcoal-950 text-xl mt-3 pt-4 border-t border-dashed border-charcoal-200">
+              <span className="text-sm font-poppins font-bold text-charcoal-900 uppercase tracking-widest pb-1">Total</span>
               <span>₹{order.total.toLocaleString("en-IN")}</span>
             </div>
           </div>
         </div>
 
         {/* Sidebar Info Columns */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 lg:gap-8">
           {/* Customer Card */}
-          <div className="bg-white rounded-2xl border border-charcoal-200/50 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-            <h3 className="font-poppins font-bold text-charcoal-800 text-xs tracking-wider uppercase mb-4">Customer Details</h3>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-charcoal-100 to-charcoal-200 flex items-center justify-center text-xs font-poppins font-bold text-charcoal-600 border border-charcoal-200/40 shadow-sm flex-shrink-0">
+          <div className="bg-white rounded-3xl border border-charcoal-200/50 p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+            <h3 className="font-poppins font-extrabold text-charcoal-900 text-[11px] tracking-widest uppercase mb-6 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-sky-400 rounded-full"></span>
+              Customer Details
+            </h3>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-charcoal-100 to-charcoal-200 flex items-center justify-center text-sm font-poppins font-bold text-charcoal-600 border border-charcoal-200/40 shadow-sm flex-shrink-0">
                 {customerInitials}
               </div>
               <div className="leading-snug">
-                <div className="font-poppins font-semibold text-charcoal-900 text-xs">{order.user.name}</div>
-                <div className="text-[10px] text-charcoal-400 font-inter">{order.user.email}</div>
+                <div className="font-poppins font-semibold text-charcoal-950 text-sm">{order.user.name}</div>
+                <div className="text-xs text-charcoal-900 font-inter mt-0.5">{order.user.email}</div>
               </div>
             </div>
           </div>
 
           {/* Shipping Address */}
           {order.address && (
-            <div className="bg-white rounded-2xl border border-charcoal-200/50 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-              <h3 className="font-poppins font-bold text-charcoal-800 text-xs tracking-wider uppercase mb-4">Shipping Info</h3>
-              <div className="flex items-start gap-2.5 text-xs text-charcoal-700 font-inter leading-relaxed">
-                <MapPin className="w-4 h-4 text-charcoal-400 mt-0.5 flex-shrink-0" />
+            <div className="bg-white rounded-3xl border border-charcoal-200/50 p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+              <h3 className="font-poppins font-extrabold text-charcoal-900 text-[11px] tracking-widest uppercase mb-6 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                Shipping Info
+              </h3>
+              <div className="flex items-start gap-3.5 text-sm w-full text-charcoal-700 font-inter leading-relaxed">
+                <div className="w-8 h-8 rounded-full bg-charcoal-50 flex items-center justify-center flex-shrink-0 border border-charcoal-200/50">
+                  <MapPin className="w-4 h-4 text-charcoal-500" />
+                </div>
                 <div>
-                  <div className="font-semibold text-charcoal-950">{order.address.name}</div>
-                  <div className="text-charcoal-500 mt-0.5">{order.address.phone}</div>
-                  <div className="text-charcoal-500 mt-1">
+                  <div className="font-poppins font-semibold text-charcoal-950 text-sm tracking-tight">{order.address.name}</div>
+                  <div className="text-charcoal-900 font-medium text-xs mt-0.5">{order.address.phone}</div>
+                  <div className="text-charcoal-900 mt-2 text-xs leading-relaxed max-w-[200px]">
                     {order.address.line1},<br />
                     {order.address.city}, {order.address.state} {order.address.pincode}
                   </div>
                 </div>
               </div>
-              <div className="mt-5 pt-4 border-t border-charcoal-100 flex items-center gap-2 text-xs text-charcoal-600 font-inter">
-                <CreditCard className="w-4 h-4 text-charcoal-400" />
-                <span>Payment: <strong className="text-charcoal-800">{order.paymentMethod}</strong></span>
+              
+              <div className="mt-6 pt-5 border-t border-charcoal-100 border-dashed flex items-center gap-3">
+                 <div className="w-8 h-8 rounded-full bg-charcoal-50 flex items-center justify-center flex-shrink-0 border border-charcoal-200/50">
+                  <CreditCard className="w-4 h-4 text-charcoal-900" />
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-widest font-poppins font-bold text-charcoal-900">Payment Method</div>
+                  <div className="font-poppins font-semibold text-charcoal-950 text-sm uppercase">{order.paymentMethod}</div>
+                </div>
               </div>
             </div>
           )}
