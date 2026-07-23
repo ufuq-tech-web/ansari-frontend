@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Search, Heart, User, ShoppingBag, Menu, X, ChevronDown, ArrowRight,
