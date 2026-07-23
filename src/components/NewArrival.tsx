@@ -25,11 +25,11 @@ export default function NewArrivals() {
 
   return (
     <section id="new-arrivals" className="py-12 sm:py-16 lg:py-20 bg-brand-ivory" aria-label="New arrivals">
-      <div className="container-main">
-        <div className="flex items-end justify-between gap-4 mb-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
+        <div className="flex flex-col items-center text-center gap-4 mb-10">
           <div>
-            <span className="text-brand-orange font-poppins font-semibold text-sm uppercase tracking-wide">Just In</span>
-            <h2 className="section-heading text-2xl sm:text-3xl lg:text-4xl mt-1">New Arrivals</h2>
+            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Just In</span>
+            <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary">New <span className="text-secondary">Arrivals</span></h2>
           </div>
 
           {/* Carousel controls */}
@@ -53,7 +53,7 @@ export default function NewArrivals() {
       </div>
 
       {/* Full-width carousel track */}
-      <div className="container-main">
+      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
         <div
           ref={trackRef}
           className="carousel-track flex gap-3 sm:gap-5 overflow-x-auto scrollbar-hide snap-x -mx-4 px-4 sm:mx-0 sm:px-0"
