@@ -23,22 +23,22 @@ export default function CustomerReviews() {
 
   return (
     <section id="reviews" className="py-12 sm:py-16 lg:py-20 bg-white" aria-label="Customer reviews">
-      <div className="container-main">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 lg:mb-10">
+      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
+        <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <div>
-            <span className="text-brand-orange font-poppins font-semibold text-sm uppercase tracking-wide">Loved by Families</span>
-            <h2 className="section-heading text-2xl sm:text-3xl lg:text-4xl mt-1">What Our Customers Say</h2>
-            <div className="mt-3 flex items-center gap-2">
+            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Loved by Families</span>
+            <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary whitespace-nowrap">What Our <span className="text-secondary">Customers Say</span></h2>
+            <div className="mt-4 flex items-center justify-center gap-2">
               <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star key={i} className="w-4 h-4 text-brand-orange fill-brand-orange" strokeWidth={2} />
                 ))}
               </div>
-              <span className="text-sm text-charcoal-500 font-inter">4.6 out of 5 · 12,000+ reviews</span>
+              <span className="text-sm text-primary/70 font-inter">4.6 out of 5 · 12,000+ reviews</span>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 mt-4">
             <button
               onClick={() => scroll('left')}
               className="w-10 h-10 rounded-full border border-charcoal-200 bg-white flex items-center justify-center text-charcoal-700 hover:border-brand-orange hover:text-brand-orange transition-colors"
@@ -79,14 +79,14 @@ export default function CustomerReviews() {
               <p className="mt-3 text-charcoal-900 font-inter leading-relaxed">"{r.text}"</p>
 
               <div className="mt-5 pt-4 border-t border-charcoal-200 flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-charcoal-800 text-white flex items-center justify-center font-poppins font-semibold flex-shrink-0">
+                <div className="w-11 h-11 rounded-full bg-primary text-white flex items-center justify-center font-sora font-semibold flex-shrink-0">
                   {r.name.charAt(0)}
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-poppins font-semibold text-charcoal-900 text-sm truncate">{r.name}</span>
+                    <span className="font-sora font-semibold text-primary text-sm truncate">{r.name}</span>
                     {r.verified && (
-                      <span className="flex items-center gap-0.5 text-brand-green text-[10px] font-poppins font-medium flex-shrink-0">
+                      <span className="flex items-center gap-0.5 text-brand-green text-[10px] font-manrope font-bold flex-shrink-0">
                         <BadgeCheck className="w-3.5 h-3.5" strokeWidth={2} /> Verified
                       </span>
                     )}
