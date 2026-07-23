@@ -15,7 +15,7 @@ export default async function SalePage() {
       title="Sale"
       subtitle="Up to 40% off across the whole family — grab your favorites before they're gone."
       products={products}
-      heroImage={products[0]?.image}
+      heroImage="/images/sale-banner.png"
       defaultSort="discount"
     />
   );
