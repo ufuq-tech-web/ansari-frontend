@@ -2,58 +2,46 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Heart, ArrowRight } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import ProductCard from '../../components/ProductCard';
 import QuickViewModal from '../../components/category/QuickViewModal';
 import { useWishlist } from '../../lib/wishlist-context';
 import type { Product } from '../../lib/catalog-helpers';
+import AccountLayout, { AccountLoading } from '../../components/account/AccountLayout';
 
 export default function WishlistPage() {
   const { items, hydrated } = useWishlist();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
-  if (!hydrated) return null;
+  if (!hydrated) return <AccountLoading />;
 
   return (
-    <div className="min-h-screen bg-brand-ivory">
-      <section className="relative overflow-hidden bg-charcoal-800" aria-label="Wishlist hero">
-        <div className="relative container-main py-10 sm:py-14">
-          <nav aria-label="Breadcrumb" className="mb-5">
-            <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
-              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">Wishlist</li>
-            </ol>
-          </nav>
-          <h1 className="font-poppins font-extrabold text-white text-3xl sm:text-4xl leading-tight">My Wishlist</h1>
-          <p className="mt-3 text-white/75 text-base font-inter">{items.length} saved {items.length === 1 ? 'item' : 'items'}</p>
-        </div>
-      </section>
-
-      <div className="container-main py-10 sm:py-12">
-        {items.length === 0 ? (
-          <div className="py-16 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 rounded-2xl bg-charcoal-100 flex items-center justify-center mb-4">
-              <Heart className="w-8 h-8 text-charcoal-400" strokeWidth={2} />
-            </div>
-            <h3 className="font-poppins font-semibold text-charcoal-900 text-lg">Your wishlist is empty</h3>
-            <p className="text-charcoal-500 font-inter mt-1 text-sm mb-4">Save items you love by tapping the heart icon on any product.</p>
-            <Link href="/" className="inline-flex items-center gap-1.5 text-brand-orange font-poppins font-semibold text-sm hover:gap-2.5 transition-all">
-              Start Shopping <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-            {items.map((product) => (
-              <div key={product.id} onClick={() => setQuickViewProduct(product)} className="cursor-pointer">
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
-        )}
+    <AccountLayout>
+      <div className="mb-10">
+        <h2 className="font-poppins font-light text-2xl sm:text-3xl text-charcoal-900 tracking-tight">Wishlist</h2>
+        <p className="text-charcoal-500 font-inter text-sm mt-1">{items.length} {items.length === 1 ? 'item' : 'items'} saved.</p>
       </div>
 
+      {items.length === 0 ? (
+        <div className="border border-charcoal-200 p-16 flex flex-col items-center justify-center text-center">
+          <Heart className="w-8 h-8 text-charcoal-300 mb-6" strokeWidth={1} />
+          <h3 className="font-poppins font-light text-xl text-charcoal-900 mb-2">Your wishlist is empty</h3>
+          <p className="text-charcoal-500 font-inter text-sm max-w-sm mb-8">Save items you love by tapping the heart icon on any product.</p>
+          <Link href="/" className="text-xs font-poppins uppercase tracking-widest text-charcoal-500 hover:text-charcoal-900 underline underline-offset-4 transition-colors">
+            Start Shopping
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+          {items.map((product) => (
+            <div key={product.id} onClick={() => setQuickViewProduct(product)} className="cursor-pointer">
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+      )}
+
       <QuickViewModal product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
-    </div>
+    </AccountLayout>
   );
 }
