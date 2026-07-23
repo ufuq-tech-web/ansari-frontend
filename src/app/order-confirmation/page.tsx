@@ -1,11 +1,12 @@
 "use client";
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2, Home, ArrowRight } from 'lucide-react';
 import OrderSummaryCard from '../../components/OrderSummaryCard';
 import { getOrder, getOrders, type Order } from '../../lib/orders';
+import { useAuth } from '../../lib/auth-context';
 
 export default function OrderConfirmationPage() {
     return (
@@ -18,17 +19,38 @@ export default function OrderConfirmationPage() {
 function OrderConfirmationContent() {
     const searchParams = useSearchParams();
     const orderNumber = searchParams.get('order');
+    const { isAuthenticated, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [order, setOrder] = useState<Order | null>(null);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
-        const found = orderNumber ? getOrder(orderNumber) : getOrders()[0];
-        setOrder(found ?? null);
-        setLoaded(true);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [orderNumber]);
+        if (authLoading) return;
+        if (!isAuthenticated) {
+            router.replace(`/login?redirect=${encodeURIComponent('/order-confirmation' + (orderNumber ? `?order=${orderNumber}` : ''))}`);
+            return;
+        }
 
-    if (!loaded) return null;
+        let active = true;
+        const load = orderNumber ? getOrder(orderNumber) : getOrders().then((list) => list[0]);
+        load
+            .then((found) => {
+                if (!active) return;
+                setOrder(found ?? null);
+            })
+            .catch(() => {
+                if (!active) return;
+                setOrder(null);
+            })
+            .finally(() => {
+                if (active) setLoaded(true);
+            });
+        return () => {
+            active = false;
+        };
+    }, [orderNumber, authLoading, isAuthenticated, router]);
+
+    if (authLoading || !isAuthenticated || !loaded) return null;
 
     if (!order) {
         return (
