@@ -24,7 +24,8 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/products", label: "Products", icon: Package, exact: true },
   { href: "/admin/products/bulk", label: "Bulk Upload", icon: Upload },
-  { href: "/admin/categories", label: "Categories", icon: Layers },
+  { href: "/admin/categories", label: "Categories", icon: Layers, exact: true },
+  { href: "/admin/subcategories", label: "Subcategories", icon: Layers, exact: true },
   { href: "/admin/brands", label: "Brands", icon: Tag },
   { href: "/admin/inventory", label: "Inventory", icon: Boxes },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
@@ -38,11 +39,18 @@ const NAV_ITEMS = [
   { href: "/admin/users", label: "Users & Roles", icon: UserCheck },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean, onClose?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex w-66 flex-shrink-0 flex-col bg-gradient-to-b from-charcoal-900 via-charcoal-850 to-charcoal-900 text-white min-h-screen sticky top-0 border-r border-white/5 shadow-2xl">
+    <>
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-charcoal-900/60 backdrop-blur-sm lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      <aside className={`fixed lg:sticky top-0 left-0 z-50 h-[100dvh] w-[264px] flex-shrink-0 flex flex-col bg-gradient-to-b from-charcoal-900 via-charcoal-850 to-charcoal-900 text-white border-r border-white/5 shadow-2xl transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:flex`}>
       <div className="flex items-center gap-3 px-6 py-6 border-b border-white/5">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-orange to-leather-300 flex items-center justify-center shadow-lg shadow-brand-orange/30 select-none">
           <span className="font-poppins font-black text-white text-lg tracking-wider">A</span>
@@ -53,7 +61,7 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         {NAV_ITEMS.map((item) => {
           const active = item.exact ? pathname === item.href : pathname?.startsWith(item.href);
           return (
@@ -85,6 +93,7 @@ export default function AdminSidebar() {
         </Link>
       </div>
     </aside>
+    </>
   );
 }
 
