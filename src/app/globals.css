@@ -7,10 +7,32 @@
         scroll-behavior: smooth;
     }
 
+    :root {
+        --color-primary: 31 41 55;      /* #1F2937 - Deep Charcoal */
+        --color-secondary: 146 64 14;   /* #92400E - Leather Brown */
+        --color-accent: 234 88 12;      /* #EA580C - Orange */
+        --color-success: 22 163 74;     /* #16A34A - Green */
+        --color-error: 220 38 38;       /* #DC2626 - Red */
+        --color-background: 248 247 244;/* #F8F7F4 - Ivory */
+        --color-surface: 255 255 255;   /* #FFFFFF - White */
+        --color-border: 229 231 235;    /* #E5E7EB - Gray */
+    }
+
+    .dark {
+        --color-primary: 249 250 251;   /* #F9FAFB */
+        --color-secondary: 253 230 138; /* #FDE68A */
+        --color-accent: 251 146 60;     /* #FB923C */
+        --color-success: 34 197 94;     /* #22C55E */
+        --color-error: 239 68 68;       /* #EF4444 */
+        --color-background: 17 24 39;   /* #111827 */
+        --color-surface: 31 41 55;      /* #1F2937 */
+        --color-border: 55 65 81;       /* #374151 */
+    }
+
     body {
         font-family: 'Inter', sans-serif;
-        background-color: #F8F7F4;
-        color: #111827;
+        background-color: rgb(var(--color-background));
+        color: rgb(var(--color-primary));
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
@@ -43,7 +65,7 @@
     }
 
     .section-heading {
-        @apply font-poppins font-bold text-charcoal-900;
+        @apply font-sora font-bold text-primary;
     }
 
     .container-main {
@@ -126,4 +148,72 @@
 
 .carousel-item {
     scroll-snap-align: start;
+}
+
+/* Hero slider text entrance */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hero slide progress bar */
+@keyframes progressBar {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+/* Instagram infinite scroll marquee */
+@keyframes scrollLeft {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes scrollRight {
+    0% {
+        transform: translateX(-50%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Floating animation for decorative elements */
+@keyframes floating {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Subtle shimmer sweep for promotional sections */
+@keyframes shimmerSweep {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
 }
