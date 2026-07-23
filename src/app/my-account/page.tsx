@@ -1,194 +1,83 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Camera, Trash2, Heart, ShoppingBag, Package, LogOut, ArrowRight } from 'lucide-react';
-import { useCart } from '../../lib/cart-context';
-import { useWishlist } from '../../lib/wishlist-context';
+import { useAuth } from '../../lib/auth-context';
 import { getOrders } from '../../lib/orders';
-
-interface Profile {
-    name: string;
-    email: string;
-    phone: string;
-}
-
-const emptyProfile: Profile = { name: '', email: '', phone: '' };
-const PROFILE_KEY = 'ansari_profile';
-const PHOTO_KEY = 'ansari_profile_photo';
+import AccountLayout, { AccountLoading } from '../../components/account/AccountLayout';
 
 export default function AccountPage() {
-    const { itemCount } = useCart();
-    const { items: wishlistItems } = useWishlist();
-    const [profile, setProfile] = useState<Profile>(emptyProfile);
-    const [photo, setPhoto] = useState<string | null>(null);
-    const [saved, setSaved] = useState(false);
+    const { user, loading: authLoading, isAuthenticated } = useAuth();
     const [orderCount, setOrderCount] = useState(0);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        try {
-            const rawProfile = localStorage.getItem(PROFILE_KEY);
-            if (rawProfile) setProfile(JSON.parse(rawProfile));
-            const rawPhoto = localStorage.getItem(PHOTO_KEY);
-            if (rawPhoto) setPhoto(rawPhoto);
-            setOrderCount(getOrders().length);
-        } catch {
-            // ignore
+        if (!authLoading && isAuthenticated) {
+            getOrders().then((list) => setOrderCount(list.length)).catch(() => setOrderCount(0));
         }
-    }, []);
+    }, [authLoading, isAuthenticated]);
 
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            const dataUrl = reader.result as string;
-            setPhoto(dataUrl);
-            localStorage.setItem(PHOTO_KEY, dataUrl);
-        };
-        reader.readAsDataURL(file);
-    };
+    if (authLoading || !isAuthenticated || !user) return <AccountLoading />;
 
-    const handleRemovePhoto = () => {
-        setPhoto(null);
-        localStorage.removeItem(PHOTO_KEY);
-    };
-
-    const handleSave = () => {
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-    };
-
-    const handleSignOut = () => {
-        localStorage.removeItem(PROFILE_KEY);
-        localStorage.removeItem(PHOTO_KEY);
-        setProfile(emptyProfile);
-        setPhoto(null);
-    };
-
-    const initial = profile.name.trim().charAt(0).toUpperCase() || 'A';
+    const initial = user.name.trim().charAt(0).toUpperCase() || 'A';
 
     return (
-        <div className="min-h-screen bg-brand-ivory">
-            <div className="container-main py-8 sm:py-12 max-w-4xl">
-                <h1 className="font-poppins font-extrabold text-charcoal-900 text-2xl sm:text-3xl mb-6">My Account</h1>
-
-                {/* Quick links */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
-                    <Link href="/wishlist" className="bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all p-4 sm:p-5 text-center">
-                        <Heart className="w-6 h-6 text-brand-orange mx-auto mb-2" strokeWidth={2} />
-                        <div className="font-poppins font-bold text-charcoal-900 text-lg">{wishlistItems.length}</div>
-                        <div className="text-xs text-charcoal-500 font-inter">Wishlist</div>
-                    </Link>
-                    <Link href="/cart" className="bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all p-4 sm:p-5 text-center">
-                        <ShoppingBag className="w-6 h-6 text-brand-orange mx-auto mb-2" strokeWidth={2} />
-                        <div className="font-poppins font-bold text-charcoal-900 text-lg">{itemCount}</div>
-                        <div className="text-xs text-charcoal-500 font-inter">In Cart</div>
-                    </Link>
-                    <Link href="/orders" className="bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all p-4 sm:p-5 text-center">
-                        <Package className="w-6 h-6 text-brand-orange mx-auto mb-2" strokeWidth={2} />
-                        <div className="font-poppins font-bold text-charcoal-900 text-lg">{orderCount}</div>
-                        <div className="text-xs text-charcoal-500 font-inter">Orders</div>
-                    </Link>
-                </div>
-
-                <div className="bg-white rounded-2xl shadow-card p-5 sm:p-8">
-                    {/* Avatar */}
-                    <div className="flex items-center gap-5 pb-6 border-b border-charcoal-200">
-                        <div className="relative flex-shrink-0">
-                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-charcoal-800 flex items-center justify-center overflow-hidden">
-                                {photo ? (
-                                    <img src={photo} alt="Profile photo" className="w-full h-full object-cover" />
-                                ) : (
-                                    <span className="font-poppins font-bold text-white text-2xl sm:text-3xl">{initial}</span>
-                                )}
-                            </div>
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-brand-orange text-white flex items-center justify-center shadow-card hover:bg-brand-orange-dark transition-colors"
-                                aria-label="Change profile photo"
-                            >
-                                <Camera className="w-4 h-4" strokeWidth={2} />
-                            </button>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handlePhotoChange}
-                                className="hidden"
-                            />
-                        </div>
-                        <div>
-                            <h2 className="font-poppins font-bold text-charcoal-900 text-lg">{profile.name || 'Your Name'}</h2>
-                            <p className="text-sm text-charcoal-500 font-inter">{profile.email || 'Add your email'}</p>
-                            {photo && (
-                                <button
-                                    onClick={handleRemovePhoto}
-                                    className="mt-2 inline-flex items-center gap-1.5 text-xs text-charcoal-400 hover:text-red-500 font-inter transition-colors"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5" strokeWidth={2} /> Remove photo
-                                </button>
-                            )}
-                        </div>
+        <AccountLayout>
+            <div className="space-y-12 sm:space-y-16">
+                
+                {/* Greeting & Avatar */}
+                <div className="flex items-center gap-6 pb-8 border-b border-charcoal-100">
+                    <div className="relative w-20 h-20 bg-charcoal-50 flex items-center justify-center font-poppins font-light text-3xl text-charcoal-900 border border-charcoal-200 group overflow-hidden">
+                        <span className="group-hover:opacity-0 transition-opacity duration-300">{initial}</span>
+                        <label className="absolute inset-0 bg-charcoal-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer text-white text-[10px] font-poppins uppercase tracking-widest text-center px-2 leading-tight">
+                           Upload<br/>Photo
+                           <input type="file" className="sr-only" accept="image/*" onChange={() => alert('Profile photo upload feature coming soon!')} />
+                        </label>
                     </div>
-
-                    {/* Profile fields */}
-                    <div className="pt-6 grid sm:grid-cols-2 gap-4">
-                        <div className="sm:col-span-2">
-                            <label className="text-sm font-poppins font-semibold text-charcoal-900 block mb-1.5">Full Name</label>
-                            <input
-                                value={profile.name}
-                                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                                placeholder="Your name"
-                                className="w-full px-4 py-3 rounded-xl border border-charcoal-200 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none font-inter text-charcoal-900 placeholder:text-charcoal-400 transition-all"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-sm font-poppins font-semibold text-charcoal-900 block mb-1.5">Email</label>
-                            <input
-                                value={profile.email}
-                                onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                                placeholder="you@example.com"
-                                type="email"
-                                className="w-full px-4 py-3 rounded-xl border border-charcoal-200 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none font-inter text-charcoal-900 placeholder:text-charcoal-400 transition-all"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-sm font-poppins font-semibold text-charcoal-900 block mb-1.5">Phone</label>
-                            <input
-                                value={profile.phone}
-                                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                                placeholder="+91 98765 43210"
-                                type="tel"
-                                className="w-full px-4 py-3 rounded-xl border border-charcoal-200 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none font-inter text-charcoal-900 placeholder:text-charcoal-400 transition-all"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                        <button
-                            onClick={handleSave}
-                            className={`btn-primary justify-center sm:w-auto ${saved ? 'bg-brand-green hover:bg-brand-green' : ''}`}
-                        >
-                            {saved ? 'Saved ✓' : 'Save Changes'}
-                        </button>
-                        <button
-                            onClick={handleSignOut}
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-poppins font-semibold text-sm text-charcoal-600 hover:text-red-500 hover:bg-red-50 transition-colors"
-                        >
-                            <LogOut className="w-4 h-4" strokeWidth={2} /> Sign Out
-                        </button>
+                    <div>
+                        <h2 className="font-poppins font-light text-2xl sm:text-3xl text-charcoal-900 tracking-tight">Hello, {user.name}</h2>
+                        <p className="text-charcoal-500 font-inter text-sm mt-1">{user.email}</p>
                     </div>
                 </div>
 
-                <div className="mt-6 text-center">
-                    <Link href="/" className="inline-flex items-center gap-1.5 text-brand-orange font-poppins font-semibold text-sm hover:gap-2.5 transition-all">
-                        Back to Home <ArrowRight className="w-4 h-4" />
-                    </Link>
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+                    {/* Orders Summary block */}
+                    <div className="border border-charcoal-200 p-8 flex flex-col justify-between">
+                       <div>
+                           <h3 className="font-poppins font-bold text-xs uppercase tracking-widest mb-6 text-charcoal-900">Recent Orders</h3>
+                           <div className="font-poppins font-light text-5xl text-charcoal-900 mb-8">{orderCount}</div>
+                       </div>
+                       <Link href="/orders" className="text-xs font-poppins uppercase tracking-widest text-charcoal-500 hover:text-charcoal-900 underline underline-offset-4 transition-colors w-fit">
+                           View All Orders
+                       </Link>
+                    </div>
+
+                    {/* Profile Details block */}
+                    <div className="border border-charcoal-200 p-8">
+                       <div className="flex justify-between items-start mb-8">
+                           <h3 className="font-poppins font-bold text-xs uppercase tracking-widest text-charcoal-900">Account Details</h3>
+                           <button className="text-xs font-poppins uppercase tracking-widest text-charcoal-500 hover:text-charcoal-900 underline underline-offset-4 transition-colors">Edit</button>
+                       </div>
+                       <div className="space-y-6 text-sm font-inter text-charcoal-900">
+                           <div className="grid grid-cols-2 gap-4 border-b border-charcoal-100 pb-4">
+                               <div className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">Name</div>
+                               <div>{user.name}</div>
+                           </div>
+                           <div className="grid grid-cols-2 gap-4 border-b border-charcoal-100 pb-4">
+                               <div className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">Email</div>
+                               <div>{user.email}</div>
+                           </div>
+                           <div className="grid grid-cols-2 gap-4 border-b border-charcoal-100 pb-4">
+                               <div className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">Phone</div>
+                               <div>{user.phone || '—'}</div>
+                           </div>
+                           <div className="grid grid-cols-2 gap-4">
+                               <div className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">Password</div>
+                               <div>••••••••</div>
+                           </div>
+                       </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </AccountLayout>
     );
 }
