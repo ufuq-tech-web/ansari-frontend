@@ -15,7 +15,7 @@ export default async function NewArrivalsPage() {
       title="New Arrivals"
       subtitle="Fresh drops across Men, Women, Kids & Accessories — just landed."
       products={products}
-      heroImage={products[0]?.image}
+      heroImage="/images/new-arrivals-banner.png"
       defaultSort="newest"
     />
   );
