@@ -3,8 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Upload, FileText, CheckCircle2, AlertTriangle, ArrowLeft, Loader2, Play, Download, Image as ImageIcon } from "lucide-react";
+import { Upload, FileText, CheckCircle2, AlertTriangle, ArrowLeft, Loader2, Play, Download, Image as ImageIcon, HelpCircle } from "lucide-react";
 import { adminApi } from "../../../../lib/admin-api";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+const BACKEND_ORIGIN = API_URL.replace(/\/api\/?$/, "");
 
 interface CSVRow {
   name: string;
@@ -16,6 +19,7 @@ interface CSVRow {
   salePrice: number;
   image: string;
   hoverImage?: string;
+  gallery?: string[];
   stock?: string;
   colors?: string[];
   sizes?: string[];
@@ -40,21 +44,8 @@ export default function AdminBulkUploadPage() {
   const [isValidated, setIsValidated] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ successCount: number; errorCount: number } | null>(null);
+  const [uploadingZip, setUploadingZip] = useState(false);
 
-  // Download Sample CSV helper
-  const downloadSampleCSV = () => {
-    const headers = "Name,SKU,Brand,Category,Subcategory,Price,SalePrice,Image,HoverImage,Stock,Colors,Sizes,Gender,AgeGroup,Badge,IsNew\n";
-    const row1 = 'Ansari Premium Oxford,OX-100,Ansari,men,Dress Shoes,3999,3499,https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a,,IN_STOCK,"Black,Brown","7,8,9,10",UNISEX,,Best Seller,true\n';
-    const row2 = 'Stride Athletic Sneaker,SN-200,Stride,women,Running Shoes,2499,1999,https://images.unsplash.com/photo-1549298916-b41d501d3772,,LOW_STOCK,"White,Blue","6,7,8",UNISEX,,New,false\n';
-    const blob = new Blob([headers + row1 + row2], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "ansari_products_template.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   // CSV parsing logic
   const handleCsvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,11 +81,17 @@ export default function AdminBulkUploadPage() {
       const rowObj: any = {};
       headers.forEach((header, index) => {
         const val = values[index];
-        if (header === "Price" || header === "Price" || header === "Price") rowObj.price = Number(val) || 0;
-        else if (header === "SalePrice" || header === "salePrice") rowObj.salePrice = Number(val) || 0;
-        else if (header === "Colors" || header === "colors") rowObj.colors = val ? val.split(";").map((c) => c.trim()) : [];
-        else if (header === "Sizes" || header === "sizes") rowObj.sizes = val ? val.split(";").map((s) => s.trim()) : [];
-        else if (header === "IsNew" || header === "isNew") rowObj.isNew = val.toLowerCase() === "true";
+        const h = header.toLowerCase();
+        
+        if (h === "price") rowObj.price = Number(val) || 0;
+        else if (h === "saleprice") rowObj.salePrice = Number(val) || 0;
+        else if (h === "colors") rowObj.colors = val ? val.split(";").map((c) => c.trim()) : [];
+        else if (h === "sizes") rowObj.sizes = val ? val.split(";").map((s) => s.trim()) : [];
+        else if (h === "isnew") rowObj.isNew = val.toLowerCase() === "true";
+        else if (h === "sku") rowObj.sku = val;
+        else if (h === "brand") rowObj.brandName = val;
+        else if (h === "category") rowObj.categoryKey = val;
+        else if (h === "subcategory") rowObj.subcategoryName = val;
         else {
           const key = header.charAt(0).toLowerCase() + header.slice(1);
           rowObj[key] = val;
@@ -106,21 +103,33 @@ export default function AdminBulkUploadPage() {
     setValidationLogs([{ type: "success", message: `Successfully parsed ${rows.length} products from CSV.` }]);
   };
 
-  // ZIP File select (Mock mapping simulation for SKU names)
-  const handleZipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // ZIP file select — actually uploads and extracts on the backend, then maps
+  // real extracted filenames to CSV rows by SKU during validation below.
+  const handleZipChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setZipFile(file);
     setIsValidated(false);
+    setUploadingZip(true);
 
-    // Simulate reading filenames in ZIP based on typical patterns
-    // e.g., if SKU in CSV matches filename without extension, map it!
-    const simulatedFiles = ["OX-100.jpg", "SN-200.png", "UNKNOWN-SKU.jpg"];
-    setZipImages(simulatedFiles);
-    setValidationLogs((prev) => [
-      ...prev,
-      { type: "success", message: `ZIP file loaded. Found ${simulatedFiles.length} images inside.` },
-    ]);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await adminApi.upload<{ files: string[]; baseUrl: string }>("/products/bulk/upload-images", formData);
+      setZipImages(res.files);
+      setValidationLogs((prev) => [
+        ...prev,
+        { type: "success", message: `ZIP uploaded and extracted. Found ${res.files.length} image files inside.` },
+      ]);
+    } catch (err) {
+      setZipImages([]);
+      setValidationLogs((prev) => [
+        ...prev,
+        { type: "error", message: err instanceof Error ? `ZIP upload failed: ${err.message}` : "ZIP upload failed." },
+      ]);
+    } finally {
+      setUploadingZip(false);
+    }
   };
 
   // Validate mapping and categories
@@ -151,21 +160,36 @@ export default function AdminBulkUploadPage() {
 
       // SKU-based ZIP image mapping
       let updatedImage = row.image;
+      let hoverImage = row.hoverImage;
+      let gallery: string[] = [];
+
       if (zipFile && zipImages.length > 0) {
-        const matchingImage = zipImages.find(
-          (imgName) => imgName.split(".")[0].toUpperCase() === row.sku.toUpperCase()
-        );
-        if (matchingImage) {
-          // Simulated mapping URL
-          updatedImage = `/uploads/products/${matchingImage}`;
+        // Find all images that start with the SKU (e.g. OX-100.jpg, OX-100-1.jpg, OX-100_2.png)
+        const matchingImages = zipImages
+          .filter((imgName) => {
+            const upperImg = imgName.toUpperCase();
+            const upperSku = row.sku.toUpperCase();
+            return (
+              upperImg.startsWith(upperSku + ".") ||
+              upperImg.startsWith(upperSku + "-") ||
+              upperImg.startsWith(upperSku + "_")
+            );
+          })
+          .sort(); // Sorts -1, -2, etc.
+
+        if (matchingImages.length > 0) {
+          gallery = matchingImages.map((img) => `${BACKEND_ORIGIN}/uploads/products/${img}`);
+          updatedImage = gallery[0];
+          hoverImage = gallery.length > 1 ? gallery[1] : updatedImage;
+
           logs.push({
             type: "success",
-            message: `Row ${idx + 1} ("${row.name}"): Mapped image "${matchingImage}" to SKU "${row.sku}".`,
+            message: `Row ${idx + 1} ("${row.name}"): Mapped ${matchingImages.length} image(s) to SKU "${row.sku}".`,
           });
         } else {
           logs.push({
             type: "warning",
-            message: `Row ${idx + 1} ("${row.name}"): No matching image file found in ZIP for SKU "${row.sku}". Using default fallback.`,
+            message: `Row ${idx + 1} ("${row.name}"): No matching image files found in ZIP for SKU "${row.sku}". Using default fallback.`,
           });
         }
       }
@@ -173,6 +197,8 @@ export default function AdminBulkUploadPage() {
       return {
         ...row,
         image: updatedImage,
+        hoverImage: hoverImage || updatedImage,
+        gallery,
       };
     });
 
@@ -210,6 +236,7 @@ export default function AdminBulkUploadPage() {
         salePrice: Number(row.salePrice || row.price),
         image: row.image || "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=400",
         hoverImage: row.hoverImage || row.image,
+        gallery: row.gallery || [],
         stock: row.stock || "IN_STOCK",
         isNew: !!row.isNew,
         colors: row.colors || [],
@@ -265,12 +292,15 @@ export default function AdminBulkUploadPage() {
             Import shoes and catalog items using CSV files and ZIP images matching SKUs
           </p>
         </div>
-        <button
-          onClick={downloadSampleCSV}
-          className="flex items-center gap-1.5 text-xs text-brand-orange font-poppins font-bold uppercase tracking-wider hover:gap-2 transition-all bg-brand-orange/5 hover:bg-brand-orange/10 px-4 py-2.5 rounded-xl border border-brand-orange/20"
-        >
-          <Download className="w-4 h-4" /> Download Sample CSV
-        </button>
+        <div className="flex items-center gap-3">
+          <a
+            href="/ansari_products_template.csv"
+            download="ansari_products_template.csv"
+            className="flex items-center gap-1.5 text-xs text-brand-orange font-poppins font-bold uppercase tracking-wider hover:gap-2 transition-all bg-brand-orange/5 hover:bg-brand-orange/10 px-4 py-2.5 rounded-xl border border-brand-orange/20"
+          >
+            <Download className="w-4 h-4" /> Download Sample CSV
+          </a>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -304,23 +334,44 @@ export default function AdminBulkUploadPage() {
             <ImageIcon className="w-5 h-5 text-brand-orange" />
             2. Select Images ZIP Archive
           </h3>
-          <label className="flex flex-col items-center justify-center border-2 border-dashed border-charcoal-200 hover:border-brand-orange rounded-2xl p-6 cursor-pointer bg-charcoal-50/50 hover:bg-brand-orange/5 transition-all text-center group">
-            <Upload className="w-8 h-8 text-charcoal-400 group-hover:text-brand-orange mb-2.5 transition-colors" />
+          <label className={`flex flex-col items-center justify-center border-2 border-dashed border-charcoal-200 hover:border-brand-orange rounded-2xl p-6 cursor-pointer bg-charcoal-50/50 hover:bg-brand-orange/5 transition-all text-center group ${uploadingZip ? "opacity-60 pointer-events-none" : ""}`}>
+            {uploadingZip ? (
+              <Loader2 className="w-8 h-8 text-brand-orange mb-2.5 animate-spin" />
+            ) : (
+              <Upload className="w-8 h-8 text-charcoal-400 group-hover:text-brand-orange mb-2.5 transition-colors" />
+            )}
             <span className="text-xs font-poppins font-bold text-charcoal-700 uppercase tracking-wide">
-              {zipFile ? zipFile.name : "Choose ZIP File"}
+              {uploadingZip ? "Uploading & extracting…" : zipFile ? zipFile.name : "Choose ZIP File"}
             </span>
             <span className="text-[10px] text-charcoal-400 font-inter mt-1">
-              {zipFile ? `${(zipFile.size / 1024 / 1024).toFixed(1)} MB` : "Maps filenames directly to product SKUs"}
+              {zipFile && !uploadingZip ? `${zipImages.length} images extracted` : "Maps filenames directly to product SKUs"}
             </span>
             <input
               type="file"
               accept=".zip"
               onChange={handleZipChange}
+              disabled={uploadingZip}
               className="hidden"
             />
           </label>
         </div>
 
+      </div>
+
+      <div className="bg-brand-orange/10 border border-brand-orange/20 rounded-2xl p-6 shadow-sm mb-6">
+        <h3 className="font-poppins font-bold text-charcoal-900 text-sm flex items-center gap-2 mb-3">
+          <HelpCircle className="w-5 h-5 text-brand-orange" /> Detailed Import Instructions
+        </h3>
+        <div className="text-xs text-charcoal-700 font-inter space-y-3 leading-relaxed">
+          <p><strong>1. Excel/CSV Format:</strong> Ensure your document matches the column headers of the sample exactly. Mandatory fields include <code>Name</code>, <code>SKU</code>, <code>Brand</code>, <code>Category</code>, and <code>Price</code>.</p>
+          <p><strong>2. Categories & Subcategories:</strong> The category must be one of: <code>men</code>, <code>women</code>, <code>kids</code>, or <code>accessories</code>. The subcategory must exactly match the ones existing in your store (e.g., <code>Sneakers</code>, <code>Formal Shoes</code>, <code>Boots</code>).</p>
+          <p><strong>3. Multi-Image ZIP Mapping (Important!):</strong> For automatic gallery mapping, name the files inside your ZIP using the exact <strong>SKU</strong> followed by a dash and number.
+            For example, if your product SKU is <strong>SN-200</strong>, name your images:
+            <br />• <code>SN-200-1.jpg</code> (Main Thumbnail)
+            <br />• <code>SN-200-2.jpg</code> (Hover Image)
+            <br />• <code>SN-200-3.jpg</code> (Gallery Image)
+          </p>
+        </div>
       </div>
 
       {/* Action panel */}
