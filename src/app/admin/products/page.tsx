@@ -2,10 +2,15 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, ChevronLeft, ChevronRight, Eye, EyeOff } from "lucide-react";
 import { adminApi } from "../../../lib/admin-api";
 import ProductModal from "../../../components/admin/ProductModal";
 import Select from "../../../components/admin/Select";
+
+import DataTable, { ColumnDef } from "../../../components/shared/DataTable";
+import Pagination from "../../../components/shared/Pagination";
+import SearchInput from "../../../components/shared/SearchInput";
+import ConfirmModal from "../../../components/shared/ConfirmModal";
 
 interface ProductRow {
   id: string;
@@ -17,6 +22,7 @@ interface ProductRow {
   brand: { name: string };
   category: { name: string };
   subcategory: { name: string } | null;
+  isActive: boolean;
 }
 
 interface CategoryOption {
@@ -50,6 +56,14 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [modalState, setModalState] = useState<{ open: boolean; productId?: string }>({ open: false });
 
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    id: "",
+    name: "",
+    action: "" as "delete" | "toggle",
+    isCurrentlyActive: false,
+  });
+
   useEffect(() => {
     adminApi.get<CategoryOption[]>("/categories").then(setCategories);
   }, []);
@@ -60,7 +74,7 @@ export default function AdminProductsPage() {
     if (q) params.set("search", q);
     if (cat) params.set("categoryKey", cat);
     if (st) params.set("stock", st);
-    const res = await adminApi.get<{ items: ProductRow[]; total: number; totalPages: number }>(`/products?${params.toString()}`);
+    const res = await adminApi.get<{ items: ProductRow[]; total: number; totalPages: number }>(`/products/manage?${params.toString()}`);
     setItems(res.items);
     setTotal(res.total);
     setTotalPages(res.totalPages || 1);
@@ -72,11 +86,106 @@ export default function AdminProductsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryKey, stock, page]);
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Delete "${name}"? This can't be undone.`)) return;
-    await adminApi.delete(`/products/${id}`);
-    load(search, categoryKey, stock, page);
+  const handleConfirmAction = async () => {
+    const { id, action, isCurrentlyActive } = confirmModal;
+    
+    try {
+      if (action === "delete") {
+        await adminApi.delete(`/products/${id}`);
+      } else if (action === "toggle") {
+        await adminApi.patch(`/products/${id}`, { isActive: !isCurrentlyActive });
+      }
+      load(search, categoryKey, stock, page);
+    } catch {
+      alert(`Failed to ${action} product`);
+    }
   };
+
+  const columns: ColumnDef<ProductRow>[] = [
+    {
+      key: 'product',
+      label: 'Product',
+      render: (p) => (
+        <div className="flex items-center gap-3.5">
+          <img src={p.image} alt="" className="w-10 h-10 rounded-xl object-cover bg-charcoal-100 border border-charcoal-250/20 shadow-sm" />
+          <div className="leading-snug">
+            <div className="font-poppins font-bold text-charcoal-900 text-xs">{p.name}</div>
+            <div className="text-[10px] text-charcoal-400 font-poppins font-bold tracking-wide uppercase mt-0.5">{p.brand.name}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'category',
+      label: 'Category',
+      render: (p) => (
+        <span className="text-charcoal-600 font-inter text-xs">
+          <span className="font-semibold text-charcoal-800">{p.category.name}</span>
+          {p.subcategory ? <span className="text-charcoal-400"> / {p.subcategory.name}</span> : ""}
+        </span>
+      )
+    },
+    {
+      key: 'price',
+      label: 'Price',
+      render: (p) => (
+        <span className="font-manrope">
+          <span className="font-extrabold text-charcoal-900 text-sm">₹{p.salePrice.toLocaleString("en-IN")}</span>
+          {p.price > p.salePrice && <span className="text-charcoal-400 line-through ml-2 text-xs font-semibold">₹{p.price.toLocaleString("en-IN")}</span>}
+        </span>
+      )
+    },
+    {
+      key: 'stock',
+      label: 'Stock',
+      render: (p) => (
+        <span className={`text-[10px] font-poppins font-bold tracking-wide uppercase px-2.5 py-1 rounded-full border ${
+          STOCK_STYLES[p.stock] ?? "bg-charcoal-100 text-charcoal-600 border-charcoal-200/30"
+        }`}>
+          {p.stock.replace("_", " ")}
+        </span>
+      )
+    },
+    {
+      key: 'isActive',
+      label: 'Status',
+      render: (p) => (
+        <span className={`px-2.5 py-1 rounded-full text-[10px] font-poppins font-bold tracking-wide uppercase ${p.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {p.isActive ? 'Active' : 'Blocked'}
+        </span>
+      )
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      align: 'right',
+      render: (p) => (
+        <div className="flex items-center justify-end gap-2.5">
+          <button
+            onClick={() => setConfirmModal({ isOpen: true, id: p.id, name: p.name, action: "toggle", isCurrentlyActive: p.isActive })}
+            className="p-2 text-charcoal-400 hover:text-charcoal-700 hover:bg-charcoal-100 rounded-xl transition-all duration-200"
+            title={p.isActive ? "Block" : "Unblock"}
+          >
+            {p.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+          <button 
+            onClick={() => setModalState({ open: true, productId: p.id })} 
+            className="p-2 text-charcoal-400 hover:text-brand-orange hover:bg-brand-orange/5 rounded-xl transition-all duration-200" 
+            aria-label="Edit"
+          >
+            <Pencil className="w-4 h-4" strokeWidth={2} />
+          </button>
+          <button 
+            onClick={() => setConfirmModal({ isOpen: true, id: p.id, name: p.name, action: "delete", isCurrentlyActive: false })}
+            className="p-2 text-charcoal-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200" 
+            aria-label="Delete"
+          >
+            <Trash2 className="w-4 h-4" strokeWidth={2} />
+          </button>
+        </div>
+      )
+    }
+  ];
 
   return (
     <div>
@@ -89,16 +198,17 @@ export default function AdminProductsPage() {
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal-400" strokeWidth={2.5} />
-            <input
+          <form 
+            onSubmit={(e) => { e.preventDefault(); setPage(1); load(search, categoryKey, stock, 1); }}
+            className="w-full sm:w-64"
+          >
+            <SearchInput
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && (setPage(1), load(search, categoryKey, stock, 1))}
+              onChange={setSearch}
               placeholder="Search products…"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-charcoal-200 text-sm font-inter text-charcoal-900 placeholder-charcoal-400 focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/15 transition-all"
+              className="w-full"
             />
-          </div>
+          </form>
           <Select
             value={categoryKey}
             onChange={(v) => { setCategoryKey(v); setPage(1); }}
@@ -128,103 +238,37 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
+      <DataTable
+        data={items}
+        columns={columns}
+        keyExtractor={(p) => p.id}
+        isLoading={loading}
+        emptyMessage="No products found."
+      />
 
-      <div className="bg-white rounded-2xl border border-charcoal-200/50 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-charcoal-50/70 border-b border-charcoal-200/30 text-charcoal-400 font-poppins font-semibold text-xs tracking-wider uppercase">
-              <tr>
-                <th className="text-left px-6 py-4">Product</th>
-                <th className="text-left px-6 py-4">Category</th>
-                <th className="text-left px-6 py-4">Price</th>
-                <th className="text-left px-6 py-4">Stock</th>
-                <th className="text-right px-6 py-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-charcoal-100">
-              {loading ? (
-                <tr><td colSpan={5} className="px-6 py-8 text-center text-charcoal-400 font-inter">Loading…</td></tr>
-              ) : items.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-8 text-center text-charcoal-400 font-inter">No products found</td></tr>
-              ) : (
-                items.map((p) => (
-                  <tr key={p.id} className="hover:bg-charcoal-50/40 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3.5">
-                        <img src={p.image} alt="" className="w-10 h-10 rounded-xl object-cover bg-charcoal-100 border border-charcoal-250/20 shadow-sm" />
-                        <div className="leading-snug">
-                          <div className="font-poppins font-bold text-charcoal-900 text-xs">{p.name}</div>
-                          <div className="text-[10px] text-charcoal-400 font-poppins font-bold tracking-wide uppercase mt-0.5">{p.brand.name}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-charcoal-600 font-inter text-xs">
-                      <span className="font-semibold text-charcoal-800">{p.category.name}</span>
-                      {p.subcategory ? <span className="text-charcoal-400"> / {p.subcategory.name}</span> : ""}
-                    </td>
-                    <td className="px-6 py-4 font-manrope">
-                      <span className="font-extrabold text-charcoal-900 text-sm">₹{p.salePrice.toLocaleString("en-IN")}</span>
-                      {p.price > p.salePrice && <span className="text-charcoal-400 line-through ml-2 text-xs font-semibold">₹{p.price.toLocaleString("en-IN")}</span>}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`text-[10px] font-poppins font-bold tracking-wide uppercase px-2.5 py-1 rounded-full border ${
-                        STOCK_STYLES[p.stock] ?? "bg-charcoal-100 text-charcoal-600 border-charcoal-200/30"
-                      }`}>
-                        {p.stock.replace("_", " ")}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2.5">
-                        <button 
-                          onClick={() => setModalState({ open: true, productId: p.id })} 
-                          className="p-2 text-charcoal-400 hover:text-brand-orange hover:bg-brand-orange/5 rounded-xl transition-all duration-200" 
-                          aria-label="Edit"
-                        >
-                          <Pencil className="w-4 h-4" strokeWidth={2} />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(p.id, p.name)} 
-                          className="p-2 text-charcoal-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200" 
-                          aria-label="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" strokeWidth={2} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+      {!loading && total > 0 && (
+        <Pagination
+          currentPage={page}
+          totalItems={total}
+          pageSize={PAGE_SIZE}
+          onPageChange={(p) => setPage(p)}
+        />
+      )}
 
-        {!loading && total > 0 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-charcoal-200/50">
-            <p className="text-xs text-charcoal-400 font-inter">
-              Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} of {total} products
-            </p>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="w-8 h-8 rounded-lg border border-charcoal-200 flex items-center justify-center text-charcoal-600 hover:border-brand-orange hover:text-brand-orange hover:bg-brand-orange/5 disabled:opacity-30 disabled:hover:border-charcoal-200 disabled:hover:text-charcoal-600 disabled:hover:bg-transparent transition-all duration-200"
-                aria-label="Previous page"
-              >
-                <ChevronLeft className="w-4 h-4" strokeWidth={2.5} />
-              </button>
-              <span className="text-xs text-charcoal-600 font-poppins font-semibold px-1">Page {page} of {totalPages}</span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="w-8 h-8 rounded-lg border border-charcoal-200 flex items-center justify-center text-charcoal-600 hover:border-brand-orange hover:text-brand-orange hover:bg-brand-orange/5 disabled:opacity-30 disabled:hover:border-charcoal-200 disabled:hover:text-charcoal-600 disabled:hover:bg-transparent transition-all duration-200"
-                aria-label="Next page"
-              >
-                <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.action === 'delete' ? 'Delete Product' : confirmModal.isCurrentlyActive ? 'Block Product' : 'Unblock Product'}
+        message={
+          confirmModal.action === 'delete' 
+            ? `Are you sure you want to delete "${confirmModal.name}"? This action cannot be undone.`
+            : `Are you sure you want to ${confirmModal.isCurrentlyActive ? "block" : "unblock"} "${confirmModal.name}"?`
+        }
+        confirmText={confirmModal.action === 'delete' ? 'Delete' : confirmModal.isCurrentlyActive ? 'Block' : 'Unblock'}
+        cancelText="Cancel"
+        danger={confirmModal.action === 'delete' || confirmModal.isCurrentlyActive}
+        onConfirm={handleConfirmAction}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
 
       {modalState.open && (
         <ProductModal
