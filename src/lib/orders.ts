@@ -45,3 +45,7 @@ export async function getOrder(orderNumber: string): Promise<Order | undefined> 
         throw err;
     }
 }
+
+export function cancelOrder(orderNumber: string, reason?: string): Promise<Order> {
+    return customerApi.patch<Order>(`/orders/${orderNumber}/cancel`, { reason });
+}
