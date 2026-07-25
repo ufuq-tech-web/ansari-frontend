@@ -39,7 +39,7 @@ export default function AdminBulkUploadPage() {
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [zipFile, setZipFile] = useState<File | null>(null);
   const [parsedData, setParsedData] = useState<CSVRow[]>([]);
-  const [zipImages, setZipImages] = useState<string[]>([]); // file names in ZIP
+  const [zipImages, setZipImages] = useState<{ filename: string; url: string }[]>([]); // Extracted cloud URLs
   const [validationLogs, setValidationLogs] = useState<ValidationLog[]>([]);
   const [isValidated, setIsValidated] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -115,7 +115,7 @@ export default function AdminBulkUploadPage() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await adminApi.upload<{ files: string[]; baseUrl: string }>("/products/bulk/upload-images", formData);
+      const res = await adminApi.upload<{ files: { filename: string; url: string }[]; baseUrl: string }>("/products/bulk/upload-images", formData);
       setZipImages(res.files);
       setValidationLogs((prev) => [
         ...prev,
@@ -166,8 +166,8 @@ export default function AdminBulkUploadPage() {
       if (zipFile && zipImages.length > 0) {
         // Find all images that start with the SKU (e.g. OX-100.jpg, OX-100-1.jpg, OX-100_2.png)
         const matchingImages = zipImages
-          .filter((imgName) => {
-            const upperImg = imgName.toUpperCase();
+          .filter((img) => {
+            const upperImg = img.filename.toUpperCase();
             const upperSku = row.sku.toUpperCase();
             return (
               upperImg.startsWith(upperSku + ".") ||
@@ -175,10 +175,10 @@ export default function AdminBulkUploadPage() {
               upperImg.startsWith(upperSku + "_")
             );
           })
-          .sort(); // Sorts -1, -2, etc.
+          .sort((a, b) => a.filename.localeCompare(b.filename)); // Sorts -1, -2, etc.
 
         if (matchingImages.length > 0) {
-          gallery = matchingImages.map((img) => `${BACKEND_ORIGIN}/uploads/products/${img}`);
+          gallery = matchingImages.map((img) => img.url);
           updatedImage = gallery[0];
           hoverImage = gallery.length > 1 ? gallery[1] : updatedImage;
 
