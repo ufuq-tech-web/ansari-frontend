@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import { Boxes, Loader2, CheckCircle2, Check, X } from "lucide-react";
 import { adminApi } from "../../../lib/admin-api";
 import Select from "../../../components/admin/Select";
@@ -29,63 +30,55 @@ interface CategoryOption {
 const PAGE_SIZE = 15;
 
 export default function AdminInventoryPage() {
-  const [items, setItems] = useState<ProductRow[]>([]);
-  const [total, setTotal] = useState(0);
-  const [categories, setCategories] = useState<CategoryOption[]>([]);
-  
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   
   const [categoryKey, setCategoryKey] = useState("");
   const [stock, setStock] = useState("");
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   
   // Row-level tracking
   const [drafts, setDrafts] = useState<Record<string, number>>({});
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [successId, setSuccessId] = useState<string | null>(null);
 
-  useEffect(() => {
-    adminApi.get<CategoryOption[]>("/categories").then(setCategories);
-  }, []);
+  const { data: categories = [] } = useQuery({
+    queryKey: ["adminCategories"],
+    queryFn: () => adminApi.get<CategoryOption[]>("/categories"),
+    staleTime: 60 * 1000,
+  });
 
-  // Handle Search Debouncing
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-      setPage(1);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [search]);
+  const { data, isLoading: loading } = useQuery({
+    queryKey: ["adminInventory", debouncedSearch, categoryKey, stock, page],
+    queryFn: () => {
+      const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (categoryKey) params.set("categoryKey", categoryKey);
+      if (stock) params.set("stock", stock);
+      return adminApi.get<{ items: ProductRow[]; total: number }>(`/products?${params.toString()}`);
+    },
+    placeholderData: keepPreviousData,
+  });
 
-  const load = useCallback(async (q: string, cat: string, st: string, p: number) => {
-    setLoading(true);
-    const params = new URLSearchParams({ page: String(p), limit: String(PAGE_SIZE) });
-    if (q) params.set("search", q);
-    if (cat) params.set("categoryKey", cat);
-    if (st) params.set("stock", st);
-    
-    try {
-      const res = await adminApi.get<{ items: ProductRow[]; total: number }>(`/products?${params.toString()}`);
-      setItems(res.items);
-      setTotal(res.total);
-    } catch {
-      // Ignored for now
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    load(debouncedSearch, categoryKey, stock, page);
-  }, [debouncedSearch, categoryKey, stock, page, load]);
+  const items = data?.items || [];
+  const total = data?.total || 0;
 
   const handleQuantityChange = async (productId: string, newQuantity: number) => {
     setUpdatingId(productId);
     try {
       const updated = await adminApi.patch<{ stock: string; stockQuantity: number }>(`/products/${productId}`, { stockQuantity: newQuantity });
-      setItems((prev) =>
-        prev.map((item) => (item.id === productId ? { ...item, stock: updated.stock, stockQuantity: updated.stockQuantity } : item))
+      queryClient.setQueryData(
+        ["adminInventory", debouncedSearch, categoryKey, stock, page],
+        (oldData: any) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            items: oldData.items.map((item: ProductRow) => 
+               item.id === productId ? { ...item, stock: updated.stock, stockQuantity: updated.stockQuantity } : item
+            )
+          };
+        }
       );
       
       // Clear draft since it successfully saved
