@@ -12,6 +12,7 @@ import { useGuides } from '../hooks/useGuides';
 import { useHeaderScroll } from '../hooks/useHeaderScroll';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useHeaderMenus } from '../hooks/useHeaderMenus';
+import { useAuth } from '../lib/auth-context';
 
 interface MegaLink { label: string; to: string; }
 interface MegaColumn { title: string; links: MegaLink[]; }
@@ -135,7 +136,7 @@ const buildNavLinks = (guides: BuyingGuideWithCategory[]): { label: string; href
 const simpleLinks = [
   { label: 'Brands', href: '/brands' },
   { label: 'Collections', href: '/collections' },
-  { label: 'New Arrivals', href: '/new-arrivals' },
+  { label: 'Journal', href: '/journal' },
   { label: 'Sale', href: '/sale', highlight: true },
 ];
 
@@ -147,6 +148,7 @@ export default function Header() {
   } = useHeaderMenus();
   const { itemCount } = useCart();
   const { items: wishlistItems } = useWishlist();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const guides = useGuides();
   const scrolled = useHeaderScroll();
@@ -260,9 +262,38 @@ export default function Header() {
                 </span>
               )}
             </Link>
-            <Link href="/my-account" className="hidden sm:flex p-2 text-charcoal-700 hover:text-brand-orange hover:bg-charcoal-50 rounded-lg transition-colors" aria-label="Account">
-              <User className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={2} />
-            </Link>
+            <div className="relative hidden sm:flex group">
+              <Link href="/my-account" className="p-2 text-charcoal-700 hover:text-brand-orange hover:bg-charcoal-50 rounded-lg transition-colors" aria-label="Account">
+                <User className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={2} />
+              </Link>
+              
+              <div className="absolute right-0 top-full pt-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 min-w-[220px]">
+                <div className="bg-white rounded-xl shadow-card-hover border border-charcoal-200 overflow-hidden">
+                  {isAuthenticated ? (
+                    <>
+                      <div className="px-4 py-3.5 border-b border-charcoal-100 bg-charcoal-50">
+                        <div className="font-poppins font-semibold text-sm text-charcoal-900 truncate">{user?.name}</div>
+                        <div className="text-xs text-charcoal-500 font-inter truncate mt-0.5">{user?.email}</div>
+                      </div>
+                      <div className="p-2 space-y-0.5">
+                        <Link href="/my-account" className="block px-3 py-2.5 text-sm text-charcoal-700 font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">Dashboard</Link>
+                        <Link href="/orders" className="block px-3 py-2.5 text-sm text-charcoal-700 font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">My Orders</Link>
+                        <Link href="/my-account/wallet" className="block px-3 py-2.5 text-sm text-charcoal-700 font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">My Wallet</Link>
+                        <div className="h-px bg-charcoal-100 my-1"></div>
+                        <button onClick={logout} className="block w-full text-left px-3 py-2.5 text-sm font-medium text-rose-600 font-inter hover:bg-rose-50 rounded-lg transition-colors">Sign Out</button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="p-4 space-y-3">
+                      <Link href="/login" className="block w-full text-center bg-charcoal-900 text-white font-poppins font-bold text-xs uppercase tracking-wider py-3 rounded-xl hover:bg-charcoal-800 transition-colors">Sign In</Link>
+                      <p className="text-center text-xs text-charcoal-500 font-inter">
+                        New customer? <Link href="/signup" className="font-semibold text-charcoal-900 hover:text-brand-orange underline underline-offset-2">Create Account</Link>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
 
             <Link href="/cart" className="relative p-2 text-charcoal-700 hover:text-brand-orange hover:bg-charcoal-50 rounded-lg transition-colors" aria-label="Shopping cart">
               <ShoppingBag className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={2} />
