@@ -217,3 +217,58 @@
         transform: translateX(100%);
     }
 }
+
+/* Quill Tooltip Enhancements */
+.ql-snow .ql-tooltip {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgb(var(--color-border)) !important;
+    padding: 12px 16px !important;
+    background-color: white !important;
+    z-index: 100 !important;
+    
+    /* Lock position to center of editor to prevent edge-clipping */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: 10px !important;
+}
+
+.ql-snow .ql-tooltip input[type=text] {
+    border: 1px solid rgb(var(--color-border)) !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    margin-right: 12px !important;
+    font-size: 14px !important;
+}
+
+.ql-snow .ql-tooltip input[type=text]:focus {
+    border-color: rgb(var(--color-accent)) !important;
+    outline: none !important;
+}
+
+.ql-snow .ql-tooltip a.ql-action::after {
+    color: rgb(var(--color-accent)) !important;
+    font-weight: 600 !important;
+}
+
+/* Quill Blot Formatter Customization */
+
+/* 1. Hide the alignment toolbar ("3 options to drag") */
+.blot-formatter__toolbar {
+    display: none !important;
+}
+
+/* 2. Allow native HTML5 image drag through the overlay */
+.blot-formatter__overlay {
+    pointer-events: none !important;
+}
+
+/* 3. Re-enable pointer events ONLY for the resize corner handles */
+.blot-formatter__resize-handle {
+    pointer-events: auto !important;
+}
+
+/* Frontend Quill Output Alignments */
+.prose .ql-align-center img, .prose [style*="text-align: center"] img, .prose [style*="text-align:center"] img { margin-left: auto; margin-right: auto; }
+.prose .ql-align-left img, .prose [style*="text-align: left"] img, .prose [style*="text-align:left"] img { margin-left: 0; margin-right: auto; }
+.prose .ql-align-right img, .prose [style*="text-align: right"] img, .prose [style*="text-align:right"] img { margin-left: auto; margin-right: 0; }
