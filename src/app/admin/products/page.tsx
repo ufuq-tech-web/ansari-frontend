@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Plus, Pencil, Trash2, Search, ChevronLeft, ChevronRight, Eye, EyeOff } from "lucide-react";
 import { adminApi } from "../../../lib/admin-api";
@@ -45,15 +46,11 @@ const STOCK_STYLES: Record<string, string> = {
 };
 
 export default function AdminProductsPage() {
-  const [items, setItems] = useState<ProductRow[]>([]);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [categoryKey, setCategoryKey] = useState("");
   const [stock, setStock] = useState("");
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [modalState, setModalState] = useState<{ open: boolean; productId?: string }>({ open: false });
 
   const [confirmModal, setConfirmModal] = useState({
@@ -64,27 +61,26 @@ export default function AdminProductsPage() {
     isCurrentlyActive: false,
   });
 
-  useEffect(() => {
-    adminApi.get<CategoryOption[]>("/categories").then(setCategories);
-  }, []);
+  const { data: categories = [] } = useQuery({
+    queryKey: ["adminCategories"],
+    queryFn: () => adminApi.get<CategoryOption[]>("/categories"),
+    staleTime: 60 * 1000,
+  });
 
-  const load = useCallback(async (q: string, cat: string, st: string, p: number) => {
-    setLoading(true);
-    const params = new URLSearchParams({ page: String(p), limit: String(PAGE_SIZE) });
-    if (q) params.set("search", q);
-    if (cat) params.set("categoryKey", cat);
-    if (st) params.set("stock", st);
-    const res = await adminApi.get<{ items: ProductRow[]; total: number; totalPages: number }>(`/products/manage?${params.toString()}`);
-    setItems(res.items);
-    setTotal(res.total);
-    setTotalPages(res.totalPages || 1);
-    setLoading(false);
-  }, []);
+  const { data, isLoading: loading, refetch } = useQuery({
+    queryKey: ["adminProducts", searchQuery, categoryKey, stock, page],
+    queryFn: () => {
+      const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
+      if (searchQuery) params.set("search", searchQuery);
+      if (categoryKey) params.set("categoryKey", categoryKey);
+      if (stock) params.set("stock", stock);
+      return adminApi.get<{ items: ProductRow[]; total: number; totalPages: number }>(`/products/manage?${params.toString()}`);
+    },
+    placeholderData: keepPreviousData,
+  });
 
-  useEffect(() => {
-    load(search, categoryKey, stock, page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryKey, stock, page]);
+  const items = data?.items || [];
+  const total = data?.total || 0;
 
   const handleConfirmAction = async () => {
     const { id, action, isCurrentlyActive } = confirmModal;
@@ -95,7 +91,7 @@ export default function AdminProductsPage() {
       } else if (action === "toggle") {
         await adminApi.patch(`/products/${id}`, { isActive: !isCurrentlyActive });
       }
-      load(search, categoryKey, stock, page);
+      refetch();
     } catch {
       alert(`Failed to ${action} product`);
     }
@@ -199,7 +195,7 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <form 
-            onSubmit={(e) => { e.preventDefault(); setPage(1); load(search, categoryKey, stock, 1); }}
+            onSubmit={(e) => { e.preventDefault(); setPage(1); setSearchQuery(search); }}
             className="w-full sm:w-64"
           >
             <SearchInput
@@ -276,7 +272,7 @@ export default function AdminProductsPage() {
           onClose={() => setModalState({ open: false })}
           onSaved={() => {
             setModalState({ open: false });
-            load(search, categoryKey, stock, page);
+            refetch();
           }}
         />
       )}
