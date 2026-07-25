@@ -26,12 +26,8 @@ export default function AccountPage() {
                 
                 {/* Greeting & Avatar */}
                 <div className="flex items-center gap-6 pb-8 border-b border-charcoal-100">
-                    <div className="relative w-20 h-20 bg-charcoal-50 flex items-center justify-center font-poppins font-light text-3xl text-charcoal-900 border border-charcoal-200 group overflow-hidden">
-                        <span className="group-hover:opacity-0 transition-opacity duration-300">{initial}</span>
-                        <label className="absolute inset-0 bg-charcoal-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer text-white text-[10px] font-poppins uppercase tracking-widest text-center px-2 leading-tight">
-                           Upload<br/>Photo
-                           <input type="file" className="sr-only" accept="image/*" onChange={() => alert('Profile photo upload feature coming soon!')} />
-                        </label>
+                    <div className="relative w-20 h-20 bg-charcoal-50 flex items-center justify-center font-poppins font-light text-3xl text-charcoal-900 border border-charcoal-200 overflow-hidden shrink-0">
+                        <span>{initial}</span>
                     </div>
                     <div>
                         <h2 className="font-poppins font-light text-2xl sm:text-3xl text-charcoal-900 tracking-tight">Hello, {user.name}</h2>
