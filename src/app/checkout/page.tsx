@@ -33,11 +33,24 @@ function FormField({ label, ...props }: any) {
     );
 }
 
+const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+        if ((window as any).Razorpay) return resolve(true);
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+};
+
 export default function CheckoutPage() {
     const { items, subtotal, clearCart, hydrated } = useCart();
     const { isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
     const [address, setAddress] = useState<Address>(emptyAddress);
+    const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+    const [selectedAddressId, setSelectedAddressId] = useState<string | 'new'>('new');
     const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'upi'>('cod');
     const [placingOrder, setPlacingOrder] = useState(false);
     const [orderError, setOrderError] = useState('');
@@ -46,11 +59,22 @@ export default function CheckoutPage() {
     const [shippingSettings, setShippingSettings] = useState({ flatRate: 79, freeShippingThreshold: 999 });
     const [couponInput, setCouponInput] = useState('');
     const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
+    const [activeCoupons, setActiveCoupons] = useState<any[]>([]);
     const [couponError, setCouponError] = useState('');
     const [applyingCoupon, setApplyingCoupon] = useState(false);
 
     useEffect(() => {
         storefrontApi.getShippingSettings().then(setShippingSettings);
+        customerApi.get<any[]>('/users/me/addresses').then(addrs => {
+            const uniqueAddrs = addrs.filter((addr, index, self) =>
+                index === self.findIndex((t) => (
+                    t.name === addr.name && t.phone === addr.phone && t.line1 === addr.line1 && t.pincode === addr.pincode
+                ))
+            );
+            setSavedAddresses(uniqueAddrs);
+            if (uniqueAddrs.length > 0) setSelectedAddressId(uniqueAddrs[0].id);
+        }).catch(() => {});
+        customerApi.get<any[]>('/coupons/active').then(setActiveCoupons).catch(() => {});
     }, []);
 
     useEffect(() => {
@@ -69,22 +93,25 @@ export default function CheckoutPage() {
 
     if (authLoading || !isAuthenticated || !hydrated || items.length === 0) return null;
 
-    const isValid = Object.values(address).every((v) => v.trim().length > 0);
+    const isNewAddressValid = Object.values(address).every((v) => v.trim().length > 0);
+    const isValid = selectedAddressId !== 'new' || isNewAddressValid;
 
     const shipping = subtotal === 0 || subtotal >= shippingSettings.freeShippingThreshold ? 0 : shippingSettings.flatRate;
     const discount = coupon?.discount ?? 0;
     const total = Math.max(subtotal + shipping - discount, 0);
 
-    const handleApplyCoupon = async () => {
-        if (!couponInput.trim()) return;
+    const handleApplyCoupon = async (codeOverwrite?: string) => {
+        const codeToApply = (typeof codeOverwrite === 'string' ? codeOverwrite : couponInput).trim();
+        if (!codeToApply) return;
         setApplyingCoupon(true);
         setCouponError('');
         try {
             const res = await customerApi.post<{ code: string; discount: number }>('/coupons/validate', {
-                code: couponInput.trim(),
+                code: codeToApply,
                 subtotal,
             });
             setCoupon({ code: res.code, discount: res.discount });
+            if (typeof codeOverwrite === 'string') setCouponInput(codeOverwrite);
         } catch (err) {
             setCoupon(null);
             setCouponError(err instanceof ApiError ? err.message : 'Could not apply this coupon.');
@@ -104,27 +131,114 @@ export default function CheckoutPage() {
         setPlacingOrder(true);
         setOrderError('');
         try {
-            const newAddress = await customerApi.post<{ id: string }>('/users/me/addresses', {
-                name: address.fullName,
-                phone: address.phone,
-                line1: address.line1,
-                city: address.city,
-                state: address.state,
-                pincode: address.pincode,
-                isDefault: true,
-            });
+            let addressIdSelected = selectedAddressId;
+            if (addressIdSelected === 'new') {
+                const newAddress = await customerApi.post<{ id: string }>('/users/me/addresses', {
+                    name: address.fullName,
+                    phone: address.phone,
+                    line1: address.line1,
+                    city: address.city,
+                    state: address.state,
+                    pincode: address.pincode,
+                    isDefault: true,
+                });
+                addressIdSelected = newAddress.id;
+                setSelectedAddressId(newAddress.id);
+                setSavedAddresses(prev => [...prev, { 
+                    id: newAddress.id, name: address.fullName, phone: address.phone, 
+                    line1: address.line1, city: address.city, state: address.state, pincode: address.pincode 
+                }]);
+            }
 
-            const order = await customerApi.post<{ orderNumber: string }>('/orders', {
-                addressId: newAddress.id,
-                paymentMethod,
-                couponCode: coupon?.code,
-            });
+            if (paymentMethod === 'card' || paymentMethod === 'upi') {
+                const isLoaded = await loadRazorpayScript();
+                if (!isLoaded) {
+                    throw new Error('Razorpay SDK failed to load. Check your connection.');
+                }
 
-            redirecting.current = true;
-            clearCart();
-            router.push(`/order-confirmation?order=${order.orderNumber}`);
+                const rzOrder = await customerApi.post<{ orderId: string, amount: number, currency: string }>('/orders/razorpay/create', {
+                    couponCode: coupon?.code
+                });
+
+                const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+
+                if (keyId === 'rzp_test_placeholder') {
+                    // Mock payment success for development
+                    setTimeout(async () => {
+                        try {
+                            const order = await customerApi.post<{ orderNumber: string }>('/orders', {
+                                addressId: addressIdSelected,
+                                paymentMethod,
+                                couponCode: coupon?.code,
+                                razorpayOrderId: rzOrder.orderId,
+                                razorpayPaymentId: 'mock_payment_id_' + Date.now(),
+                                razorpaySignature: 'mock_signature',
+                            });
+                            redirecting.current = true;
+                            clearCart();
+                            router.push(`/order-confirmation?order=${order.orderNumber}`);
+                        } catch (err) {
+                            setOrderError(err instanceof ApiError ? err.message : 'Mock Payment verification failed on server.');
+                            setPlacingOrder(false);
+                        }
+                    }, 800); // Small delay to simulate processing
+                    return;
+                }
+
+                const options = {
+                    key: keyId,
+                    amount: rzOrder.amount,
+                    currency: rzOrder.currency,
+                    name: 'Ufuq Boot House',
+                    description: 'Order Checkout',
+                    order_id: rzOrder.orderId,
+                    handler: async function (response: any) {
+                        try {
+                            const order = await customerApi.post<{ orderNumber: string }>('/orders', {
+                                addressId: addressIdSelected,
+                                paymentMethod,
+                                couponCode: coupon?.code,
+                                razorpayOrderId: response.razorpay_order_id,
+                                razorpayPaymentId: response.razorpay_payment_id,
+                                razorpaySignature: response.razorpay_signature,
+                            });
+                            redirecting.current = true;
+                            clearCart();
+                            router.push(`/order-confirmation?order=${order.orderNumber}`);
+                        } catch (err) {
+                            setOrderError(err instanceof ApiError ? err.message : 'Payment verification failed on server.');
+                            setPlacingOrder(false);
+                        }
+                    },
+                    prefill: {
+                        name: address.fullName || 'User',
+                        contact: address.phone || '9999999999'
+                    },
+                    theme: {
+                        color: '#EA580C' // brand-orange
+                    }
+                };
+
+                const paymentObject = new (window as any).Razorpay(options);
+                paymentObject.on('payment.failed', function (response: any) {
+                    setOrderError(response.error.description || 'Payment Failed');
+                    setPlacingOrder(false);
+                });
+                paymentObject.open();
+
+            } else {
+                const order = await customerApi.post<{ orderNumber: string }>('/orders', {
+                    addressId: addressIdSelected,
+                    paymentMethod,
+                    couponCode: coupon?.code,
+                });
+
+                redirecting.current = true;
+                clearCart();
+                router.push(`/order-confirmation?order=${order.orderNumber}`);
+            }
         } catch (err) {
-            setOrderError(err instanceof ApiError ? err.message : 'Could not place your order. Please try again.');
+            setOrderError(err instanceof ApiError ? err.message : (err as Error).message || 'Could not place your order.');
             setPlacingOrder(false);
         }
     };
@@ -161,47 +275,69 @@ export default function CheckoutPage() {
                                 <span className="flex items-center justify-center w-8 h-8 rounded-full bg-charcoal-900 text-white text-sm">1</span>
                                 Shipping Address
                             </h2>
-                            <div className="grid sm:grid-cols-2 gap-x-5 gap-y-6">
-                                <FormField
-                                    label="Full Name"
-                                    value={address.fullName}
-                                    onChange={(e: any) => setAddress({ ...address, fullName: e.target.value })}
-                                    placeholder="Enter your full name"
-                                    className="sm:col-span-2"
-                                />
-                                <FormField
-                                    label="Phone Number"
-                                    type="tel"
-                                    value={address.phone}
-                                    onChange={(e: any) => setAddress({ ...address, phone: e.target.value })}
-                                    placeholder="+91"
-                                />
-                                <FormField
-                                    label="Pincode"
-                                    value={address.pincode}
-                                    onChange={(e: any) => setAddress({ ...address, pincode: e.target.value })}
-                                    placeholder="e.g. 400001"
-                                />
-                                <FormField
-                                    label="Address"
-                                    value={address.line1}
-                                    onChange={(e: any) => setAddress({ ...address, line1: e.target.value })}
-                                    placeholder="House No, Street, Area"
-                                    className="sm:col-span-2"
-                                />
-                                <FormField
-                                    label="City"
-                                    value={address.city}
-                                    onChange={(e: any) => setAddress({ ...address, city: e.target.value })}
-                                    placeholder="City"
-                                />
-                                <FormField
-                                    label="State"
-                                    value={address.state}
-                                    onChange={(e: any) => setAddress({ ...address, state: e.target.value })}
-                                    placeholder="State"
-                                />
-                            </div>
+                            {savedAddresses.length > 0 && (
+                                <div className="space-y-3 mb-6">
+                                    {savedAddresses.map(addr => (
+                                        <label key={addr.id} className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-brand-orange bg-brand-orange/5 ring-1 ring-brand-orange/20' : 'border-charcoal-100 hover:border-charcoal-300 bg-charcoal-50/50'}`}>
+                                            <div className="mt-1 flex-shrink-0">
+                                                <input type="radio" name="addressSelect" checked={selectedAddressId === addr.id} onChange={() => setSelectedAddressId(addr.id)} className="w-4 h-4 text-brand-orange focus:ring-brand-orange" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="font-poppins font-semibold text-charcoal-900 text-sm">{addr.name} <span className="text-charcoal-500 font-normal">({addr.phone})</span></p>
+                                                <p className="text-sm text-charcoal-600 font-inter mt-1">{addr.line1}, {addr.city}, {addr.state} - {addr.pincode}</p>
+                                            </div>
+                                        </label>
+                                    ))}
+                                    <label className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedAddressId === 'new' ? 'border-brand-orange bg-brand-orange/5 ring-1 ring-brand-orange/20' : 'border-charcoal-100 hover:border-charcoal-300 bg-charcoal-50/50'}`}>
+                                        <input type="radio" name="addressSelect" checked={selectedAddressId === 'new'} onChange={() => setSelectedAddressId('new')} className="w-4 h-4 text-brand-orange focus:ring-brand-orange" />
+                                        <span className="font-poppins font-semibold text-charcoal-900 text-sm">Add a New Address</span>
+                                    </label>
+                                </div>
+                            )}
+
+                            {selectedAddressId === 'new' && (
+                                <div className="grid sm:grid-cols-2 gap-x-5 gap-y-6">
+                                    <FormField
+                                        label="Full Name"
+                                        value={address.fullName}
+                                        onChange={(e: any) => setAddress({ ...address, fullName: e.target.value })}
+                                        placeholder="Enter your full name"
+                                        className="sm:col-span-2"
+                                    />
+                                    <FormField
+                                        label="Phone Number"
+                                        type="tel"
+                                        value={address.phone}
+                                        onChange={(e: any) => setAddress({ ...address, phone: e.target.value })}
+                                        placeholder="+91"
+                                    />
+                                    <FormField
+                                        label="Pincode"
+                                        value={address.pincode}
+                                        onChange={(e: any) => setAddress({ ...address, pincode: e.target.value })}
+                                        placeholder="e.g. 400001"
+                                    />
+                                    <FormField
+                                        label="Address"
+                                        value={address.line1}
+                                        onChange={(e: any) => setAddress({ ...address, line1: e.target.value })}
+                                        placeholder="House No, Street, Area"
+                                        className="sm:col-span-2"
+                                    />
+                                    <FormField
+                                        label="City"
+                                        value={address.city}
+                                        onChange={(e: any) => setAddress({ ...address, city: e.target.value })}
+                                        placeholder="City"
+                                    />
+                                    <FormField
+                                        label="State"
+                                        value={address.state}
+                                        onChange={(e: any) => setAddress({ ...address, state: e.target.value })}
+                                        placeholder="State"
+                                    />
+                                </div>
+                            )}
                         </section>
 
                         {/* Payment method */}
@@ -283,7 +419,7 @@ export default function CheckoutPage() {
                                                 className="flex-1 px-4 py-3 rounded-xl bg-charcoal-50 border border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/10 outline-none font-inter text-sm text-charcoal-900 placeholder:text-charcoal-400 transition-all uppercase"
                                             />
                                             <button
-                                                onClick={handleApplyCoupon}
+                                                onClick={() => handleApplyCoupon()}
                                                 disabled={applyingCoupon || !couponInput.trim()}
                                                 className="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-lg bg-charcoal-900 text-white font-poppins font-semibold text-xs uppercase tracking-wide hover:bg-brand-orange transition-colors disabled:opacity-50"
                                             >
@@ -291,6 +427,21 @@ export default function CheckoutPage() {
                                             </button>
                                         </div>
                                         {couponError && <p className="text-xs text-red-600 font-inter mt-2 ml-1">{couponError}</p>}
+
+                                        {activeCoupons.length > 0 && (
+                                            <div className="mt-4 space-y-2">
+                                                <p className="text-xs font-poppins font-semibold text-charcoal-500 uppercase tracking-wider mb-3">Available Coupons</p>
+                                                {activeCoupons.map((c) => (
+                                                    <button key={c.id} onClick={(e) => { e.preventDefault(); handleApplyCoupon(c.code); }} className="w-full flex items-center justify-between p-3 rounded-xl border border-charcoal-200 hover:border-brand-orange bg-charcoal-50/50 hover:bg-brand-orange/5 transition-all text-left group">
+                                                        <div>
+                                                            <p className="font-poppins font-bold text-charcoal-900 text-sm flex items-center gap-2 group-hover:text-brand-orange transition-colors"><Tag className="w-3.5 h-3.5 text-brand-orange" /> {c.code}</p>
+                                                            <p className="text-xs text-charcoal-600 mt-1 font-inter">{c.type === 'PERCENT' ? `${c.value}% OFF` : `₹${c.value} OFF`} {c.minOrder > 0 ? `on orders over ₹${c.minOrder}` : ''}</p>
+                                                        </div>
+                                                        <span className="text-[10px] font-bold text-brand-orange uppercase tracking-wider bg-brand-orange/10 px-2.5 py-1.5 rounded-lg whitespace-nowrap">Tap to Apply</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
