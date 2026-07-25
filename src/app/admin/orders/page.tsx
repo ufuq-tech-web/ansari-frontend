@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import { useQuery, keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Loader2, ExternalLink, ChevronDown } from "lucide-react";
 import { adminApi } from "../../../lib/admin-api";
@@ -15,6 +16,7 @@ interface OrderRow {
   status: string;
   total: number;
   placedAt: string;
+  paymentMethod: string;
   user: { name: string; email: string };
   items: unknown[];
 }
@@ -23,10 +25,7 @@ const STATUS_OPTIONS = ["PLACED", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLE
 const PAGE_SIZE = 15;
 
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<OrderRow[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [status, setStatus] = useState("");
@@ -43,31 +42,36 @@ export default function AdminOrdersPage() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  const load = useCallback(async (q: string, s: string, p: number) => {
-    setLoading(true);
-    const params = new URLSearchParams({ page: String(p), limit: String(PAGE_SIZE) });
-    if (q) params.set("search", q);
-    if (s) params.set("status", s);
-    try {
-      const res = await adminApi.get<{ items: OrderRow[]; total: number }>(`/orders/admin/all?${params.toString()}`);
-      setOrders(res.items);
-      setTotal(res.total);
-    } catch {
-      // Ignored
-    }
-    setLoading(false);
-  }, []);
+  const { data, isLoading: loading, refetch } = useQuery({
+    queryKey: ["adminOrders", debouncedSearch, status, page],
+    queryFn: () => {
+      const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (status) params.set("status", status);
+      return adminApi.get<{ items: OrderRow[]; total: number }>(`/orders/admin/all?${params.toString()}`);
+    },
+    placeholderData: keepPreviousData,
+  });
 
-  useEffect(() => {
-    load(debouncedSearch, status, page);
-  }, [debouncedSearch, status, page, load]);
+  const orders = data?.items || [];
+  const total = data?.total || 0;
 
   const handleStatusChange = async (orderNumber: string, newStatus: string) => {
     setUpdatingId(orderNumber);
     try {
       await adminApi.patch(`/orders/${orderNumber}/status`, { status: newStatus });
-      setOrders((prev) =>
-        prev.map((o) => (o.orderNumber === orderNumber ? { ...o, status: newStatus } : o))
+      // Optimistic cache update
+      queryClient.setQueryData(
+        ["adminOrders", debouncedSearch, status, page],
+        (oldData: any) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            items: oldData.items.map((o: OrderRow) =>
+              o.orderNumber === orderNumber ? { ...o, status: newStatus } : o
+            ),
+          };
+        }
       );
     } catch (err) {
       console.error(err);
@@ -119,7 +123,7 @@ export default function AdminOrdersPage() {
     },
     {
       key: "placedAt",
-      label: "Placed",
+      label: "Order Date",
       render: (o) => {
         const date = new Date(o.placedAt);
         return (
@@ -133,6 +137,15 @@ export default function AdminOrdersPage() {
           </div>
         );
       }
+    },
+    {
+      key: "paymentMethod",
+      label: "Payment",
+      render: (o) => (
+        <span className="font-poppins font-semibold text-[10px] tracking-wider uppercase text-charcoal-600 bg-charcoal-100 px-2.5 py-1 rounded-md border border-charcoal-200">
+           {o.paymentMethod || 'COD'}
+        </span>
+      )
     },
     {
       key: "status",
