@@ -26,6 +26,11 @@ export default function ConfirmModal({
 }: ConfirmModalProps) {
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
 
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -33,21 +38,24 @@ export default function ConfirmModal({
     document.body.style.overflow = "hidden";
 
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     };
     
     window.addEventListener("keydown", handleEsc);
     
     // Auto-focus confirm for keyboard accessibility
-    setTimeout(() => {
-      confirmBtnRef.current?.focus();
+    const timer = setTimeout(() => {
+      if (document.activeElement?.tagName !== 'TEXTAREA' && document.activeElement?.tagName !== 'INPUT') {
+          confirmBtnRef.current?.focus();
+      }
     }, 10);
 
     return () => {
       document.body.style.overflow = originalOverflow;
       window.removeEventListener("keydown", handleEsc);
+      clearTimeout(timer);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
