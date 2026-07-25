@@ -9,6 +9,7 @@ export interface CustomerUser {
   name: string;
   phone: string | null;
   role: string;
+  walletBalance: number;
 }
 
 interface AuthContextValue {
@@ -16,7 +17,8 @@ interface AuthContextValue {
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string, phone?: string) => Promise<void>;
+  register: (email: string, password: string, name: string, phone?: string) => Promise<{ requiresVerification: boolean }>;
+  verifyRegistration: (email: string, otp: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -49,7 +51,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (email: string, password: string, name: string, phone?: string) => {
-    const res = await customerApi.post<{ accessToken: string; user: CustomerUser }>("/auth/register", { email, password, name, phone });
+    const res = await customerApi.post<{ requiresVerification?: boolean; accessToken?: string; user?: CustomerUser }>("/auth/register", { email, password, name, phone });
+    if (res.requiresVerification) {
+      return { requiresVerification: true };
+    }
+    setAccessToken(res.accessToken!);
+    setUser(res.user!);
+    return { requiresVerification: false };
+  };
+
+  const verifyRegistration = async (email: string, otp: string) => {
+    const res = await customerApi.post<{ accessToken: string; user: CustomerUser }>("/auth/verify-registration", { email, otp });
     setAccessToken(res.accessToken);
     setUser(res.user);
   };
@@ -65,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, login, register, verifyRegistration, logout }}>
       {children}
     </AuthContext.Provider>
   );
