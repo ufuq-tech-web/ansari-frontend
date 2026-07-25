@@ -4,8 +4,10 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../lib/auth-context";
+import { toast } from "react-hot-toast";
 import { ApiError } from "../../lib/customer-api";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
+import GuestRoute from "../../components/auth/GuestRoute";
 
 function LoginForm() {
     const router = useRouter();
@@ -15,24 +17,41 @@ function LoginForm() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [errors, setErrors] = useState<{ general?: string; email?: string; password?: string }>({});
     const [submitting, setSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
+        setErrors({});
         setSubmitting(true);
         try {
             await login(email, password);
             router.push(redirectTo);
         } catch (err) {
-            setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
+            const errMsg = err instanceof ApiError ? err.message : "Something went wrong. Please try again.";
+            
+            if (err instanceof ApiError && err.status === 401) {
+                if (errMsg.includes("verify")) {
+                    setErrors({ email: errMsg });
+                    toast.error("Please verify your email to log in.");
+                } else if (errMsg === "Invalid email or password") {
+                    // Show for both fields + general so the user clearly sees they just mismatched credentials
+                    setErrors({ email: "", password: "", general: errMsg });
+                } else {
+                    setErrors({ general: errMsg });
+                }
+            } else if (err instanceof ApiError && err.status === 500) {
+                toast.error("Server error. Please try again later.");
+            } else {
+                setErrors({ general: errMsg });
+                toast.error(errMsg);
+            }
         } finally {
             setSubmitting(false);
         }
     };
 
-    const inputClass = "w-full px-4 py-3 rounded-xl border border-charcoal-200 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none font-inter text-charcoal-900 placeholder:text-charcoal-400 transition-all";
+    const getInputClass = (hasError?: boolean) => `w-full px-4 py-3 rounded-xl border ${hasError ? 'border-red-500 focus:border-red-600 focus:ring-red-500/20' : 'border-charcoal-200 focus:border-brand-orange focus:ring-brand-orange/20'} focus:ring-2 outline-none font-inter text-charcoal-900 placeholder:text-charcoal-400 transition-all`;
 
     return (
         <div className="min-h-screen bg-brand-ivory flex items-center justify-center px-4 py-16">
@@ -53,31 +72,43 @@ function LoginForm() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <input
-                        required
-                        type="email"
-                        placeholder="Email address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={inputClass}
-                    />
-                    <input
-                        required
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={inputClass}
-                    />
+                    <div>
+                        <input
+                            required
+                            type="email"
+                            placeholder="Email address"
+                            value={email}
+                            onChange={(e) => { setEmail(e.target.value); setErrors(p => ({...p, email: undefined})) }}
+                            className={getInputClass(!!errors.email)}
+                        />
+                        {errors.email && <p className="mt-1.5 text-xs text-red-500 font-inter">{errors.email}</p>}
+                    </div>
+                    
+                    <div>
+                        <input
+                            required
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => { setPassword(e.target.value); setErrors(p => ({...p, password: undefined})) }}
+                            className={getInputClass(!!errors.password)}
+                        />
+                        {errors.password && <p className="mt-1.5 text-xs text-red-500 font-inter">{errors.password}</p>}
+                        <div className="text-right mt-2">
+                            <button type="button" onClick={() => router.push("/forgot-password")} className="text-xs text-brand-orange hover:underline font-inter">
+                                Forgot password?
+                            </button>
+                        </div>
+                    </div>
 
-                    {error && <p className="text-sm text-red-600 font-inter">{error}</p>}
+                    {errors.general && <p className="text-sm text-red-600 font-inter text-center bg-red-50 py-2 rounded-lg">{errors.general}</p>}
 
                     <button
                         type="submit"
                         disabled={submitting}
                         className="mt-2 bg-brand-orange text-white font-poppins font-bold text-sm uppercase tracking-wider py-3.5 rounded-xl hover:bg-brand-orange-dark transition-colors disabled:opacity-60"
                     >
-                        {submitting ? "Signing in…" : "Sign In"}
+                        {submitting ? "Signing In…" : "Sign In"}
                     </button>
                 </form>
 
@@ -100,8 +131,10 @@ function LoginForm() {
 
 export default function LoginPage() {
     return (
-        <Suspense fallback={null}>
-            <LoginForm />
-        </Suspense>
+        <GuestRoute>
+            <Suspense fallback={null}>
+                <LoginForm />
+            </Suspense>
+        </GuestRoute>
     );
 }
