@@ -17,7 +17,8 @@ import {
   BarChart3,
   Settings,
   UserCheck,
-  Upload
+  Upload,
+  Search
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
   { href: "/admin/blogs", label: "Blogs", icon: FileText },
   { href: "/admin/guides", label: "Buying Guides", icon: BookOpen },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
+  { href: "/admin/seo", label: "SEO Config", icon: Search },
   { href: "/admin/settings", label: "Settings", icon: Settings },
   { href: "/admin/users", label: "Users & Roles", icon: UserCheck },
 ];
