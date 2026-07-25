@@ -68,10 +68,16 @@ export default function OrderSummaryCard({ order, showDelivery = true }: { order
             <div className="pt-4 grid sm:grid-cols-2 gap-4 text-sm font-inter">
                 <div>
                     <p className="font-poppins font-semibold text-charcoal-900 text-xs uppercase tracking-wide mb-1">Shipping to</p>
-                    <p className="text-charcoal-600">{order.address.name}</p>
-                    <p className="text-charcoal-600">{order.address.line1}</p>
-                    <p className="text-charcoal-600">{order.address.city}, {order.address.state} {order.address.pincode}</p>
-                    <p className="text-charcoal-600">{order.address.phone}</p>
+                    {order.address ? (
+                        <>
+                            <p className="text-charcoal-600">{order.address.name}</p>
+                            <p className="text-charcoal-600">{order.address.line1}</p>
+                            <p className="text-charcoal-600">{order.address.city}, {order.address.state} {order.address.pincode}</p>
+                            <p className="text-charcoal-600">{order.address.phone}</p>
+                        </>
+                    ) : (
+                        <p className="text-charcoal-500 italic">Address unavailable</p>
+                    )}
                 </div>
                 <div>
                     <p className="font-poppins font-semibold text-charcoal-900 text-xs uppercase tracking-wide mb-1">Payment method</p>
