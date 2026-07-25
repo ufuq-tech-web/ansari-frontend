@@ -46,7 +46,7 @@ const footerColumns: { title: string; links: { label: string; href?: string }[] 
       { label: 'Our Story', href: '/about-us' },
       { label: 'Store Locator' },
       { label: 'Careers' },
-      { label: 'Blog', href: '/blog' },
+      { label: 'Journal', href: '/journal' },
       { label: 'Privacy Policy', href: '/privacy-policy' },
       { label: 'Terms & Conditions', href: '/terms-and-conditions' },
     ],
