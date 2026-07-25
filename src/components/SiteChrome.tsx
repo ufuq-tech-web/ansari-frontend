@@ -11,8 +11,13 @@ import MobileBottomNav from "./MobileBottomNav";
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const isAuthPage = pathname === "/login" || 
+                     pathname === "/signup" || 
+                     pathname === "/forgot-password" || 
+                     pathname === "/reset-password" || 
+                     pathname === "/otp-verification";
 
-  if (isAdmin) {
+  if (isAdmin || isAuthPage) {
     return <>{children}</>;
   }
 
