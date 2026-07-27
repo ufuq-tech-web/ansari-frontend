@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { Product } from '../lib/catalog-helpers';
 import { customerApi } from './customer-api';
 import { mapProduct } from './storefront-api';
-import { useAuth } from './auth-context';
+import { useAuthStore } from "./auth-store";
 
 export interface CartItem extends Product {
     qty: number;
@@ -28,7 +28,8 @@ const CartContext = createContext<CartContextValue | null>(null);
 // thin cache in front of /api/cart so every consumer (Header, ProductCard,
 // cart/checkout pages) keeps working against the same hook shape as before.
 export function CartProvider({ children }: { children: ReactNode }) {
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const authLoading = useAuthStore(state => state.loading);
     const router = useRouter();
     const [items, setItems] = useState<CartItem[]>([]);
     const [hydrated, setHydrated] = useState(false);

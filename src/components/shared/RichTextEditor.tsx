@@ -342,7 +342,7 @@ export default function RichTextEditor({ value, onChange }: { value: string, onC
       `}</style>
       <div className="bg-white rounded-xl [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-charcoal-200 [&_.ql-container]:rounded-b-xl [&_.ql-container]:border-charcoal-200 [&_.ql-container]:min-h-[350px] [&_.ql-editor]:min-h-[350px] [&_.ql-container]:font-inter [&_.ql-editor]:text-charcoal-900 [&_.ql-editor]:overflow-y-auto">
         <ReactQuill
-          ref={quillRef}
+          {...({ ref: quillRef } as any)}
           theme="snow"
           value={value}
           onChange={onChange}
