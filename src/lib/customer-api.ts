@@ -1,18 +1,9 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
-// Access token lives in memory only (never localStorage) — the refresh
-// token is an httpOnly cookie the browser manages on its own, invisible to
-// JS. A hard reload loses this in-memory value, so AuthProvider silently
-// calls /auth/refresh on mount to get a fresh one back before rendering
-// anything gated on auth state.
-let accessToken: string | null = null;
+import { useAuthStore } from "./auth-store";
 
 export function getAccessToken(): string | null {
-  return accessToken;
-}
-
-export function setAccessToken(token: string | null) {
-  accessToken = token;
+  return useAuthStore.getState().accessToken;
 }
 
 export class ApiError extends Error {
@@ -30,7 +21,7 @@ function rawFetch(path: string, options: RequestInit = {}): Promise<Response> {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      ...(useAuthStore.getState().accessToken ? { Authorization: `Bearer ${useAuthStore.getState().accessToken}` } : {}),
       ...options.headers,
     },
   });
@@ -44,12 +35,18 @@ async function tryRefresh(): Promise<boolean> {
   if (!refreshPromise) {
     refreshPromise = fetch(`${API_URL}/auth/refresh`, { method: "POST", credentials: "include" })
       .then(async (res) => {
-        if (!res.ok) return false;
+        if (!res.ok) {
+          useAuthStore.setState({ user: null, isAuthenticated: false, accessToken: null, loading: false });
+          return false;
+        }
         const body = await res.json();
-        accessToken = body.accessToken;
+        useAuthStore.setState({ accessToken: body.accessToken });
         return true;
       })
-      .catch(() => false)
+      .catch(() => {
+        useAuthStore.setState({ user: null, isAuthenticated: false, accessToken: null, loading: false });
+        return false;
+      })
       .finally(() => {
         refreshPromise = null;
       });

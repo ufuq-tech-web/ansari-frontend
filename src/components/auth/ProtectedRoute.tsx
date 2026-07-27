@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuth } from "../../lib/auth-context";
+import { useAuthStore } from "../../lib/auth-store";
 
 export default function ProtectedRoute({ 
     children, 
@@ -11,7 +11,9 @@ export default function ProtectedRoute({
     children: React.ReactNode;
     adminOnly?: boolean;
 }) {
-    const { user, loading, isAuthenticated } = useAuth();
+    const user = useAuthStore(state => state.user);
+    const loading = useAuthStore(state => state.loading);
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const router = useRouter();
     const pathname = usePathname();
 

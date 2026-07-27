@@ -4,15 +4,15 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
-import { useAuth } from "../../lib/auth-context";
+import { useAuthStore } from "../../lib/auth-store";
 import { ApiError } from "../../lib/customer-api";
 import GuestRoute from "../../components/auth/GuestRoute";
 
 function SignupForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirectTo = searchParams.get("redirect") || "/my-account";
-    const { register } = useAuth();
+    const redirectTo = searchParams.get("redirect") || "/";
+    const register = useAuthStore(state => state.register);
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -54,7 +54,7 @@ function SignupForm() {
         try {
             const res = await register(email, password, name, undefined);
             if (res.requiresVerification) {
-                router.push(`/otp-verification?email=${encodeURIComponent(email)}&purpose=REGISTER_VERIFY`);
+                router.push(`/otp-verification?email=${encodeURIComponent(email)}&purpose=REGISTER_VERIFY&redirect=${encodeURIComponent(redirectTo)}`);
             } else {
                 router.push(redirectTo);
             }

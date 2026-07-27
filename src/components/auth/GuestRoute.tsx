@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "../../lib/auth-context";
+import { useAuthStore } from "../../lib/auth-store";
 
-export default function GuestRoute({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, loading } = useAuth();
+function GuestRouteInner({ children }: { children: React.ReactNode }) {
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const loading = useAuthStore(state => state.loading);
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -25,4 +26,12 @@ export default function GuestRoute({ children }: { children: React.ReactNode }) 
     }
 
     return <>{children}</>;
+}
+
+export default function GuestRoute({ children }: { children: React.ReactNode }) {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-brand-ivory flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-charcoal-200 border-t-brand-orange animate-spin" /></div>}>
+            <GuestRouteInner>{children}</GuestRouteInner>
+        </Suspense>
+    );
 }

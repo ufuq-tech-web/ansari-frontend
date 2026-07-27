@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "../../lib/auth-context";
+import { useAuthStore } from "../../lib/auth-store";
 import { toast } from "react-hot-toast";
 import { ApiError } from "../../lib/customer-api";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
@@ -13,7 +13,7 @@ function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectTo = searchParams.get("redirect") || "/my-account";
-    const { login } = useAuth();
+    const login = useAuthStore(state => state.login);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

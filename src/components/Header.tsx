@@ -12,7 +12,7 @@ import { useGuides } from '../hooks/useGuides';
 import { useHeaderScroll } from '../hooks/useHeaderScroll';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useHeaderMenus } from '../hooks/useHeaderMenus';
-import { useAuth } from '../lib/auth-context';
+import { useAuthStore } from "../lib/auth-store";
 
 interface MegaLink { label: string; to: string; }
 interface MegaColumn { title: string; links: MegaLink[]; }
@@ -148,7 +148,9 @@ export default function Header() {
   } = useHeaderMenus();
   const { itemCount } = useCart();
   const { items: wishlistItems } = useWishlist();
-  const { user, isAuthenticated, logout } = useAuth();
+  const user = useAuthStore(state => state.user);
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const logout = useAuthStore(state => state.logout);
 
   const guides = useGuides();
   const scrolled = useHeaderScroll();

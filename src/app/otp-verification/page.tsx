@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "../../lib/auth-context";
+import { useAuthStore } from "../../lib/auth-store";
 import { customerApi, ApiError } from "../../lib/customer-api";
 import GuestRoute from "../../components/auth/GuestRoute";
 
@@ -11,7 +11,7 @@ function OtpVerificationForm() {
     const searchParams = useSearchParams();
     const email = searchParams.get("email");
     const purpose = searchParams.get("purpose"); // "REGISTER_VERIFY" | "FORGOT_PASSWORD"
-    const { verifyRegistration } = useAuth();
+    const verifyRegistration = useAuthStore(state => state.verifyRegistration);
 
     const [otp, setOtp] = useState("");
     const [error, setError] = useState("");
