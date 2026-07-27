@@ -1,10 +1,12 @@
 "use client";
 
-import { useAuth } from '../../lib/auth-context';
+import { useAuthStore } from "../../lib/auth-store";
 import AccountLayout, { AccountLoading } from '../../components/account/AccountLayout';
 
 export default function SettingsPage() {
-    const { user, loading: authLoading, isAuthenticated } = useAuth();
+    const user = useAuthStore(state => state.user);
+    const authLoading = useAuthStore(state => state.loading);
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
     if (authLoading || !isAuthenticated || !user) return <AccountLoading />;
 

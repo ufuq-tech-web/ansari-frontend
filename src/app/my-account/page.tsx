@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '../../lib/auth-context';
+import { useAuthStore } from "../../lib/auth-store";
 import { getOrders } from '../../lib/orders';
 import AccountLayout, { AccountLoading } from '../../components/account/AccountLayout';
 
 export default function AccountPage() {
-    const { user, loading: authLoading, isAuthenticated } = useAuth();
+    const user = useAuthStore(state => state.user);
+    const authLoading = useAuthStore(state => state.loading);
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const [orderCount, setOrderCount] = useState(0);
 
     useEffect(() => {

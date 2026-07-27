@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { User, Package, Heart, MapPin, Settings, LogOut, ChevronLeft, Wallet } from 'lucide-react';
-import { useAuth } from '../../lib/auth-context';
+import { useAuthStore } from "../../lib/auth-store";
 
 interface Props {
   children: React.ReactNode;
@@ -13,7 +13,10 @@ interface Props {
 }
 
 export default function AccountLayout({ children }: Props) {
-  const { user, loading: authLoading, isAuthenticated, logout } = useAuth();
+  const user = useAuthStore(state => state.user);
+    const authLoading = useAuthStore(state => state.loading);
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const logout = useAuthStore(state => state.logout);
   const router = useRouter();
   const pathname = usePathname();
 

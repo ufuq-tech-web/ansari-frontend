@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AccountLayout from "../../../components/account/AccountLayout";
-import { useAuth } from "../../../lib/auth-context";
+import { useAuthStore } from "../../../lib/auth-store";
 import { customerApi } from "../../../lib/customer-api";
 import { Wallet, TrendingUp, TrendingDown, Clock, CheckCircle } from "lucide-react";
 
@@ -16,7 +16,7 @@ interface WalletTransaction {
 }
 
 export default function WalletPage() {
-  const { user } = useAuth();
+  const user = useAuthStore(state => state.user);
   const [balance, setBalance] = useState(user?.walletBalance || 0);
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
   const [loading, setLoading] = useState(true);
