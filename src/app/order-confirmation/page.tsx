@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { CheckCircle2, Home, ArrowRight } from 'lucide-react';
 import OrderSummaryCard from '../../components/OrderSummaryCard';
 import { getOrder, getOrders, type Order } from '../../lib/orders';
-import { useAuth } from '../../lib/auth-context';
+import { useAuthStore } from "../../lib/auth-store";
 
 export default function OrderConfirmationPage() {
     return (
@@ -19,7 +19,8 @@ export default function OrderConfirmationPage() {
 function OrderConfirmationContent() {
     const searchParams = useSearchParams();
     const orderNumber = searchParams.get('order');
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const authLoading = useAuthStore(state => state.loading);
     const router = useRouter();
     const [order, setOrder] = useState<Order | null>(null);
     const [loaded, setLoaded] = useState(false);

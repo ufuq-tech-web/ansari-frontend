@@ -6,13 +6,14 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import OrderSummaryCard from '../../../components/OrderSummaryCard';
 import { getOrder, cancelOrder, type Order } from '../../../lib/orders';
-import { useAuth } from '../../../lib/auth-context';
+import { useAuthStore } from "../../../lib/auth-store";
 import AccountLayout, { AccountLoading } from '../../../components/account/AccountLayout';
 import ConfirmModal from '../../../components/shared/ConfirmModal';
 
 export default function OrderDetailPage() {
     const params = useParams<{ orderNumber: string }>();
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const authLoading = useAuthStore(state => state.loading);
     const [order, setOrder] = useState<Order | null | undefined>(undefined);
     const [cancelling, setCancelling] = useState(false);
     const [cancelModalOpen, setCancelModalOpen] = useState(false);

@@ -22,7 +22,7 @@ export interface OrderAddress {
 export interface Order {
     orderNumber: string;
     placedAt: string;
-    status: 'PLACED' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+    status: 'PENDING' | 'PAYMENT_FAILED' | 'PLACED' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
     paymentMethod: string;
     items: OrderItem[];
     subtotal: number;

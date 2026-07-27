@@ -2,14 +2,30 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'react-hot-toast';
 import { Package, ChevronRight } from 'lucide-react';
 import { getOrders, cancelOrder, type Order } from '../../lib/orders';
-import { useAuth } from '../../lib/auth-context';
+import { useAuthStore } from "../../lib/auth-store";
 import AccountLayout, { AccountLoading } from '../../components/account/AccountLayout';
 import ConfirmModal from '../../components/shared/ConfirmModal';
+import { customerApi } from '@/lib/customer-api';
+const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+        if ((window as any).Razorpay) {
+            resolve(true);
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+};
 
 export default function OrdersPage() {
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const authLoading = useAuthStore(state => state.loading);
     const [orders, setOrders] = useState<Order[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [cancelling, setCancelling] = useState<string | null>(null);
@@ -32,10 +48,65 @@ export default function OrdersPage() {
             const updatedOrder = await cancelOrder(targetOrder, cancelReason);
             setOrders(prev => prev.map(o => o.orderNumber === targetOrder ? updatedOrder : o));
         } catch (err: any) {
-            alert(err?.message || 'Failed to cancel the order. It might already be processed.');
+            toast.error(err?.message || 'Failed to cancel the order. It might already be processed.');
         } finally {
             setCancelling(null);
             setOrderToCancel(null);
+        }
+    };
+
+    const retryPayment = async (e: React.MouseEvent, orderNumber: string) => {
+        e.preventDefault();
+        try {
+            const isLoaded = await loadRazorpayScript();
+            if (!isLoaded) {
+                toast.error('Razorpay SDK failed to load. Check your connection.');
+                return;
+            }
+
+            const res = await customerApi.post<{ orderNumber: string, razorpayOrderId: string, amount: number, currency: string }>('/orders/retry-payment', { orderNumber });
+            const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+
+
+
+            const options = {
+                key: keyId,
+                amount: res.amount,
+                currency: res.currency,
+                name: 'Ufuq Boot House',
+                description: 'Retry Payment',
+                order_id: res.razorpayOrderId,
+                handler: async function (response: any) {
+                    try {
+                        await customerApi.post('/orders/checkout-verify', {
+                            orderNumber: res.orderNumber,
+                            razorpayPaymentId: response.razorpay_payment_id,
+                            razorpaySignature: response.razorpay_signature,
+                        });
+                        toast.success('Payment successful!');
+                        getOrders().then(setOrders); // Refresh list
+                    } catch (err) {
+                        toast.error('Payment verification failed on server.');
+                    }
+                },
+                theme: { color: '#EA580C' },
+                modal: {
+                    ondismiss: async () => {
+                        try {
+                            await customerApi.post('/orders/checkout-fail', { orderNumber: res.orderNumber });
+                        } catch (e) { console.error("Failed to dismiss retry"); }
+                    }
+                }
+            };
+            
+            const paymentObject = new (window as any).Razorpay(options);
+            paymentObject.on('payment.failed', function (response: any) {
+                toast.error(response.error.description || 'Payment Failed.');
+            });
+            paymentObject.open();
+
+        } catch (err: any) {
+            toast.error(err?.message || 'Failed to initialize retry payment.');
         }
     };
 
@@ -97,10 +168,10 @@ export default function OrdersPage() {
                                             <div className="flex items-center gap-3 mb-1">
                                                 <p className="font-poppins font-medium text-charcoal-900 text-sm truncate uppercase tracking-widest">Order #{order.orderNumber}</p>
                                                 <span className={`px-2 py-0.5 text-[9px] font-poppins font-bold uppercase tracking-widest border ${order.status === 'DELIVERED' ? 'border-brand-green text-brand-green' :
-                                                        order.status === 'CANCELLED' ? 'border-red-400 text-red-500' :
+                                                        order.status === 'CANCELLED' || order.status === 'PAYMENT_FAILED' ? 'border-red-400 text-red-500' :
                                                             'border-brand-orange text-brand-orange'
                                                     }`}>
-                                                    {order.status || 'PLACED'}
+                                                    {order.status === 'PAYMENT_FAILED' ? 'PAYMENT FAILED' : (order.status || 'PLACED')}
                                                 </span>
                                             </div>
                                             <p className="text-xs text-charcoal-500 font-inter uppercase tracking-wider">{placedDate} · {itemCount} {itemCount === 1 ? 'item' : 'items'}</p>
@@ -109,7 +180,7 @@ export default function OrdersPage() {
                                     <div className="flex flex-col sm:items-end gap-3 pointer-events-auto">
                                         <span className="font-poppins font-light text-charcoal-900 text-xl">₹{order.total.toLocaleString('en-IN')}</span>
                                         <div className="flex flex-wrap items-center gap-3">
-                                            {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && order.status !== 'SHIPPED' && (
+                                            {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && order.status !== 'SHIPPED' && order.status !== 'PAYMENT_FAILED' && (
                                                 <button
                                                     onClick={(e) => promptCancel(e, order.orderNumber)}
                                                     disabled={cancelling === order.orderNumber}
@@ -118,9 +189,9 @@ export default function OrdersPage() {
                                                     {cancelling === order.orderNumber ? 'Cancelling...' : 'Cancel Order'}
                                                 </button>
                                             )}
-                                            {order.paymentMethod && order.paymentMethod.toLowerCase() !== 'cod' && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+                                            {order.status === 'PAYMENT_FAILED' && (
                                                 <button
-                                                    onClick={(e) => { e.preventDefault(); alert('Retry Payment feature coming soon!'); }}
+                                                    onClick={(e) => retryPayment(e, order.orderNumber)}
                                                     className="text-[10px] font-poppins uppercase tracking-widest text-brand-orange hover:text-brand-orange-dark underline underline-offset-4 transition-colors"
                                                 >
                                                     Retry Payment

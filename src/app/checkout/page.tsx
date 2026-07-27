@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Truck, ShieldCheck, Banknote, CreditCard, Smartphone, Tag, X, Lock } from 'lucide-react';
 import { useCart } from '../../lib/cart-context';
-import { useAuth } from '../../lib/auth-context';
+import { useAuthStore } from "../../lib/auth-store";
 import { customerApi, ApiError } from '../../lib/customer-api';
 import { storefrontApi } from '../../lib/storefront-api';
 
@@ -46,7 +46,8 @@ const loadRazorpayScript = () => {
 
 export default function CheckoutPage() {
     const { items, subtotal, clearCart, hydrated } = useCart();
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const authLoading = useAuthStore(state => state.loading);
     const router = useRouter();
     const [address, setAddress] = useState<Address>(emptyAddress);
     const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
@@ -91,7 +92,14 @@ export default function CheckoutPage() {
         }
     }, [hydrated, items.length, router]);
 
-    if (authLoading || !isAuthenticated || !hydrated || items.length === 0) return null;
+    if (authLoading || !isAuthenticated || !hydrated || items.length === 0) {
+        return (
+            <div className="min-h-[70vh] flex flex-col items-center justify-center pb-20">
+                <div className="w-10 h-10 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+                <p className="mt-4 font-inter text-charcoal-500 text-sm animate-pulse">Preparing Checkout...</p>
+            </div>
+        );
+    }
 
     const isNewAddressValid = Object.values(address).every((v) => v.trim().length > 0);
     const isValid = selectedAddressId !== 'new' || isNewAddressValid;
@@ -156,58 +164,42 @@ export default function CheckoutPage() {
                     throw new Error('Razorpay SDK failed to load. Check your connection.');
                 }
 
-                const rzOrder = await customerApi.post<{ orderId: string, amount: number, currency: string }>('/orders/razorpay/create', {
-                    couponCode: coupon?.code
+                const initResponse = await customerApi.post<{ orderNumber: string, status: string, razorpayOrderId?: string, amount?: number, currency?: string }>('/orders/checkout-init', {
+                    addressId: addressIdSelected,
+                    paymentMethod,
+                    couponCode: coupon?.code,
                 });
 
-                const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
-
-                if (keyId === 'rzp_test_placeholder') {
-                    // Mock payment success for development
-                    setTimeout(async () => {
-                        try {
-                            const order = await customerApi.post<{ orderNumber: string }>('/orders', {
-                                addressId: addressIdSelected,
-                                paymentMethod,
-                                couponCode: coupon?.code,
-                                razorpayOrderId: rzOrder.orderId,
-                                razorpayPaymentId: 'mock_payment_id_' + Date.now(),
-                                razorpaySignature: 'mock_signature',
-                            });
-                            redirecting.current = true;
-                            clearCart();
-                            router.push(`/order-confirmation?order=${order.orderNumber}`);
-                        } catch (err) {
-                            setOrderError(err instanceof ApiError ? err.message : 'Mock Payment verification failed on server.');
-                            setPlacingOrder(false);
-                        }
-                    }, 800); // Small delay to simulate processing
+                if (initResponse.status === 'PLACED') {
+                    redirecting.current = true;
+                    router.push(`/order-confirmation?order=${initResponse.orderNumber}`);
                     return;
                 }
 
+                const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+
                 const options = {
                     key: keyId,
-                    amount: rzOrder.amount,
-                    currency: rzOrder.currency,
+                    amount: initResponse.amount,
+                    currency: initResponse.currency,
                     name: 'Ufuq Boot House',
                     description: 'Order Checkout',
-                    order_id: rzOrder.orderId,
+                    order_id: initResponse.razorpayOrderId,
                     handler: async function (response: any) {
                         try {
-                            const order = await customerApi.post<{ orderNumber: string }>('/orders', {
-                                addressId: addressIdSelected,
-                                paymentMethod,
-                                couponCode: coupon?.code,
-                                razorpayOrderId: response.razorpay_order_id,
+                            await customerApi.post('/orders/checkout-verify', {
+                                orderNumber: initResponse.orderNumber,
                                 razorpayPaymentId: response.razorpay_payment_id,
                                 razorpaySignature: response.razorpay_signature,
                             });
                             redirecting.current = true;
-                            clearCart();
-                            router.push(`/order-confirmation?order=${order.orderNumber}`);
+                            router.push(`/order-confirmation?order=${initResponse.orderNumber}`);
                         } catch (err) {
                             setOrderError(err instanceof ApiError ? err.message : 'Payment verification failed on server.');
                             setPlacingOrder(false);
+                            // We shouldn't fail it outright if verification failed, maybe it's a network issue?
+                            // But usually, it means we can send them to payment failed.
+                            router.push(`/payment-failed?order=${initResponse.orderNumber}`);
                         }
                     },
                     prefill: {
@@ -216,26 +208,35 @@ export default function CheckoutPage() {
                     },
                     theme: {
                         color: '#EA580C' // brand-orange
+                    },
+                    modal: {
+                        ondismiss: async () => {
+                            setPlacingOrder(false);
+                            try {
+                                await customerApi.post('/orders/checkout-fail', { orderNumber: initResponse.orderNumber });
+                                router.push(`/payment-failed?order=${initResponse.orderNumber}`);
+                            } catch (e) {
+                                setOrderError('An error occurred while cleaning up your session.');
+                            }
+                        }
                     }
                 };
 
                 const paymentObject = new (window as any).Razorpay(options);
                 paymentObject.on('payment.failed', function (response: any) {
-                    setOrderError(response.error.description || 'Payment Failed');
-                    setPlacingOrder(false);
+                    setOrderError(response.error.description || 'Payment Failed. You can retry inside the modal, or close it.');
                 });
                 paymentObject.open();
 
             } else {
-                const order = await customerApi.post<{ orderNumber: string }>('/orders', {
+                const initResponse = await customerApi.post<{ orderNumber: string }>('/orders/checkout-init', {
                     addressId: addressIdSelected,
                     paymentMethod,
                     couponCode: coupon?.code,
                 });
 
                 redirecting.current = true;
-                clearCart();
-                router.push(`/order-confirmation?order=${order.orderNumber}`);
+                router.push(`/order-confirmation?order=${initResponse.orderNumber}`);
             }
         } catch (err) {
             setOrderError(err instanceof ApiError ? err.message : (err as Error).message || 'Could not place your order.');
