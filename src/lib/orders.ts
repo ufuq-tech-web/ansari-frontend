@@ -8,6 +8,7 @@ export interface OrderItem {
     image: string;
     qty: number;
     salePrice: number;
+    status: 'PLACED' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 }
 
 export interface OrderAddress {
@@ -46,6 +47,6 @@ export async function getOrder(orderNumber: string): Promise<Order | undefined> 
     }
 }
 
-export function cancelOrder(orderNumber: string, reason?: string): Promise<Order> {
-    return customerApi.patch<Order>(`/orders/${orderNumber}/cancel`, { reason });
+export function cancelOrder(orderNumber: string, reason?: string, itemIds?: string[]): Promise<Order> {
+    return customerApi.patch<Order>(`/orders/${orderNumber}/cancel`, { reason, itemIds });
 }
