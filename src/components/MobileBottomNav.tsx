@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { Home, Search, Heart, ShoppingBag, User } from 'lucide-react';
 import { useCart } from '../lib/cart-context';
-import { useWishlist } from '../lib/wishlist-context';
+import { useWishlistStore } from '../lib/wishlist-store';
 
 export default function MobileBottomNav() {
   const { itemCount } = useCart();
-  const { items: wishlistItems } = useWishlist();
+  const { ids: wishlistItems } = useWishlistStore();
 
   const items = [
     { icon: Home, label: 'Home', href: '/' },
