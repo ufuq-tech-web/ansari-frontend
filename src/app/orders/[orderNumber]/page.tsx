@@ -18,9 +18,17 @@ export default function OrderDetailPage() {
     const [cancelling, setCancelling] = useState(false);
     const [cancelModalOpen, setCancelModalOpen] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
+    const [cancellingItemId, setCancellingItemId] = useState<string | null>(null);
 
-    const promptCancel = () => {
+    const promptCancelOrder = () => {
         setCancelReason("");
+        setCancellingItemId(null);
+        setCancelModalOpen(true);
+    };
+
+    const promptCancelItem = (itemId: string) => {
+        setCancelReason("");
+        setCancellingItemId(itemId);
         setCancelModalOpen(true);
     };
 
@@ -28,12 +36,15 @@ export default function OrderDetailPage() {
         if (!order) return;
         setCancelling(true);
         try {
-            const updatedOrder = await cancelOrder(order.orderNumber, cancelReason);
+            const itemIds = cancellingItemId ? [cancellingItemId] : undefined;
+            const updatedOrder = await cancelOrder(order.orderNumber, cancelReason, itemIds);
             setOrder(updatedOrder);
+            setCancelModalOpen(false);
         } catch (err: any) {
             alert(err?.message || 'Failed to cancel the order. It might already be processed.');
         } finally {
             setCancelling(false);
+            setCancellingItemId(null);
         }
     };
 
@@ -67,16 +78,16 @@ export default function OrderDetailPage() {
         <AccountLayout>
             <div className="max-w-3xl">
                 <nav aria-label="Breadcrumb" className="mb-8">
-                    <ol className="flex items-center gap-3 text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">
-                        <li><Link href="/orders" className="hover:text-charcoal-900 transition-colors">Orders</Link></li>
-                        <li aria-hidden><span className="text-charcoal-300">/</span></li>
-                        <li className="text-charcoal-900 font-medium">#{order.orderNumber}</li>
+                    <ol className="flex items-center gap-3 text-[10px] font-poppins uppercase tracking-widest text-black">
+                        <li><Link href="/orders" className="hover:text-brand-orange transition-colors">Orders</Link></li>
+                        <li aria-hidden><span className="text-black">/</span></li>
+                        <li className="text-black font-medium">#{order.orderNumber}</li>
                     </ol>
                 </nav>
                 <div className="flex items-center justify-between mb-10 pb-6 border-b border-charcoal-200">
                     <div>
-                        <h1 className="font-poppins font-light text-3xl sm:text-4xl text-charcoal-900 tracking-tight mb-2">Order #{order.orderNumber}</h1>
-                        <p className="text-sm text-charcoal-500 font-inter">Placed on {placedDate}</p>
+                        <h1 className="font-poppins font-light text-3xl sm:text-4xl text-black tracking-tight mb-2">Order #{order.orderNumber}</h1>
+                        <p className="text-sm text-black font-inter">Placed on {placedDate}</p>
                     </div>
                     <div className="flex flex-col sm:items-end gap-3 mt-4 sm:mt-0">
                         <span className={`px-3 py-1 text-[10px] sm:w-fit w-full text-center font-poppins font-bold uppercase tracking-widest border ${
@@ -89,20 +100,24 @@ export default function OrderDetailPage() {
                         
                         {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && order.status !== 'SHIPPED' && (
                             <button 
-                                onClick={promptCancel} 
+                                onClick={promptCancelOrder} 
                                 disabled={cancelling}
-                                className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400 hover:text-red-500 underline underline-offset-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="text-[10px] font-poppins uppercase tracking-widest text-black hover:text-red-500 underline underline-offset-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {cancelling ? 'Cancelling...' : 'Cancel Order'}
+                                {(cancelling && !cancellingItemId) ? 'Cancelling...' : 'Cancel Order'}
                             </button>
                         )}
                     </div>
                 </div>
 
-                <OrderSummaryCard order={order} />
+                <OrderSummaryCard 
+                    order={order} 
+                    onCancelItem={promptCancelItem}
+                    isCancellingItem={cancelling ? cancellingItemId : null}
+                />
 
                 <div className="mt-12 pt-8 border-t border-charcoal-200">
-                    <Link href="/" className="text-xs font-poppins uppercase tracking-widest text-charcoal-500 hover:text-charcoal-900 underline underline-offset-4 transition-colors">
+                    <Link href="/" className="text-xs font-poppins uppercase tracking-widest text-black hover:text-brand-orange underline underline-offset-4 transition-colors">
                         Continue Shopping
                     </Link>
                 </div>
@@ -110,14 +125,18 @@ export default function OrderDetailPage() {
             
             <ConfirmModal 
                 isOpen={cancelModalOpen}
-                title="Cancel Order"
+                title={cancellingItemId ? "Cancel Item" : "Cancel Order"}
                 danger={true}
-                confirmText="Cancel Order"
-                onClose={() => setCancelModalOpen(false)}
+                confirmText={cancellingItemId ? "Cancel Item" : "Cancel Order"}
+                onClose={() => { setCancelModalOpen(false); setCancellingItemId(null); }}
                 onConfirm={confirmCancel}
                 message={
                     <div>
-                        <p className="mb-4 text-black">Are you sure you want to cancel this order? This action cannot be undone.</p>
+                        <p className="mb-4 text-black">
+                            {cancellingItemId 
+                                ? "Are you sure you want to cancel this specific item from your order?" 
+                                : "Are you sure you want to cancel this entire order? This action cannot be undone."}
+                        </p>
                         <label className="block text-xs font-poppins font-semibold text-charcoal-900 mb-2">Reason (Optional)</label>
                         <textarea
                             value={cancelReason}
