@@ -16,11 +16,11 @@ export async function generateMetadata({
   const config = await storefrontApi.getCategory(categoryKey);
 
   if (!config) {
-    return { title: "Category Not Found — Ansari Boot House" };
+    return { title: "Category Not Found — Ansary Footwear" };
   }
 
   // Fallback metadata if not set
-  const metaTitle = (config as any).metaTitle || `${config.name} Online | Formal, Casual, Sneakers & Sandals | Ansari Boot House`;
+  const metaTitle = (config as any).metaTitle || `${config.name} Online | Formal, Casual, Sneakers & Sandals | Ansary Footwear`;
   const metaDesc = (config as any).metaDescription || config.description;
 
   return {
