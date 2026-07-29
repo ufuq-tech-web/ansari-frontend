@@ -5,7 +5,7 @@ import RecentlyViewed from '../../components/RecentlyViewed';
 import Newsletter from '../../components/Newsletter';
 
 export const metadata = {
-  title: 'Shop by Collection — Ansari Boot House',
+  title: 'Shop by Collection — Ansary Footwear',
   description: 'Handpicked footwear collections for every occasion — office wear, daily comfort, sports, weddings, and school shoes.',
   alternates: { canonical: '/collections' },
 };
