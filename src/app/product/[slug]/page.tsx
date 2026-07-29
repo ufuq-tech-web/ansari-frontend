@@ -17,7 +17,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = await storefrontApi.getProductById(slug);
+  
+  // Extract CUID if the slug matches the 'name-id' pattern
+  const idMatch = slug.match(/-([c][a-z0-9]{23,})$/i);
+  const idToFetch = idMatch ? idMatch[1] : slug;
+  
+  const product = await storefrontApi.getProductById(idToFetch);
 
   if (!product) {
     return { title: "Product Not Found — Ansari Boot House" };
@@ -39,7 +44,12 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = await storefrontApi.getProductById(slug);
+  
+  // Extract CUID if the slug matches the 'name-id' pattern
+  const idMatch = slug.match(/-([c][a-z0-9]{23,})$/i);
+  const idToFetch = idMatch ? idMatch[1] : slug;
+  
+  const product = await storefrontApi.getProductById(idToFetch);
 
   if (!product) {
     notFound();
