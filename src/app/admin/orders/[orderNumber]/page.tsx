@@ -14,6 +14,7 @@ interface OrderItem {
   image: string;
   qty: number;
   salePrice: number;
+  status: string;
 }
 
 interface OrderDetail {
@@ -23,6 +24,7 @@ interface OrderDetail {
   shipping: number;
   total: number;
   paymentMethod: string;
+  cancellationReason?: string | null;
   placedAt: string;
   items: OrderItem[];
   address: { name: string; phone: string; line1: string; city: string; state: string; pincode: string } | null;
@@ -107,6 +109,18 @@ export default function AdminOrderDetailPage() {
         </div>
       </div>
 
+      {order.cancellationReason && (
+        <div className="bg-red-50/50 rounded-3xl border border-red-100 p-6 sm:p-8 flex items-start sm:items-center gap-5 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+            <div className="w-12 h-12 rounded-2xl bg-red-100 border border-red-200 flex items-center justify-center text-red-500 shadow-sm flex-shrink-0">
+                <span className="font-poppins font-black text-xl">!</span>
+            </div>
+            <div>
+                <h3 className="font-poppins font-bold text-red-900 text-sm tracking-tight mb-1">Customer Cancellation Note</h3>
+                <p className="text-red-700 text-sm font-inter leading-relaxed">{order.cancellationReason}</p>
+            </div>
+        </div>
+      )}
+
       <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Items Breakdown */}
         <div className="bg-white rounded-3xl border border-charcoal-200/50 p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)] lg:col-span-2 flex flex-col justify-between overflow-hidden">
@@ -116,25 +130,30 @@ export default function AdminOrderDetailPage() {
               Items Summary
             </h3>
             <div className="flex flex-col gap-5">
-              {order.items.map((item) => (
+              {order.items.map((item) => {
+                const isCancelled = item.status === 'CANCELLED';
+                return (
                 <div key={item.id} className="flex items-start gap-4 pb-5 border-b border-charcoal-100/60 last:pb-0 last:border-b-0 group">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-charcoal-50 border border-charcoal-200/50 shadow-sm flex-shrink-0">
+                  <div className={`relative w-16 h-16 rounded-xl overflow-hidden bg-charcoal-50 border border-charcoal-200/50 shadow-sm flex-shrink-0 ${isCancelled ? 'opacity-50 grayscale' : ''}`}>
                     <img src={item.image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="flex-1 leading-snug pt-0.5">
-                    <div className="font-poppins font-bold text-charcoal-950 text-sm tracking-tight">{item.name}</div>
-                    <div className="text-[10px] text-charcoal-500 font-poppins font-bold tracking-widest uppercase mt-1.5">{item.brand}</div>
+                    <div className="flex items-center gap-2">
+                        <div className={`font-poppins font-bold text-sm tracking-tight ${isCancelled ? 'text-charcoal-400 line-through' : 'text-charcoal-950'}`}>{item.name}</div>
+                        {isCancelled && <span className="px-1.5 py-0.5 text-[8px] font-poppins font-bold uppercase tracking-widest border border-red-200 text-red-500 rounded bg-red-50">Cancelled</span>}
+                    </div>
+                    <div className={`text-[10px] font-poppins font-bold tracking-widest uppercase mt-1.5 ${isCancelled ? 'text-charcoal-400 opacity-70' : 'text-charcoal-500'}`}>{item.brand}</div>
                     <div className="text-xs text-charcoal-500 font-inter mt-1.5 font-medium flex items-center gap-1.5">
                       <span className="bg-charcoal-50 px-1.5 py-0.5 rounded text-[11px]">Qty: {item.qty}</span>
                       <span>·</span>
                       <span>₹{item.salePrice.toLocaleString("en-IN")}</span>
                     </div>
                   </div>
-                  <div className="font-manrope font-extrabold text-charcoal-950 text-base pt-0.5">
+                  <div className={`font-manrope font-extrabold text-base pt-0.5 ${isCancelled ? 'text-charcoal-400 line-through' : 'text-charcoal-950'}`}>
                     ₹{(item.salePrice * item.qty).toLocaleString("en-IN")}
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           </div>
           <div className="mt-8 pt-5 border-t border-charcoal-100/60 flex flex-col gap-2.5 text-xs font-inter">
