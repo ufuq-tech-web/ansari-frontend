@@ -33,7 +33,7 @@ export default function AccountPage() {
                     </div>
                     <div>
                         <h2 className="font-poppins font-light text-2xl sm:text-3xl text-charcoal-900 tracking-tight">Hello, {user.name}</h2>
-                        <p className="text-charcoal-500 font-inter text-sm mt-1">{user.email}</p>
+                        <p className="text-black font-inter text-sm mt-1">{user.email}</p>
                     </div>
                 </div>
 
@@ -44,7 +44,7 @@ export default function AccountPage() {
                            <h3 className="font-poppins font-bold text-xs uppercase tracking-widest mb-6 text-charcoal-900">Recent Orders</h3>
                            <div className="font-poppins font-light text-5xl text-charcoal-900 mb-8">{orderCount}</div>
                        </div>
-                       <Link href="/orders" className="text-xs font-poppins uppercase tracking-widest text-charcoal-500 hover:text-charcoal-900 underline underline-offset-4 transition-colors w-fit">
+                       <Link href="/orders" className="text-xs font-poppins uppercase tracking-widest text-black hover:text-brand-orange underline underline-offset-4 transition-colors w-fit">
                            View All Orders
                        </Link>
                     </div>
@@ -53,23 +53,23 @@ export default function AccountPage() {
                     <div className="border border-charcoal-200 p-8">
                        <div className="flex justify-between items-start mb-8">
                            <h3 className="font-poppins font-bold text-xs uppercase tracking-widest text-charcoal-900">Account Details</h3>
-                           <button className="text-xs font-poppins uppercase tracking-widest text-charcoal-500 hover:text-charcoal-900 underline underline-offset-4 transition-colors">Edit</button>
+                           <button className="text-xs font-poppins uppercase tracking-widest text-black hover:text-brand-orange underline underline-offset-4 transition-colors">Edit</button>
                        </div>
                        <div className="space-y-6 text-sm font-inter text-charcoal-900">
                            <div className="grid grid-cols-2 gap-4 border-b border-charcoal-100 pb-4">
-                               <div className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">Name</div>
+                               <div className="text-[10px] font-poppins uppercase tracking-widest text-black">Name</div>
                                <div>{user.name}</div>
                            </div>
                            <div className="grid grid-cols-2 gap-4 border-b border-charcoal-100 pb-4">
-                               <div className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">Email</div>
+                               <div className="text-[10px] font-poppins uppercase tracking-widest text-black">Email</div>
                                <div>{user.email}</div>
                            </div>
                            <div className="grid grid-cols-2 gap-4 border-b border-charcoal-100 pb-4">
-                               <div className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">Phone</div>
+                               <div className="text-[10px] font-poppins uppercase tracking-widest text-black">Phone</div>
                                <div>{user.phone || '—'}</div>
                            </div>
                            <div className="grid grid-cols-2 gap-4">
-                               <div className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400">Password</div>
+                               <div className="text-[10px] font-poppins uppercase tracking-widest text-black">Password</div>
                                <div>••••••••</div>
                            </div>
                        </div>
