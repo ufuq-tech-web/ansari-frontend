@@ -174,7 +174,7 @@ function SignupForm() {
                 <p className="mt-6 text-center text-sm text-charcoal-500 font-inter">
                     Already have an account?{" "}
                     <Link
-                        href={`/login${redirectTo !== "/my-account" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`}
+                        href={`/login${redirectTo !== "/" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`}
                         className="text-brand-orange font-semibold hover:underline"
                     >
                         Sign in
