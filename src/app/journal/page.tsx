@@ -3,8 +3,8 @@ import { ArrowRight, Clock, FileText } from 'lucide-react';
 import { storefrontApi } from '../../lib/storefront-api';
 
 export const metadata = {
-  title: 'Journal — Ansari Boot House',
-  description: 'Editorial insights, style guides, and journal entries from the Ansari Boot House team.',
+  title: 'Journal — Ansary Footwear',
+  description: 'Editorial insights, style guides, and journal entries from the Ansary Footwear team.',
   alternates: { canonical: '/journal' },
 };
 
@@ -35,7 +35,7 @@ export default async function JournalPage() {
           </nav>
           <h1 className="font-poppins font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight text-shadow-sm">{seo?.title || 'The Journal'}</h1>
           <p className="mt-4 text-white/90 text-base sm:text-lg font-inter leading-relaxed max-w-xl text-shadow-sm">
-            {seo?.description || 'Tips, trends, and tutorials from the Ansari Boot House team.'}
+            {seo?.description || 'Tips, trends, and tutorials from the Ansary Footwear team.'}
           </p>
         </div>
       </section>
