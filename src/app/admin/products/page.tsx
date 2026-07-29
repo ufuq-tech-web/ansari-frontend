@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, Search, ChevronLeft, ChevronRight, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Search, ChevronLeft, ChevronRight, Ban, CheckCircle } from "lucide-react";
 import { adminApi } from "../../../lib/admin-api";
 import ProductModal from "../../../components/admin/ProductModal";
 import Select from "../../../components/admin/Select";
@@ -57,7 +57,7 @@ export default function AdminProductsPage() {
     isOpen: false,
     id: "",
     name: "",
-    action: "" as "delete" | "toggle",
+    action: "toggle" as const,
     isCurrentlyActive: false,
   });
 
@@ -86,9 +86,7 @@ export default function AdminProductsPage() {
     const { id, action, isCurrentlyActive } = confirmModal;
     
     try {
-      if (action === "delete") {
-        await adminApi.delete(`/products/${id}`);
-      } else if (action === "toggle") {
+      if (action === "toggle") {
         await adminApi.patch(`/products/${id}`, { isActive: !isCurrentlyActive });
       }
       refetch();
@@ -146,7 +144,7 @@ export default function AdminProductsPage() {
       key: 'isActive',
       label: 'Status',
       render: (p) => (
-        <span className={`px-2.5 py-1 rounded-full text-[10px] font-poppins font-bold tracking-wide uppercase ${p.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <span className={`px-2.5 py-1 rounded-full text-[10px] font-poppins font-bold tracking-wide uppercase ${p.isActive ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'}`}>
           {p.isActive ? 'Active' : 'Blocked'}
         </span>
       )
@@ -159,10 +157,10 @@ export default function AdminProductsPage() {
         <div className="flex items-center justify-end gap-2.5">
           <button
             onClick={() => setConfirmModal({ isOpen: true, id: p.id, name: p.name, action: "toggle", isCurrentlyActive: p.isActive })}
-            className="p-2 text-charcoal-400 hover:text-charcoal-700 hover:bg-charcoal-100 rounded-xl transition-all duration-200"
-            title={p.isActive ? "Block" : "Unblock"}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-poppins font-semibold text-[10px] uppercase tracking-wider transition-all duration-200 ${p.isActive ? 'text-rose-600 bg-rose-50 hover:bg-rose-100' : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'}`}
+            title={p.isActive ? "Block Product" : "Unblock Product"}
           >
-            {p.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {p.isActive ? <><Ban className="w-3.5 h-3.5" /> Block</> : <><CheckCircle className="w-3.5 h-3.5" /> Unblock</>}
           </button>
           <button 
             onClick={() => setModalState({ open: true, productId: p.id })} 
@@ -170,13 +168,6 @@ export default function AdminProductsPage() {
             aria-label="Edit"
           >
             <Pencil className="w-4 h-4" strokeWidth={2} />
-          </button>
-          <button 
-            onClick={() => setConfirmModal({ isOpen: true, id: p.id, name: p.name, action: "delete", isCurrentlyActive: false })}
-            className="p-2 text-charcoal-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200" 
-            aria-label="Delete"
-          >
-            <Trash2 className="w-4 h-4" strokeWidth={2} />
           </button>
         </div>
       )
@@ -253,15 +244,11 @@ export default function AdminProductsPage() {
 
       <ConfirmModal
         isOpen={confirmModal.isOpen}
-        title={confirmModal.action === 'delete' ? 'Delete Product' : confirmModal.isCurrentlyActive ? 'Block Product' : 'Unblock Product'}
-        message={
-          confirmModal.action === 'delete' 
-            ? `Are you sure you want to delete "${confirmModal.name}"? This action cannot be undone.`
-            : `Are you sure you want to ${confirmModal.isCurrentlyActive ? "block" : "unblock"} "${confirmModal.name}"?`
-        }
-        confirmText={confirmModal.action === 'delete' ? 'Delete' : confirmModal.isCurrentlyActive ? 'Block' : 'Unblock'}
+        title={confirmModal.isCurrentlyActive ? 'Block Product' : 'Unblock Product'}
+        message={`Are you sure you want to ${confirmModal.isCurrentlyActive ? "block" : "unblock"} "${confirmModal.name}"? This will ${confirmModal.isCurrentlyActive ? "hide it from " : "show it on "} the public storefront.`}
+        confirmText={confirmModal.isCurrentlyActive ? 'Block' : 'Unblock'}
         cancelText="Cancel"
-        danger={confirmModal.action === 'delete' || confirmModal.isCurrentlyActive}
+        danger={confirmModal.isCurrentlyActive}
         onConfirm={handleConfirmAction}
         onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
       />
