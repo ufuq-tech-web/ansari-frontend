@@ -1,18 +1,28 @@
 "use client";
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
 import { useCart } from '../../lib/cart-context';
+import { customerApi } from '../../lib/customer-api';
+import ConfirmModal from '../../components/shared/ConfirmModal';
 
 const FREE_SHIPPING_THRESHOLD = 999;
 const SHIPPING_FEE = 99;
 
 export default function CartPage() {
-  const { items, updateQty, removeItem, subtotal, itemCount, hydrated } = useCart();
+  const router = useRouter();
+  const { items, updateQty, removeItem, subtotal, itemCount, hydrated, refreshCart } = useCart();
   const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
   const total = subtotal + shipping;
-
+  const [validating, setValidating] = useState(false);
+  const [validationError, setValidationError] = useState('');
+  const [itemToRemove, setItemToRemove] = useState<string | null>(null);
+  
   if (!hydrated) return null;
+
+  const hasInactiveItems = items.some(item => typeof item.isActive === 'boolean' && !item.isActive);
 
   if (items.length === 0) {
     return (
@@ -30,6 +40,35 @@ export default function CartPage() {
       </div>
     );
   }
+
+  const handleProceedToCheckout = async () => {
+    if (hasInactiveItems) return;
+    setValidating(true);
+    setValidationError('');
+    try {
+      const cartResp = await customerApi.get<any[]>('/cart');
+      
+      const hasBlocked = cartResp.some((row) => row.product.isActive === false);
+      if (hasBlocked) {
+        setValidationError('One or more items in your cart are no longer available. We have updated your cart.');
+        refreshCart();
+        return;
+      }
+      
+      const hasInsufficientStock = cartResp.find((row) => row.qty > row.product.stockQuantity);
+      if (hasInsufficientStock) {
+        setValidationError(`Sorry, we only have ${hasInsufficientStock.product.stockQuantity} left of "${hasInsufficientStock.product.name}". Please reduce the quantity.`);
+        refreshCart();
+        return;
+      }
+
+      router.push('/checkout');
+    } catch {
+      setValidationError('Failed to validate your cart. Please try again.');
+    } finally {
+      setValidating(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-brand-ivory">
@@ -50,10 +89,13 @@ export default function CartPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <span className="text-xs text-charcoal-400 font-inter uppercase tracking-wide">{item.brand}</span>
-                      <h3 className="font-poppins font-bold text-charcoal-900 text-sm sm:text-base leading-snug truncate">{item.name}</h3>
+                      <h3 className={`font-poppins font-bold text-sm sm:text-base leading-snug truncate ${item.isActive === false ? 'text-charcoal-400 line-through' : 'text-charcoal-900'}`}>{item.name}</h3>
+                      {item.isActive === false && (
+                        <p className="text-xs font-bold text-red-500 mt-1">Currently Unavailable</p>
+                      )}
                     </div>
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => setItemToRemove(item.id)}
                       className="p-1.5 text-charcoal-400 hover:text-red-500 transition-colors flex-shrink-0"
                       aria-label={`Remove ${item.name} from cart`}
                     >
@@ -79,10 +121,16 @@ export default function CartPage() {
                         <Plus className="w-3.5 h-3.5" strokeWidth={2} />
                       </button>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-manrope font-bold text-charcoal-900 text-base">₹{(item.salePrice * item.qty).toLocaleString('en-IN')}</span>
-                      {item.price > item.salePrice && (
-                        <span className="text-xs text-charcoal-400 line-through font-manrope">₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {item.isActive !== false ? (
+                        <>
+                          <span className="font-manrope font-bold text-charcoal-900 text-base">₹{(item.salePrice * item.qty).toLocaleString('en-IN')}</span>
+                          {item.price > item.salePrice && (
+                            <span className="text-xs text-charcoal-400 line-through font-manrope">₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="font-manrope font-bold text-charcoal-400 text-base">—</span>
                       )}
                     </div>
                   </div>
@@ -130,9 +178,21 @@ export default function CartPage() {
                 <span className="font-manrope font-bold text-charcoal-900 text-xl">₹{total.toLocaleString('en-IN')}</span>
               </div>
 
-              <Link href="/checkout" className="btn-primary w-full justify-center mt-5">
-                Proceed to Checkout <ArrowRight className="w-4 h-4" />
-              </Link>
+              {hasInactiveItems && (
+                <p className="text-xs text-red-500 font-inter mt-3 text-center bg-red-50 p-2 rounded-lg">Please remove unavailable items to proceed.</p>
+              )}
+
+              {validationError && (
+                <p className="text-xs text-red-500 font-inter mt-3 text-center bg-red-50 p-2 rounded-lg">{validationError}</p>
+              )}
+
+              <button 
+                onClick={handleProceedToCheckout}
+                disabled={hasInactiveItems || validating} 
+                className={`btn-primary w-full justify-center mt-5 ${hasInactiveItems || validating ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {validating ? 'Validating...' : 'Proceed to Checkout'} <ArrowRight className="w-4 h-4" />
+              </button>
 
               <div className="mt-4 space-y-2">
                 <span className="flex items-center gap-2 text-xs text-charcoal-500 font-inter">
@@ -146,6 +206,25 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={itemToRemove !== null}
+        title="Remove Item"
+        danger={true}
+        confirmText="Remove"
+        onClose={() => setItemToRemove(null)}
+        onConfirm={() => {
+          if (itemToRemove) {
+            removeItem(itemToRemove);
+            setItemToRemove(null);
+          }
+        }}
+        message={
+          <p className="text-black">
+            Are you sure you want to remove this item from your shopping cart?
+          </p>
+        }
+      />
     </div>
   );
 }
