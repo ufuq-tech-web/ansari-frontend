@@ -12,4 +12,5 @@ export interface FilterState {
   closureTypes: string[];
   heelHeights: string[];
   toeShapes: string[];
+  search: string;
 }
