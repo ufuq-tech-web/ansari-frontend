@@ -145,7 +145,7 @@ export default function Footer() {
         <div className="container-main py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-white font-inter text-center sm:text-left">
-              © {new Date().getFullYear()} Ansari Boot House. All rights reserved. · Made in India
+              © {new Date().getFullYear()} Ansary Footwear. All rights reserved. · Made in India
             </p>
 
             {/* Social */}
