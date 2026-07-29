@@ -58,7 +58,7 @@ function LoginForm() {
             <div className="w-full max-w-md bg-white rounded-2xl shadow-card p-8">
                 <div className="mb-6 text-center">
                     <h1 className="font-poppins font-extrabold text-charcoal-900 text-2xl">Welcome Back</h1>
-                    <p className="mt-1.5 text-sm text-charcoal-500 font-inter">Sign in to your Ansari Boot House account</p>
+                    <p className="mt-1.5 text-sm text-charcoal-500 font-inter">Sign in to your Ansary Footwear account</p>
                 </div>
 
                 <div className="mb-5">
@@ -113,7 +113,7 @@ function LoginForm() {
                 </form>
 
                 <p className="mt-6 text-center text-sm text-charcoal-500 font-inter">
-                    New to Ansari Boot House?{" "}
+                    New to Ansary Footwear?{" "}
                     <Link
                         href={`/signup${redirectTo !== "/" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`}
                         className="text-brand-orange font-semibold hover:underline"
