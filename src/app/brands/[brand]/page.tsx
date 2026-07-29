@@ -15,13 +15,13 @@ export async function generateMetadata({
   const brand = brands.find((b) => b.slug === brandSlug);
 
   if (!brand) {
-    return { title: "Brand Not Found — Ansari Boot House" };
+    return { title: "Brand Not Found — Ansary Footwear" };
   }
 
   const productsRes = await storefrontApi.getProducts({ brandSlug, limit: 1 });
   const count = productsRes.total;
-  const title = `${brand.name} Footwear — Ansari Boot House`;
-  const description = `Shop ${count} ${brand.name} footwear styles at Ansari Boot House — trusted quality, affordable pricing, free shipping.`;
+  const title = `${brand.name} Footwear — Ansary Footwear`;
+  const description = `Shop ${count} ${brand.name} footwear styles at Ansary Footwear — trusted quality, affordable pricing, free shipping.`;
   return {
     title,
     description,
