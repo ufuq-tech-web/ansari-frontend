@@ -172,7 +172,7 @@ export default function Header() {
               <Menu className="w-6 h-6" strokeWidth={2} />
             </button>
 
-            <Link href="/" className="flex items-center gap-2 group" aria-label="Ansari Boot House home">
+            <Link href="/" className="flex items-center gap-2 group" aria-label="Ansary Footwear home">
               <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-charcoal-800 flex items-center justify-center group-hover:bg-charcoal-700 transition-colors">
                 <span className="font-poppins font-bold text-white text-lg">A</span>
               </div>
