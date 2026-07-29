@@ -28,9 +28,8 @@ function activeCount(f: FilterState): number {
     return (
         f.brands.length + f.sizes.length + f.colors.length +
         (f.rating ? 1 : 0) + (f.discount ? 1 : 0) + f.availability.length +
-        f.materials.length + f.occasions.length +
-        f.soleMaterials.length + f.closureTypes.length + f.heelHeights.length + f.toeShapes.length +
-        (f.priceRange[0] > 0 || f.priceRange[1] < 5000 ? 1 : 0)
+        (f.priceRange[0] > 0 || f.priceRange[1] < 5000 ? 1 : 0) +
+        (f.search ? 1 : 0)
     );
 }
 
