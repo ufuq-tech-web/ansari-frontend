@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, Ticket, ToggleLeft, ToggleRight } from "lucide-react";
-import { adminApi } from "../../../lib/admin-api";
+import { toast } from "react-hot-toast";
+import { adminApi, ApiError } from "../../../lib/admin-api";
 import DataTable, { ColumnDef } from "../../../components/shared/DataTable";
 import CouponModal from "../../../components/admin/CouponModal";
+import ConfirmModal from "../../../components/shared/ConfirmModal";
 
 interface Coupon {
   id: string;
@@ -24,6 +26,7 @@ export default function AdminCouponsPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
+  const [deletingCoupon, setDeletingCoupon] = useState<Coupon | null>(null);
 
   const loadCoupons = async () => {
     setLoading(true);
@@ -40,14 +43,26 @@ export default function AdminCouponsPage() {
   }, []);
 
   const handleToggleActive = async (c: Coupon) => {
-    await adminApi.patch(`/coupons/${c.id}`, { active: !c.active });
-    loadCoupons();
+    try {
+      await adminApi.patch(`/coupons/${c.id}`, { active: !c.active });
+      toast.success(`Coupon ${c.code} ${c.active ? 'deactivated' : 'activated'}`);
+      loadCoupons();
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Failed to update coupon status');
+    }
   };
 
-  const handleDelete = async (id: string, code: string) => {
-    if (!confirm(`Delete coupon code "${code}"?`)) return;
-    await adminApi.delete(`/coupons/${id}`);
-    loadCoupons();
+  const handleDelete = async () => {
+    if (!deletingCoupon) return;
+    try {
+      await adminApi.delete(`/coupons/${deletingCoupon.id}`);
+      toast.success(`Coupon ${deletingCoupon.code} deleted`);
+      setDeletingCoupon(null);
+      loadCoupons();
+    } catch (err) {
+      setDeletingCoupon(null);
+      toast.error(err instanceof ApiError ? err.message : 'Failed to delete coupon');
+    }
   };
 
   const handleOpenCreate = () => {
@@ -69,14 +84,24 @@ export default function AdminCouponsPage() {
       expiry: form.expiry,
     };
 
-    if (editingCoupon) {
-      await adminApi.patch(`/coupons/${editingCoupon.id}`, payload);
-    } else {
-      await adminApi.post("/coupons", payload);
+    if (new Date(payload.expiry) < new Date(new Date().toDateString())) {
+      toast.error('Expiry date cannot be in the past');
+      return;
     }
 
-    setIsModalOpen(false);
-    loadCoupons();
+    try {
+      if (editingCoupon) {
+        await adminApi.patch(`/coupons/${editingCoupon.id}`, payload);
+        toast.success(`Coupon ${payload.code} updated`);
+      } else {
+        await adminApi.post("/coupons", payload);
+        toast.success(`Coupon ${payload.code} created`);
+      }
+      setIsModalOpen(false);
+      loadCoupons();
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Failed to save coupon');
+    }
   };
 
   const columns: ColumnDef<Coupon>[] = [
@@ -159,7 +184,7 @@ export default function AdminCouponsPage() {
             <Pencil className="w-4 h-4" strokeWidth={2} />
           </button>
           <button
-            onClick={() => handleDelete(c.id, c.code)}
+            onClick={() => setDeletingCoupon(c)}
             className="p-2 text-charcoal-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
             aria-label="Delete"
           >
@@ -214,6 +239,23 @@ export default function AdminCouponsPage() {
               }
             : null
         }
+      />
+
+      <ConfirmModal
+        isOpen={!!deletingCoupon}
+        title="Delete Coupon"
+        message={
+          <>
+            Are you sure you want to delete coupon{" "}
+            <span className="font-mono font-bold text-charcoal-900">{deletingCoupon?.code}</span>?
+            This action cannot be undone.
+          </>
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        danger
+        onConfirm={handleDelete}
+        onClose={() => setDeletingCoupon(null)}
       />
     </>
   );
