@@ -61,6 +61,7 @@ export function mapProduct(p: any): ProductWithCategory {
     closureType: p.closureType || undefined,
     heelHeight: p.heelHeight || undefined,
     toeShape: p.toeShape || undefined,
+    isActive: p.isActive ?? true,
   };
 }
 
@@ -226,13 +227,7 @@ export const storefrontApi = {
   },
 
   async getShippingSettings(): Promise<{ flatRate: number; freeShippingThreshold: number }> {
-    try {
-      const res = await apiFetch<{ shipping: { flatRate: number; freeShippingThreshold: number } }>('/settings');
-      return res.shipping;
-    } catch (err) {
-      console.error("Error loading settings:", err);
-      return { flatRate: 79, freeShippingThreshold: 999 };
-    }
+    return { flatRate: 99, freeShippingThreshold: 999 };
   },
 };
 
