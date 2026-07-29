@@ -22,6 +22,7 @@ export const defaultFilters: FilterState = {
   closureTypes: [],
   heelHeights: [],
   toeShapes: [],
+  search: "",
 };
 
 export const LIST_PARAMS: Array<[keyof FilterState, string]> = [
@@ -61,6 +62,7 @@ export function filtersFromParams(searchParams: URLSearchParams, presetPriceRang
     toeShapes: list("toeShape"),
     rating: searchParams.get("rating") ? Number(searchParams.get("rating")) : null,
     discount: searchParams.get("discount") ? Number(searchParams.get("discount")) : null,
+    search: searchParams.get("search") || "",
     priceRange,
   };
 }
@@ -106,6 +108,7 @@ export function buildProductQuery({ categoryKey, subcategory, gender, ageGroup, 
     discount: filters.discount ?? undefined,
     minPrice: filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined,
     maxPrice: filters.priceRange[1] < 5000 ? filters.priceRange[1] : undefined,
+    search: filters.search || undefined,
     sort,
     page,
     limit: PAGE_SIZE,
