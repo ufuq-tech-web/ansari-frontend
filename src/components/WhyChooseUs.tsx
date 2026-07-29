@@ -60,7 +60,7 @@ export default function WhyChooseUs() {
       ref={sectionRef}
       id="why-us"
       className="py-12 sm:py-16 lg:py-20 bg-charcoal-800 text-white relative overflow-hidden"
-      aria-label="Why choose Ansari Boot House"
+      aria-label="Why choose Ansary Footwear"
     >
       {/* Decorative background elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -73,7 +73,7 @@ export default function WhyChooseUs() {
       <div className="container-main relative">
         <div className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
           <span className="text-brand-orange font-poppins font-semibold text-sm uppercase tracking-wide">Our Promise</span>
-          <h2 className="font-poppins font-bold text-2xl sm:text-3xl lg:text-4xl mt-1">Why Choose Ansari Boot House</h2>
+          <h2 className="font-poppins font-bold text-2xl sm:text-3xl lg:text-4xl mt-1">Why Choose Ansary Footwear</h2>
           <p className="mt-3 text-white/70 font-inter">A heritage of trust built on quality, value, and customer care</p>
         </div>
 
