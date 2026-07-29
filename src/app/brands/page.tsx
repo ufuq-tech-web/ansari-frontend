@@ -5,7 +5,7 @@ import RecentlyViewed from '../../components/RecentlyViewed';
 import Newsletter from '../../components/Newsletter';
 
 export const metadata = {
-  title: 'Shop by Brand — Ansari Boot House',
+  title: 'Shop by Brand — Ansary Footwear',
   description: 'Explore footwear from Heritage, UrbanStep, FlexWalk, Grace, TrailMate, LittleSteps, Classic, and ComfortPro.',
 };
 
