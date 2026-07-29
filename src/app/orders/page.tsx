@@ -125,7 +125,7 @@ export default function OrdersPage() {
         <AccountLayout>
             <div className="mb-10">
                 <h2 className="font-poppins font-light text-2xl sm:text-3xl text-charcoal-900 tracking-tight">Order History</h2>
-                <p className="text-charcoal-500 font-inter text-sm mt-1">{loaded ? `${orders.length} ${orders.length === 1 ? 'order' : 'orders'} placed.` : 'Loading...'}</p>
+                <p className="text-black font-inter text-sm mt-1">{loaded ? `${orders.length} ${orders.length === 1 ? 'order' : 'orders'} placed.` : 'Loading...'}</p>
             </div>
 
             {!loaded ? (
@@ -174,7 +174,7 @@ export default function OrdersPage() {
                                                     {order.status === 'PAYMENT_FAILED' ? 'PAYMENT FAILED' : (order.status || 'PLACED')}
                                                 </span>
                                             </div>
-                                            <p className="text-xs text-charcoal-500 font-inter uppercase tracking-wider">{placedDate} · {itemCount} {itemCount === 1 ? 'item' : 'items'}</p>
+                                            <p className="text-xs text-black font-inter uppercase tracking-wider">{placedDate} · {itemCount} {itemCount === 1 ? 'item' : 'items'}</p>
                                         </div>
                                     </div>
                                     <div className="flex flex-col sm:items-end gap-3 pointer-events-auto">
@@ -184,7 +184,7 @@ export default function OrdersPage() {
                                                 <button
                                                     onClick={(e) => promptCancel(e, order.orderNumber)}
                                                     disabled={cancelling === order.orderNumber}
-                                                    className="text-[10px] font-poppins uppercase tracking-widest text-charcoal-400 hover:text-red-500 underline underline-offset-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    className="text-[10px] font-poppins uppercase tracking-widest text-black hover:text-red-500 underline underline-offset-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
                                                     {cancelling === order.orderNumber ? 'Cancelling...' : 'Cancel Order'}
                                                 </button>
