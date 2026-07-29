@@ -17,10 +17,10 @@ export async function generateMetadata({
   const post = await storefrontApi.getBlogPostBySlug(slug);
 
   if (!post) {
-    return { title: "Article Not Found — Ansari Boot House" };
+    return { title: "Article Not Found — Ansary Footwear" };
   }
 
-  const title = `${post.title} — Ansari Boot House`;
+  const title = `${post.title} — Ansary Footwear`;
   return {
     title,
     description: post.excerpt,
