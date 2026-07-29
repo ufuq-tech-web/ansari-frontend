@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Terms & Conditions — Ansari Boot House',
-  description: 'The terms and conditions governing your use of the Ansari Boot House website and your orders with us.',
+  title: 'Terms & Conditions — Ansary Footwear',
+  description: 'The terms and conditions governing your use of the Ansary Footwear website and your orders with us.',
   alternates: { canonical: '/terms-and-conditions' },
 };
 
@@ -64,7 +64,7 @@ export default function TermsPage() {
 
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Intellectual Property</h2>
           <p>
-            All content on this site — including the Ansari Boot House name, logo, layout, and original text — is
+            All content on this site — including the Ansary Footwear name, logo, layout, and original text — is
             our property or used with permission, and may not be reproduced without consent. Product photography
             sourced from third-party providers remains the property of its respective owners.
           </p>
