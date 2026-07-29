@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
           <span className="font-poppins font-black text-white text-xl tracking-wider">A</span>
         </div>
         <h1 className="font-poppins font-light text-charcoal-900 text-2xl tracking-tight">Admin Portal</h1>
-        <p className="text-[10px] text-charcoal-900 font-poppins font-medium tracking-widest uppercase mt-2">Ansari Boot House</p>
+        <p className="text-[10px] text-charcoal-900 font-poppins font-medium tracking-widest uppercase mt-2">Ansary Footwear</p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
