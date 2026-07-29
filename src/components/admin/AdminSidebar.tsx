@@ -15,7 +15,6 @@ import {
   Star,
   FileText,
   BarChart3,
-  Settings,
   UserCheck,
   Upload,
   Search
@@ -23,6 +22,7 @@ import {
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/users", label: "Users", icon: UserCheck },
   { href: "/admin/products", label: "Products", icon: Package, exact: true },
   { href: "/admin/products/bulk", label: "Bulk Upload", icon: Upload },
   { href: "/admin/categories", label: "Categories", icon: Layers, exact: true },
@@ -37,8 +37,6 @@ const NAV_ITEMS = [
   { href: "/admin/guides", label: "Buying Guides", icon: BookOpen },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
   { href: "/admin/seo", label: "SEO Config", icon: Search },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
-  { href: "/admin/users", label: "Users & Roles", icon: UserCheck },
 ];
 
 export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean, onClose?: () => void }) {
