@@ -12,7 +12,7 @@ import ProductCard from "../ProductCard";
 import CategoryFAQ from "../category/CategoryFaq";
 import RecentlyViewed from "../RecentlyViewed";
 import { useCart } from "../../lib/cart-context";
-import { useWishlist } from "../../lib/wishlist-context";
+import { useWishlistStore } from "../../lib/wishlist-store";
 import { useImageZoom } from "../../hooks/useImageZoom";
 import { useDeliveryEstimate } from "../../hooks/useDeliveryEstimate";
 import {
@@ -56,7 +56,7 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
   const { zoomStyle, handleMouseMove, handleMouseLeave } = useImageZoom();
   const { pincode, deliveryEstimate, handlePincodeChange, handleCheckDelivery } = useDeliveryEstimate(product.stock);
   const { addItem } = useCart();
-  const { toggle, isWishlisted } = useWishlist();
+  const { toggle, isWishlisted } = useWishlistStore();
 
   const wishlisted = isWishlisted(product.id);
   const images = [product.image, product.hoverImage, ...(product.gallery || [])].filter((v, i, arr) => v && arr.indexOf(v) === i);
