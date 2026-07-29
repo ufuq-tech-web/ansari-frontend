@@ -35,6 +35,7 @@ export interface Product {
   heelHeight?: string;
   toeShape?: string;
   gallery?: string[];
+  isActive?: boolean;
 }
 
 export interface ProductWithCategory extends Product {
