@@ -12,7 +12,7 @@ import GuestRoute from "../../components/auth/GuestRoute";
 function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirectTo = searchParams.get("redirect") || "/my-account";
+    const redirectTo = searchParams.get("redirect") || "/";
     const login = useAuthStore(state => state.login);
 
     const [email, setEmail] = useState("");
@@ -115,7 +115,7 @@ function LoginForm() {
                 <p className="mt-6 text-center text-sm text-charcoal-500 font-inter">
                     New to Ansari Boot House?{" "}
                     <Link
-                        href={`/signup${redirectTo !== "/my-account" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`}
+                        href={`/signup${redirectTo !== "/" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`}
                         className="text-brand-orange font-semibold hover:underline"
                     >
                         Create an account
