@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { ShieldCheck, Heart, Users, Truck } from 'lucide-react';
 
 export const metadata = {
-  title: 'About Us — Ansari Boot House',
-  description: 'Ansari Boot House has been serving families across India with quality, affordable footwear for over 25 years. Learn our story.',
+  title: 'About Us — Ansary Footwear',
+  description: 'Ansary Footwear has been serving families across India with quality, affordable footwear for over 25 years. Learn our story.',
   alternates: { canonical: '/about-us' },
 };
 
@@ -37,7 +37,7 @@ export default function AboutUsPage() {
         <div className="prose-content space-y-5 text-charcoal-700 font-inter leading-relaxed">
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Our Story</h2>
           <p>
-            Ansari Boot House started as a single family-run footwear shop on Fashion Street, Mumbai, at a time when
+            Ansary Footwear started as a single family-run footwear shop on Fashion Street, Mumbai, at a time when
             buying a good pair of shoes meant trusting the shopkeeper to tell you the truth about fit, material, and
             durability — not just make a sale. That principle is still the one thing we've refused to compromise on
             as the business has grown.
