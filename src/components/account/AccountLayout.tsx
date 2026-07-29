@@ -63,7 +63,7 @@ export default function AccountLayout({ children }: Props) {
                     className={`flex items-center gap-4 px-6 py-5 lg:px-0 lg:py-3 border-b border-charcoal-50 lg:border-none transition-colors w-full lg:w-fit ${
                       isActive 
                       ? 'text-brand-orange font-bold font-poppins lg:text-xs uppercase lg:tracking-widest' 
-                      : 'text-charcoal-900 font-poppins font-semibold lg:text-xs uppercase lg:tracking-widest lg:text-charcoal-500 hover:text-brand-orange'
+                      : 'text-black font-poppins font-semibold lg:text-xs uppercase lg:tracking-widest hover:text-brand-orange'
                     }`}
                   >
                     <link.icon className="w-6 h-6 lg:hidden" strokeWidth={1.5} />
