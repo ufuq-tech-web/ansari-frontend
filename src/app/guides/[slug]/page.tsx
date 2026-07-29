@@ -18,10 +18,10 @@ export async function generateMetadata({
   const guide = await storefrontApi.getGuideBySlug(slug);
 
   if (!guide) {
-    return { title: "Guide Not Found — Ansari Boot House" };
+    return { title: "Guide Not Found — Ansary Footwear" };
   }
 
-  const title = `${guide.title} — Ansari Boot House`;
+  const title = `${guide.title} — Ansary Footwear`;
   return {
     title,
     description: guide.description,
