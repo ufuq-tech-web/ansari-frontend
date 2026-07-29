@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { slugify, priceTiers, type BuyingGuideWithCategory } from '../lib/catalog-helpers';
 import { useCart } from '../lib/cart-context';
-import { useWishlist } from '../lib/wishlist-context';
+import { useWishlistStore } from '../lib/wishlist-store';
 import { useGuides } from '../hooks/useGuides';
 import { useHeaderScroll } from '../hooks/useHeaderScroll';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
@@ -147,7 +147,7 @@ export default function Header() {
     searchOpen, toggleSearch,
   } = useHeaderMenus();
   const { itemCount } = useCart();
-  const { items: wishlistItems } = useWishlist();
+  const { ids: wishlistItems } = useWishlistStore();
   const user = useAuthStore(state => state.user);
     const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const logout = useAuthStore(state => state.logout);
@@ -274,13 +274,13 @@ export default function Header() {
                   {isAuthenticated ? (
                     <>
                       <div className="px-4 py-3.5 border-b border-charcoal-100 bg-charcoal-50">
-                        <div className="font-poppins font-semibold text-sm text-charcoal-900 truncate">{user?.name}</div>
-                        <div className="text-xs text-charcoal-500 font-inter truncate mt-0.5">{user?.email}</div>
+                        <div className="font-poppins font-semibold text-sm text-black truncate">{user?.name}</div>
+                        <div className="text-xs text-black font-inter truncate mt-0.5">{user?.email}</div>
                       </div>
                       <div className="p-2 space-y-0.5">
-                        <Link href="/my-account" className="block px-3 py-2.5 text-sm text-charcoal-700 font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">Dashboard</Link>
-                        <Link href="/orders" className="block px-3 py-2.5 text-sm text-charcoal-700 font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">My Orders</Link>
-                        <Link href="/my-account/wallet" className="block px-3 py-2.5 text-sm text-charcoal-700 font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">My Wallet</Link>
+                        <Link href="/my-account" className="block px-3 py-2.5 text-sm text-black font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">Dashboard</Link>
+                        <Link href="/orders" className="block px-3 py-2.5 text-sm text-black font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">My Orders</Link>
+                        <Link href="/my-account/wallet" className="block px-3 py-2.5 text-sm text-black font-inter hover:bg-charcoal-50 hover:text-brand-orange rounded-lg transition-colors">My Wallet</Link>
                         <div className="h-px bg-charcoal-100 my-1"></div>
                         <button onClick={logout} className="block w-full text-left px-3 py-2.5 text-sm font-medium text-rose-600 font-inter hover:bg-rose-50 rounded-lg transition-colors">Sign Out</button>
                       </div>
