@@ -6,13 +6,13 @@ import Providers from "../components/Providers";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.ansaribootthouse.com"),
   title: {
-    default: "Ansari Boot House — Quality Footwear for Every Step of Life",
+    default: "Ansary Footwear — Quality Footwear for Every Step of Life",
     template: "%s",
   },
   description:
-    "Discover affordable, quality footwear for men, women, and kids at Ansari Boot House. 25+ years of trusted retail experience. Shop boots, sandals, sneakers and more.",
+    "Discover affordable, quality footwear for men, women, and kids at Ansary Footwear. 25+ years of trusted retail experience. Shop boots, sandals, sneakers and more.",
   openGraph: {
-    title: "Ansari Boot House — Quality Footwear for Every Step of Life",
+    title: "Ansary Footwear — Quality Footwear for Every Step of Life",
     description: "Affordable footwear for the whole family. Men, Women, Kids & Accessories.",
     type: "website",
   },
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Ansari Boot House",
+  name: "Ansary Footwear",
   url: "https://www.ansaribootthouse.com",
   description:
     "Affordable, quality footwear for men, women, and kids. 25+ years of trusted retail experience.",
