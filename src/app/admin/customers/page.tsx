@@ -40,9 +40,10 @@ export default function AdminCustomersPage() {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await adminApi.get<CustomerRow[]>("/users/admin/all");
+      const res = await adminApi.get<{ users: CustomerRow[]; total: number } | CustomerRow[]>("/users/admin/all");
+      const usersList = Array.isArray(res) ? res : (res.users || []);
       // Filter only users with CUSTOMER role
-      const onlyCustomers = res.filter((u) => u.role === "CUSTOMER");
+      const onlyCustomers = usersList.filter((u) => u.role === "CUSTOMER");
       setCustomers(onlyCustomers);
     } catch (err) {
       console.error(err);
