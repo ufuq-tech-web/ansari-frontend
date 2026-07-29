@@ -17,10 +17,10 @@ export async function generateMetadata({
   const match = config?.subcategories.find((s) => slugify(s.name) === subcategory);
 
   if (!config || !match) {
-    return { title: "Page Not Found — Ansari Boot House" };
+    return { title: "Page Not Found — Ansary Footwear" };
   }
 
-  const title = `${match.name} for ${config.name.replace("'s Footwear", "")} — Ansari Boot House`;
+  const title = `${match.name} for ${config.name.replace("'s Footwear", "")} — Ansary Footwear`;
   const description = `Shop ${match.name} in our ${config.name} range — ${match.count} styles. ${config.description}`;
   return {
     title,
