@@ -103,7 +103,7 @@ function SeoForm({ pageKey, label }: { pageKey: string; label: string }) {
                 <input
                   value={data.title || ""}
                   onChange={(e) => setData({ ...data, title: e.target.value })}
-                  placeholder="e.g. Premium Footwear | Ansari Boot House"
+                  placeholder="e.g. Premium Footwear | Ansary Footwear"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-charcoal-200 text-sm font-inter text-charcoal-900 focus:outline-none focus:border-brand-orange bg-white"
                 />
               </div>
