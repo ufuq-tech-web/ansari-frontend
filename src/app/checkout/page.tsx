@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'react-hot-toast';
 import { Truck, ShieldCheck, Banknote, CreditCard, Smartphone, Tag, X, Lock } from 'lucide-react';
 import { useCart } from '../../lib/cart-context';
 import { useAuthStore } from "../../lib/auth-store";
@@ -44,6 +45,67 @@ const loadRazorpayScript = () => {
     });
 };
 
+const VISIBLE_COUPONS = 2;
+
+function CouponSection({ couponInput, setCouponInput, couponError, applyingCoupon, activeCoupons, onApply }: {
+    couponInput: string;
+    setCouponInput: (v: string) => void;
+    couponError: string;
+    applyingCoupon: boolean;
+    activeCoupons: any[];
+    onApply: (code?: string) => void;
+}) {
+    const [showAll, setShowAll] = useState(false);
+    const visibleCoupons = showAll ? activeCoupons : activeCoupons.slice(0, VISIBLE_COUPONS);
+    const hasMore = activeCoupons.length > VISIBLE_COUPONS;
+
+    return (
+        <div>
+            <div className="flex gap-2 relative">
+                <input
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                    placeholder="Enter Coupon Code"
+                    className="flex-1 px-4 py-3 rounded-xl bg-charcoal-50 border border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/10 outline-none font-inter text-sm text-charcoal-900 placeholder:text-charcoal-400 transition-all uppercase"
+                />
+                <button
+                    onClick={() => onApply()}
+                    disabled={applyingCoupon || !couponInput.trim()}
+                    className="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-lg bg-charcoal-900 text-white font-poppins font-semibold text-xs uppercase tracking-wide hover:bg-brand-orange transition-colors disabled:opacity-50"
+                >
+                    {applyingCoupon ? '...' : 'Apply'}
+                </button>
+            </div>
+            {couponError && <p className="text-xs text-red-600 font-inter mt-2 ml-1">{couponError}</p>}
+
+            {activeCoupons.length > 0 && (
+                <div className="mt-4">
+                    <p className="text-xs font-poppins font-semibold text-charcoal-500 uppercase tracking-wider mb-3">Available Coupons</p>
+                    <div className="space-y-2">
+                        {visibleCoupons.map((c) => (
+                            <button key={c.id} onClick={(e) => { e.preventDefault(); onApply(c.code); }} className="w-full flex items-center justify-between p-3 rounded-xl border border-charcoal-200 hover:border-brand-orange bg-charcoal-50/50 hover:bg-brand-orange/5 transition-all text-left group">
+                                <div>
+                                    <p className="font-poppins font-bold text-charcoal-900 text-sm flex items-center gap-2 group-hover:text-brand-orange transition-colors"><Tag className="w-3.5 h-3.5 text-brand-orange" /> {c.code}</p>
+                                    <p className="text-xs text-charcoal-600 mt-1 font-inter">{c.type === 'PERCENT' ? `${c.value}% OFF` : `₹${c.value} OFF`} {c.minOrder > 0 ? `on orders over ₹${c.minOrder}` : ''}</p>
+                                </div>
+                                <span className="text-[10px] font-bold text-brand-orange uppercase tracking-wider bg-brand-orange/10 px-2.5 py-1.5 rounded-lg whitespace-nowrap">Tap to Apply</span>
+                            </button>
+                        ))}
+                    </div>
+                    {hasMore && (
+                        <button
+                            onClick={() => setShowAll((v) => !v)}
+                            className="mt-2 w-full text-center text-xs font-poppins font-semibold text-brand-orange hover:text-brand-orange-dark transition-colors py-1.5"
+                        >
+                            {showAll ? 'Show less' : `Show all ${activeCoupons.length} coupons`}
+                        </button>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function CheckoutPage() {
     const { items, subtotal, clearCart, hydrated } = useCart();
     const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -52,7 +114,7 @@ export default function CheckoutPage() {
     const [address, setAddress] = useState<Address>(emptyAddress);
     const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string | 'new'>('new');
-    const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'upi'>('cod');
+    const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'wallet'>('cod');
     const [placingOrder, setPlacingOrder] = useState(false);
     const [orderError, setOrderError] = useState('');
     const redirecting = useRef(false);
@@ -74,8 +136,8 @@ export default function CheckoutPage() {
             );
             setSavedAddresses(uniqueAddrs);
             if (uniqueAddrs.length > 0) setSelectedAddressId(uniqueAddrs[0].id);
-        }).catch(() => {});
-        customerApi.get<any[]>('/coupons/active').then(setActiveCoupons).catch(() => {});
+        }).catch(() => { });
+        customerApi.get<any[]>('/coupons/active').then(setActiveCoupons).catch(() => { });
     }, []);
 
     useEffect(() => {
@@ -92,9 +154,9 @@ export default function CheckoutPage() {
         }
     }, [hydrated, items.length, router]);
 
-    if (authLoading || !isAuthenticated || !hydrated || items.length === 0) {
+    if (authLoading || !isAuthenticated || !hydrated || (items.length === 0 && !redirecting.current)) {
         return (
-            <div className="min-h-[70vh] flex flex-col items-center justify-center pb-20">
+            <div className="min-h-screen bg-brand-ivory flex flex-col items-center justify-center pb-20">
                 <div className="w-10 h-10 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
                 <p className="mt-4 font-inter text-charcoal-500 text-sm animate-pulse">Preparing Checkout...</p>
             </div>
@@ -122,7 +184,9 @@ export default function CheckoutPage() {
             if (typeof codeOverwrite === 'string') setCouponInput(codeOverwrite);
         } catch (err) {
             setCoupon(null);
-            setCouponError(err instanceof ApiError ? err.message : 'Could not apply this coupon.');
+            const errMsg = err instanceof ApiError ? err.message : 'Could not apply this coupon.';
+            setCouponError(errMsg);
+            toast.error(errMsg);
         } finally {
             setApplyingCoupon(false);
         }
@@ -152,13 +216,13 @@ export default function CheckoutPage() {
                 });
                 addressIdSelected = newAddress.id;
                 setSelectedAddressId(newAddress.id);
-                setSavedAddresses(prev => [...prev, { 
-                    id: newAddress.id, name: address.fullName, phone: address.phone, 
-                    line1: address.line1, city: address.city, state: address.state, pincode: address.pincode 
+                setSavedAddresses(prev => [...prev, {
+                    id: newAddress.id, name: address.fullName, phone: address.phone,
+                    line1: address.line1, city: address.city, state: address.state, pincode: address.pincode
                 }]);
             }
 
-            if (paymentMethod === 'card' || paymentMethod === 'upi') {
+            if (paymentMethod === 'card') {
                 const isLoaded = await loadRazorpayScript();
                 if (!isLoaded) {
                     throw new Error('Razorpay SDK failed to load. Check your connection.');
@@ -169,6 +233,9 @@ export default function CheckoutPage() {
                     paymentMethod,
                     couponCode: coupon?.code,
                 });
+                
+                // Delay syncing the frontend context state so the page DOM doesn't collapse during the router transition
+                setTimeout(() => clearCart(), 1500);
 
                 if (initResponse.status === 'PLACED') {
                     redirecting.current = true;
@@ -234,12 +301,35 @@ export default function CheckoutPage() {
                     paymentMethod,
                     couponCode: coupon?.code,
                 });
+                
+                // Delay syncing the frontend context state so the page DOM doesn't collapse during the router transition
+                setTimeout(() => clearCart(), 1500);
 
                 redirecting.current = true;
                 router.push(`/order-confirmation?order=${initResponse.orderNumber}`);
             }
         } catch (err) {
-            setOrderError(err instanceof ApiError ? err.message : (err as Error).message || 'Could not place your order.');
+            const errMsg = err instanceof ApiError ? err.message : (err as Error).message || 'Could not place your order.';
+            if (errMsg.toLowerCase().includes('wallet')) {
+                toast.error(errMsg, {
+                    position: 'top-center',
+                    style: {
+                        background: '#EF4444',
+                        color: '#fff',
+                        fontWeight: '600',
+                        padding: '16px',
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    },
+                    iconTheme: {
+                        primary: '#fff',
+                        secondary: '#EF4444',
+                    },
+                });
+            } else {
+                setOrderError(errMsg);
+                toast.error(errMsg);
+            }
             setPlacingOrder(false);
         }
     };
@@ -351,12 +441,12 @@ export default function CheckoutPage() {
                                 {[
                                     { value: 'cod' as const, label: 'Cash on Delivery', icon: Banknote },
                                     { value: 'card' as const, label: 'Credit / Debit', icon: CreditCard },
-                                    { value: 'upi' as const, label: 'UPI / Wallet', icon: Smartphone },
+                                    { value: 'wallet' as const, label: 'Wallet', icon: Smartphone },
                                 ].map((m) => (
                                     <label
                                         key={m.value}
-                                        className={`relative flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === m.value 
-                                            ? 'border-brand-orange bg-brand-orange/5 shadow-sm ring-1 ring-brand-orange/20' 
+                                        className={`relative flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === m.value
+                                            ? 'border-brand-orange bg-brand-orange/5 shadow-sm ring-1 ring-brand-orange/20'
                                             : 'border-charcoal-100 hover:border-charcoal-300 bg-charcoal-50/50 hover:bg-charcoal-50'
                                             }`}
                                     >
@@ -369,7 +459,7 @@ export default function CheckoutPage() {
                                         />
                                         <m.icon className={`w-8 h-8 ${paymentMethod === m.value ? 'text-brand-orange' : 'text-charcoal-400'}`} strokeWidth={1.5} />
                                         <span className={`font-poppins font-semibold text-sm text-center ${paymentMethod === m.value ? 'text-charcoal-900' : 'text-charcoal-600'}`}>{m.label}</span>
-                                        
+
                                         {/* Selection indicator */}
                                         <div className={`absolute top-3 right-3 w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === m.value ? 'border-brand-orange' : 'border-charcoal-300'}`}>
                                             {paymentMethod === m.value && <div className="w-2 h-2 rounded-full bg-brand-orange" />}
@@ -400,6 +490,7 @@ export default function CheckoutPage() {
                             </div>
 
                             {/* Coupon */}
+                            {(coupon || activeCoupons.length > 0) && (
                             <div className="border-t border-charcoal-100 mt-6 pt-6">
                                 {coupon ? (
                                     <div className="flex items-center justify-between bg-brand-green/10 border border-brand-green/20 rounded-xl px-4 py-3">
@@ -411,41 +502,17 @@ export default function CheckoutPage() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <div>
-                                        <div className="flex gap-2 relative">
-                                            <input
-                                                value={couponInput}
-                                                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                                                placeholder="Enter Coupon Code"
-                                                className="flex-1 px-4 py-3 rounded-xl bg-charcoal-50 border border-transparent focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/10 outline-none font-inter text-sm text-charcoal-900 placeholder:text-charcoal-400 transition-all uppercase"
-                                            />
-                                            <button
-                                                onClick={() => handleApplyCoupon()}
-                                                disabled={applyingCoupon || !couponInput.trim()}
-                                                className="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-lg bg-charcoal-900 text-white font-poppins font-semibold text-xs uppercase tracking-wide hover:bg-brand-orange transition-colors disabled:opacity-50"
-                                            >
-                                                {applyingCoupon ? '...' : 'Apply'}
-                                            </button>
-                                        </div>
-                                        {couponError && <p className="text-xs text-red-600 font-inter mt-2 ml-1">{couponError}</p>}
-
-                                        {activeCoupons.length > 0 && (
-                                            <div className="mt-4 space-y-2">
-                                                <p className="text-xs font-poppins font-semibold text-charcoal-500 uppercase tracking-wider mb-3">Available Coupons</p>
-                                                {activeCoupons.map((c) => (
-                                                    <button key={c.id} onClick={(e) => { e.preventDefault(); handleApplyCoupon(c.code); }} className="w-full flex items-center justify-between p-3 rounded-xl border border-charcoal-200 hover:border-brand-orange bg-charcoal-50/50 hover:bg-brand-orange/5 transition-all text-left group">
-                                                        <div>
-                                                            <p className="font-poppins font-bold text-charcoal-900 text-sm flex items-center gap-2 group-hover:text-brand-orange transition-colors"><Tag className="w-3.5 h-3.5 text-brand-orange" /> {c.code}</p>
-                                                            <p className="text-xs text-charcoal-600 mt-1 font-inter">{c.type === 'PERCENT' ? `${c.value}% OFF` : `₹${c.value} OFF`} {c.minOrder > 0 ? `on orders over ₹${c.minOrder}` : ''}</p>
-                                                        </div>
-                                                        <span className="text-[10px] font-bold text-brand-orange uppercase tracking-wider bg-brand-orange/10 px-2.5 py-1.5 rounded-lg whitespace-nowrap">Tap to Apply</span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
+                                    <CouponSection
+                                        couponInput={couponInput}
+                                        setCouponInput={setCouponInput}
+                                        couponError={couponError}
+                                        applyingCoupon={applyingCoupon}
+                                        activeCoupons={activeCoupons}
+                                        onApply={handleApplyCoupon}
+                                    />
                                 )}
                             </div>
+                            )}
 
                             <div className="border-t border-charcoal-100 mt-6 pt-6 space-y-3 text-sm font-inter">
                                 <div className="flex items-center justify-between text-charcoal-600">
@@ -476,11 +543,10 @@ export default function CheckoutPage() {
                             <button
                                 onClick={handlePlaceOrder}
                                 disabled={!isValid || placingOrder}
-                                className={`w-full flex items-center justify-center gap-2 py-4 mt-6 rounded-2xl font-poppins font-bold text-base transition-all shadow-lg ${
-                                    isValid 
-                                    ? 'bg-brand-orange text-white hover:bg-brand-orange-dark hover:shadow-brand-orange/30 hover:-translate-y-0.5' 
-                                    : 'bg-charcoal-100 text-charcoal-400 cursor-not-allowed'
-                                }`}
+                                className={`w-full flex items-center justify-center gap-2 py-4 mt-6 rounded-2xl font-poppins font-bold text-base transition-all shadow-lg ${isValid
+                                        ? 'bg-brand-orange text-white hover:bg-brand-orange-dark hover:shadow-brand-orange/30 hover:-translate-y-0.5'
+                                        : 'bg-charcoal-100 text-charcoal-400 cursor-not-allowed'
+                                    }`}
                             >
                                 <Lock className="w-4 h-4" strokeWidth={2.5} />
                                 {placingOrder ? 'Processing...' : 'Place Order Securely'}
