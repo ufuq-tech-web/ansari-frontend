@@ -114,7 +114,7 @@ export default function AdminOrdersPage() {
     {
       key: "items",
       label: "Items",
-      render: (o) => <span className="font-inter text-charcoal-500 text-xs">{o.items.length === 1 ? "1 item" : `${o.items.length} items`}</span>
+      render: (o) => <span className="font-inter text-black text-xs">{o.items.length === 1 ? "1 item" : `${o.items.length} items`}</span>
     },
     {
       key: "total",
@@ -167,7 +167,7 @@ export default function AdminOrdersPage() {
       render: (o) => (
         <Link
           href={`/admin/orders/${o.orderNumber}`}
-          className="flex items-center justify-center p-2 rounded-xl text-charcoal-400 hover:text-brand-orange hover:bg-brand-orange/5 transition-colors"
+          className="flex items-center justify-center p-2 rounded-xl text-black hover:text-brand-orange hover:bg-brand-orange/5 transition-colors"
           title="View Details"
         >
           <ExternalLink className="w-4 h-4" />
