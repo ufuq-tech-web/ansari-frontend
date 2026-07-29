@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { Truck, Package, MapPin, Clock } from 'lucide-react';
 
 export const metadata = {
-  title: 'Shipping Policy — Ansari Boot House',
-  description: 'Free shipping on orders above ₹999, Cash on Delivery available, and typical delivery timelines for Ansari Boot House orders across India.',
+  title: 'Shipping Policy — Ansary Footwear',
+  description: 'Free shipping on orders above ₹999, Cash on Delivery available, and typical delivery timelines for Ansary Footwear orders across India.',
   alternates: { canonical: '/shipping-policy' },
 };
 
