@@ -94,7 +94,7 @@ function SignupForm() {
             <div className="w-full max-w-md bg-white rounded-2xl shadow-card p-8">
                 <div className="mb-6 text-center">
                     <h1 className="font-poppins font-extrabold text-charcoal-900 text-2xl">Create Your Account</h1>
-                    <p className="mt-1.5 text-sm text-charcoal-500 font-inter">Join Ansari Boot House for faster checkout and order tracking</p>
+                    <p className="mt-1.5 text-sm text-charcoal-500 font-inter">Join Ansary Footwear for faster checkout and order tracking</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
