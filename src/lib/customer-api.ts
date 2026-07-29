@@ -1,6 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
 import { useAuthStore } from "./auth-store";
+import toast from "react-hot-toast";
 
 export function getAccessToken(): string | null {
   return useAuthStore.getState().accessToken;
@@ -66,7 +67,25 @@ export async function customerApiFetch<T>(path: string, options: RequestInit = {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ message: res.statusText }));
-    throw new ApiError(res.status, Array.isArray(body.message) ? body.message.join(", ") : body.message ?? "Request failed");
+    const errorMsg = Array.isArray(body.message) ? body.message.join(", ") : body.message ?? "Request failed";
+    
+    // Global 401 Handler
+    if (res.status === 401) {
+      // Always clear auth state when unauthorized
+      useAuthStore.setState({ user: null, isAuthenticated: false, accessToken: null, loading: false });
+      
+      // Only force severe redirects & global toasts for blocked accounts
+      if (typeof window !== "undefined" && errorMsg.toLowerCase().includes("blocked")) {
+        toast.error(errorMsg, { id: "blocked-error" });
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+          // Suspend strictly so that React doesn't crash from Unhandled Exception before tearing down
+          return new Promise(() => {}) as Promise<T>;
+        }
+      }
+    }
+    
+    throw new ApiError(res.status, errorMsg);
   }
 
   if (res.status === 204) return undefined as T;
