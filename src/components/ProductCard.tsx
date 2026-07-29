@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+
 import Link from 'next/link';
-import { Heart, Star, Plus, Check } from 'lucide-react';
+import { Heart, Star } from 'lucide-react';
 import { productHref as buildProductHref, type Product as CatalogProduct } from '../lib/catalog-helpers';
 import type { Product as LibProduct } from '../lib/products';
-import { useCart } from '../lib/cart-context';
-import { useWishlist } from '../lib/wishlist-context';
+import { useWishlistStore } from '../lib/wishlist-store';
 
 interface Props {
   product: CatalogProduct | LibProduct;
@@ -38,9 +37,7 @@ function getProductImages(product: LibProduct) {
 
 export default function ProductCard({ product, onWishlist }: Props) {
   const isCatalogProduct = 'salePrice' in product;
-  const { addItem } = useCart();
-  const { toggle, isWishlisted } = useWishlist();
-  const [justAdded, setJustAdded] = useState(false);
+  const { toggle, isWishlisted } = useWishlistStore();
   const catalogProduct = isCatalogProduct ? (product as CatalogProduct) : null;
   const wishlisted = catalogProduct ? isWishlisted(catalogProduct.id) : false;
   const productId = 'id' in product ? product.id : (product as LibProduct).slug;
@@ -49,14 +46,6 @@ export default function ProductCard({ product, onWishlist }: Props) {
     e.stopPropagation();
     if (catalogProduct) toggle(catalogProduct);
     onWishlist?.(productId);
-  };
-
-  const handleQuickAdd = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!catalogProduct) return;
-    addItem(catalogProduct, 1);
-    setJustAdded(true);
-    setTimeout(() => setJustAdded(false), 1500);
   };
 
   const sellingPrice = (isCatalogProduct 
@@ -152,25 +141,6 @@ export default function ProductCard({ product, onWishlist }: Props) {
           <Heart className="w-4 h-4" strokeWidth={2} fill={wishlisted ? 'currentColor' : 'none'} />
         </button>
 
-        {/* Quick Add — slides up on hover */}
-        <div className="absolute bottom-0 inset-x-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
-          <button
-            onClick={handleQuickAdd}
-            disabled={!catalogProduct}
-            className={`w-full backdrop-blur font-manrope font-bold text-sm py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 ${justAdded ? 'bg-brand-green text-white' : 'bg-accent/95 text-white hover:bg-accent'
-              }`}
-          >
-            {justAdded ? (
-              <>
-                <Check className="w-4 h-4" strokeWidth={2} /> Added
-              </>
-            ) : (
-              <>
-                <Plus className="w-4 h-4" strokeWidth={2} /> Quick Add
-              </>
-            )}
-          </button>
-        </div>
       </div>
 
       {/* Details */}
