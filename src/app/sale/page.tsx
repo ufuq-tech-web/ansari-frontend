@@ -2,7 +2,7 @@ import { storefrontApi } from '../../lib/storefront-api';
 import ProductListingPage from '../../components/ProductListingPage';
 
 export const metadata = {
-  title: 'Sale — Ansari Boot House',
+  title: 'Sale — Ansary Footwear',
   description: 'Big discounts across Men, Women, Kids, and Accessories footwear — shop the sale while it lasts.',
 };
 
