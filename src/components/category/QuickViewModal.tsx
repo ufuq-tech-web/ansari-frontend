@@ -4,20 +4,21 @@ import { useState } from 'react';
 import { X, ShoppingBag, Heart, Truck, RefreshCw, ChevronLeft, ChevronRight, Star, BadgeCheck, Zap } from 'lucide-react';
 import type { Product } from '../../lib/catalog-helpers';
 import { useCart } from '../../lib/cart-context';
-import { useWishlist } from '../../lib/wishlist-context';
+import { useWishlistStore } from '../../lib/wishlist-store';
 
 interface Props {
   product: Product | null;
   onClose: () => void;
+  onAddedToCart?: (product: Product) => void;
 }
 
-export default function QuickViewModal({ product, onClose }: Props) {
+export default function QuickViewModal({ product, onClose, onAddedToCart }: Props) {
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [imgIndex, setImgIndex] = useState(0);
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
-  const { toggle, isWishlisted } = useWishlist();
+  const { toggle, isWishlisted } = useWishlistStore();
 
   if (!product) return null;
 
@@ -30,7 +31,11 @@ export default function QuickViewModal({ product, onClose }: Props) {
     if (product.colors?.length && !selectedColor) return;
     addItem(product, 1);
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    if (onAddedToCart) onAddedToCart(product);
+    setTimeout(() => {
+      setAdded(false);
+      onClose(); // Auto close the modal after a short delay since it's a quick add
+    }, 1500);
   };
 
   return (
