@@ -50,7 +50,7 @@ export default function InstagramGallery() {
             >
               <img
                 src={src}
-                alt={`Ansari Boot House lifestyle photo ${(i % instagramImages.length) + 1}`}
+                alt={`Ansary Footwear lifestyle photo ${(i % instagramImages.length) + 1}`}
                 loading="lazy"
                 className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-700"
               />
@@ -89,7 +89,7 @@ export default function InstagramGallery() {
             >
               <img
                 src={src}
-                alt={`Ansari Boot House lifestyle photo ${(i % instagramImages.length) + 1}`}
+                alt={`Ansary Footwear lifestyle photo ${(i % instagramImages.length) + 1}`}
                 loading="lazy"
                 className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-700"
               />
