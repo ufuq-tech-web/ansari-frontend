@@ -7,7 +7,7 @@ import BreadcrumbJsonLd from "../../../../components/BreadcrumbJsonLd";
 const BASE_URL = "https://www.ansaribootthouse.com";
 
 function getProductDescription(product: any): string {
-  return `Buy ${product.name} by ${product.brand} online at the best price of ₹${product.salePrice.toLocaleString('en-IN')}. Explore high-quality shoes at Ansari Boot House.`;
+  return `Buy ${product.name} by ${product.brand} online at the best price of ₹${product.salePrice.toLocaleString('en-IN')}. Explore high-quality shoes at Ansary Footwear.`;
 }
 
 export async function generateMetadata({
@@ -19,10 +19,10 @@ export async function generateMetadata({
   const product = await storefrontApi.getProductBySlug(categoryKey, subcategory, productSlug);
 
   if (!product) {
-    return { title: "Product Not Found — Ansari Boot House" };
+    return { title: "Product Not Found — Ansary Footwear" };
   }
 
-  const title = `${product.name} by ${product.brand} — Ansari Boot House`;
+  const title = `${product.name} by ${product.brand} — Ansary Footwear`;
   const description = getProductDescription(product);
   return {
     title,
