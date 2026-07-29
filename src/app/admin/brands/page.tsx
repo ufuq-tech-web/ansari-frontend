@@ -39,6 +39,7 @@ export default function AdminBrandsPage() {
 
   const [modalState, setModalState] = useState<{ open: boolean; brand?: BrandRow }>({ open: false });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, slug: "", name: "" });
+  const [alertModal, setAlertModal] = useState({ isOpen: false, message: "" });
 
   const load = () => adminApi.get<BrandRow[]>(`/brands${debouncedSearch ? `?search=${encodeURIComponent(debouncedSearch)}` : ""}`).then(setBrands);
 
@@ -56,7 +57,7 @@ export default function AdminBrandsPage() {
       await adminApi.delete(`/brands/${confirmModal.slug}`);
       load();
     } catch {
-      alert("Failed to delete brand");
+      setAlertModal({ isOpen: true, message: "Failed to delete brand. Please try again later." });
     }
   };
 
@@ -114,7 +115,7 @@ export default function AdminBrandsPage() {
           <button
             onClick={() => {
               if (b.productCount > 0) {
-                alert(`Cannot delete "${b.name}" as it has ${b.productCount} linked product(s). Please remove them first.`);
+                setAlertModal({ isOpen: true, message: `Cannot delete "${b.name}" as it has ${b.productCount} linked product(s). Please remove them first.` });
                 return;
               }
               setConfirmModal({ isOpen: true, slug: b.slug, name: b.name });
@@ -193,6 +194,16 @@ export default function AdminBrandsPage() {
         danger={true}
         onConfirm={handleDelete}
         onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
+
+      <ConfirmModal
+        isOpen={alertModal.isOpen}
+        title="Action Not Allowed"
+        message={alertModal.message}
+        confirmText="Understood"
+        hideCancel={true}
+        onConfirm={() => setAlertModal({ isOpen: false, message: "" })}
+        onClose={() => setAlertModal({ isOpen: false, message: "" })}
       />
 
       {modalState.open && (
