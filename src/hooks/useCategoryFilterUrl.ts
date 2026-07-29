@@ -40,6 +40,7 @@ export function useCategoryFilterUrl(categoryKey: string, presetPriceRange?: [nu
     if (next.discount) params.set("discount", String(next.discount)); else params.delete("discount");
     if (next.priceRange[0] > 0) params.set("priceMin", String(next.priceRange[0])); else params.delete("priceMin");
     if (next.priceRange[1] < 5000) params.set("priceMax", String(next.priceRange[1])); else params.delete("priceMax");
+    if (next.search) params.set("search", next.search); else params.delete("search");
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
