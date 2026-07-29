@@ -1,13 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LogIn } from "lucide-react";
 import { useAdminAuth } from "../../../lib/admin-auth-context";
 
 export default function AdminLoginPage() {
-  const { login } = useAdminAuth();
+  const { login, user, loading } = useAdminAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/admin");
+    }
+  }, [user, loading, router]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
