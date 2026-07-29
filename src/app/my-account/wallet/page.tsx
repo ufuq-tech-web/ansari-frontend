@@ -36,7 +36,7 @@ export default function WalletPage() {
         {/* Header */}
         <div className="mb-8">
           <h2 className="font-poppins font-black text-charcoal-900 text-3xl tracking-tight mb-2">My Digital Wallet</h2>
-          <p className="font-inter text-charcoal-500 text-sm max-w-xl leading-relaxed">
+          <p className="font-inter text-black text-sm max-w-xl leading-relaxed">
             View your current balance and recent transactions. Your wallet balance is automatically credited from order cancellations and can be used on future purchases.
           </p>
         </div>
@@ -77,7 +77,7 @@ export default function WalletPage() {
               <Clock className="w-6 h-6 text-charcoal-300" />
             </div>
             <h3 className="font-poppins font-bold text-charcoal-900 mb-2">No Transactions Yet</h3>
-            <p className="font-inter text-charcoal-500 text-sm">Your wallet history will appear here once you have credits or debits.</p>
+            <p className="font-inter text-black text-sm">Your wallet history will appear here once you have credits or debits.</p>
           </div>
         ) : (
           <div className="space-y-4">
