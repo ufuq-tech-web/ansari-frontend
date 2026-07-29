@@ -12,6 +12,7 @@ interface ConfirmModalProps {
   onConfirm: () => void;
   onClose: () => void;
   danger?: boolean;
+  hideCancel?: boolean;
 }
 
 export default function ConfirmModal({
@@ -22,7 +23,8 @@ export default function ConfirmModal({
   cancelText = "Cancel",
   onConfirm,
   onClose,
-  danger = false
+  danger = false,
+  hideCancel = false
 }: ConfirmModalProps) {
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -94,13 +96,15 @@ export default function ConfirmModal({
           </div>
 
           <div className="flex items-center justify-end gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-2.5 rounded-xl font-poppins font-semibold text-sm text-charcoal-700 bg-charcoal-50 hover:bg-charcoal-100 transition-colors"
-            >
-              {cancelText}
-            </button>
+            {!hideCancel && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-5 py-2.5 rounded-xl font-poppins font-semibold text-sm text-charcoal-700 bg-charcoal-50 hover:bg-charcoal-100 transition-colors"
+              >
+                {cancelText}
+              </button>
+            )}
             <button
               ref={confirmBtnRef}
               type="button"
