@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ChevronDown, ChevronUp, X, Search } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { MATERIALS, OCCASIONS } from '../../lib/catalog-helpers';
 import { storefrontApi } from '../../lib/storefront-api';
 import { defaultFilters } from '../../lib/product-query';
@@ -62,20 +62,32 @@ function activeCount(f: FilterState): number {
         f.colors.length +
         (f.rating ? 1 : 0) +
         (f.discount ? 1 : 0) +
-        f.availability.length +
-        f.materials.length +
-        f.occasions.length +
-        f.soleMaterials.length +
-        f.closureTypes.length +
-        f.heelHeights.length +
-        f.toeShapes.length +
-        (f.priceRange[0] > 0 || f.priceRange[1] < 5000 ? 1 : 0)
+        (f.priceRange[0] > 0 || f.priceRange[1] < 5000 ? 1 : 0) +
+        (f.search ? 1 : 0)
     );
 }
 
 export default function FilterSidebar({ filters, onChange, totalResults }: Props) {
     const count = activeCount(filters);
     const [brands, setBrands] = useState<string[]>([]);
+    const [searchText, setSearchText] = useState(filters.search);
+    const userTypingRef = useRef(false);
+
+    // Sync local search text when filters change externally (e.g. "Clear all")
+    useEffect(() => {
+        userTypingRef.current = false;
+        setSearchText(filters.search);
+    }, [filters.search]);
+
+    // Debounce only when the user is actually typing
+    useEffect(() => {
+        if (!userTypingRef.current) return;
+        if (searchText === filters.search) return;
+        const timer = setTimeout(() => {
+            onChange({ ...filters, search: searchText });
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchText, filters, onChange]);
 
     useEffect(() => {
         storefrontApi.getBrands().then((list) => setBrands(list.map((b) => b.name)));
@@ -98,9 +110,29 @@ export default function FilterSidebar({ filters, onChange, totalResults }: Props
                 </div>
             </div>
 
+            {/* Keyword Search */}
+            <div className="mb-4 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal-400" strokeWidth={2} />
+                <input
+                    type="search"
+                    placeholder="Search in category..."
+                    value={searchText}
+                    onChange={(e) => { userTypingRef.current = true; setSearchText(e.target.value); }}
+                    className="w-full pl-9 pr-3 py-2 bg-white border border-charcoal-200 rounded-xl text-sm font-inter focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-colors"
+                />
+            </div>
+
             {/* Active filter chips */}
             {count > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-3 pb-3 border-b border-charcoal-200">
+                    {filters.search && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-brand-orange/10 text-xs font-inter text-brand-orange font-semibold">
+                            "{filters.search}"
+                            <button onClick={() => onChange({ ...filters, search: "" })} aria-label="Clear search">
+                                <X className="w-3 h-3" strokeWidth={2} />
+                            </button>
+                        </span>
+                    )}
                     {filters.brands.map((b) => (
                         <span key={b} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal-100 text-xs font-inter text-charcoal-700">
                             {b}
@@ -125,54 +157,6 @@ export default function FilterSidebar({ filters, onChange, totalResults }: Props
                             </button>
                         </span>
                     )}
-                    {filters.materials.map((m) => (
-                        <span key={m} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal-100 text-xs font-inter text-charcoal-700">
-                            {m}
-                            <button onClick={() => onChange({ ...filters, materials: filters.materials.filter((x) => x !== m) })} aria-label={`Remove ${m}`}>
-                                <X className="w-3 h-3" />
-                            </button>
-                        </span>
-                    ))}
-                    {filters.occasions.map((o) => (
-                        <span key={o} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal-100 text-xs font-inter text-charcoal-700">
-                            {o}
-                            <button onClick={() => onChange({ ...filters, occasions: filters.occasions.filter((x) => x !== o) })} aria-label={`Remove ${o}`}>
-                                <X className="w-3 h-3" />
-                            </button>
-                        </span>
-                    ))}
-                    {filters.soleMaterials.map((sm) => (
-                        <span key={sm} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal-100 text-xs font-inter text-charcoal-700">
-                            {sm}
-                            <button onClick={() => onChange({ ...filters, soleMaterials: filters.soleMaterials.filter((x) => x !== sm) })} aria-label={`Remove sole material ${sm}`}>
-                                <X className="w-3 h-3" />
-                            </button>
-                        </span>
-                    ))}
-                    {filters.closureTypes.map((ct) => (
-                        <span key={ct} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal-100 text-xs font-inter text-charcoal-700">
-                            {ct}
-                            <button onClick={() => onChange({ ...filters, closureTypes: filters.closureTypes.filter((x) => x !== ct) })} aria-label={`Remove closure type ${ct}`}>
-                                <X className="w-3 h-3" />
-                            </button>
-                        </span>
-                    ))}
-                    {filters.heelHeights.map((hh) => (
-                        <span key={hh} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal-100 text-xs font-inter text-charcoal-700">
-                            {hh}
-                            <button onClick={() => onChange({ ...filters, heelHeights: filters.heelHeights.filter((x) => x !== hh) })} aria-label={`Remove heel height ${hh}`}>
-                                <X className="w-3 h-3" />
-                            </button>
-                        </span>
-                    ))}
-                    {filters.toeShapes.map((ts) => (
-                        <span key={ts} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-charcoal-100 text-xs font-inter text-charcoal-700">
-                            {ts}
-                            <button onClick={() => onChange({ ...filters, toeShapes: filters.toeShapes.filter((x) => x !== ts) })} aria-label={`Remove toe shape ${ts}`}>
-                                <X className="w-3 h-3" />
-                            </button>
-                        </span>
-                    ))}
                 </div>
             )}
 
@@ -264,107 +248,6 @@ export default function FilterSidebar({ filters, onChange, totalResults }: Props
                 </div>
             </FilterGroup>
 
-            {/* Material */}
-            <FilterGroup title="Material">
-                <div className="space-y-2">
-                    {MATERIALS.map((m) => (
-                        <label key={m} className="flex items-center gap-2.5 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                checked={filters.materials.includes(m)}
-                                onChange={() => onChange({ ...filters, materials: toggle(filters.materials, m) })}
-                                className="w-4 h-4 rounded border-charcoal-300 text-brand-orange focus:ring-brand-orange"
-                            />
-                            <span className="text-sm font-inter text-charcoal-700 group-hover:text-charcoal-900">{m}</span>
-                        </label>
-                    ))}
-                </div>
-            </FilterGroup>
-
-            {/* Occasion */}
-            <FilterGroup title="Occasion">
-                <div className="space-y-2">
-                    {OCCASIONS.map((o) => (
-                        <label key={o} className="flex items-center gap-2.5 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                checked={filters.occasions.includes(o)}
-                                onChange={() => onChange({ ...filters, occasions: toggle(filters.occasions, o) })}
-                                className="w-4 h-4 rounded border-charcoal-300 text-brand-orange focus:ring-brand-orange"
-                            />
-                            <span className="text-sm font-inter text-charcoal-700 group-hover:text-charcoal-900">{o}</span>
-                        </label>
-                    ))}
-                </div>
-            </FilterGroup>
-
-            {/* Sole Material */}
-            <FilterGroup title="Sole Material" defaultOpen={false}>
-                <div className="space-y-2">
-                    {SOLE_MATERIALS.map((sm) => (
-                        <label key={sm} className="flex items-center gap-2.5 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                checked={filters.soleMaterials.includes(sm)}
-                                onChange={() => onChange({ ...filters, soleMaterials: toggle(filters.soleMaterials, sm) })}
-                                className="w-4 h-4 rounded border-charcoal-300 text-brand-orange focus:ring-brand-orange"
-                            />
-                            <span className="text-sm font-inter text-charcoal-700 group-hover:text-charcoal-900">{sm}</span>
-                        </label>
-                    ))}
-                </div>
-            </FilterGroup>
-
-            {/* Closure Type */}
-            <FilterGroup title="Closure Type" defaultOpen={false}>
-                <div className="space-y-2">
-                    {CLOSURE_TYPES.map((ct) => (
-                        <label key={ct} className="flex items-center gap-2.5 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                checked={filters.closureTypes.includes(ct)}
-                                onChange={() => onChange({ ...filters, closureTypes: toggle(filters.closureTypes, ct) })}
-                                className="w-4 h-4 rounded border-charcoal-300 text-brand-orange focus:ring-brand-orange"
-                            />
-                            <span className="text-sm font-inter text-charcoal-700 group-hover:text-charcoal-900">{ct}</span>
-                        </label>
-                    ))}
-                </div>
-            </FilterGroup>
-
-            {/* Heel Height */}
-            <FilterGroup title="Heel Height" defaultOpen={false}>
-                <div className="space-y-2">
-                    {HEEL_HEIGHTS.map((hh) => (
-                        <label key={hh} className="flex items-center gap-2.5 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                checked={filters.heelHeights.includes(hh)}
-                                onChange={() => onChange({ ...filters, heelHeights: toggle(filters.heelHeights, hh) })}
-                                className="w-4 h-4 rounded border-charcoal-300 text-brand-orange focus:ring-brand-orange"
-                            />
-                            <span className="text-sm font-inter text-charcoal-700 group-hover:text-charcoal-900">{hh}</span>
-                        </label>
-                    ))}
-                </div>
-            </FilterGroup>
-
-            {/* Toe Shape */}
-            <FilterGroup title="Toe Shape" defaultOpen={false}>
-                <div className="space-y-2">
-                    {TOE_SHAPES.map((ts) => (
-                        <label key={ts} className="flex items-center gap-2.5 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                checked={filters.toeShapes.includes(ts)}
-                                onChange={() => onChange({ ...filters, toeShapes: toggle(filters.toeShapes, ts) })}
-                                className="w-4 h-4 rounded border-charcoal-300 text-brand-orange focus:ring-brand-orange"
-                            />
-                            <span className="text-sm font-inter text-charcoal-700 group-hover:text-charcoal-900">{ts}</span>
-                        </label>
-                    ))}
-                </div>
-            </FilterGroup>
 
             {/* Customer Rating */}
             <FilterGroup title="Customer Rating">
