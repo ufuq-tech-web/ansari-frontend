@@ -2,7 +2,7 @@ import { storefrontApi } from "../../lib/storefront-api";
 import ProductListingPage from "../../components/ProductListingPage";
 
 export const metadata = {
-  title: "Best Sellers — Ansari Boot House",
+  title: "Best Sellers — Ansary Footwear",
   description: "Our most-loved footwear styles across Men, Women, Kids, and Accessories — top-rated by thousands of customers.",
 };
 
