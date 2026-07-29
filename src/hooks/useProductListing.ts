@@ -25,6 +25,7 @@ export function useProductListing(params: Params) {
 
   const hasInitial = initialProducts != null;
   const initialKeyRef = useRef(key);
+  const didMountRef = useRef(false);
 
   const [products, setProducts] = useState<ProductWithCategory[]>(initialProducts ?? []);
   const [total, setTotal] = useState(initialTotal ?? 0);
@@ -33,9 +34,13 @@ export function useProductListing(params: Params) {
   const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
-    // The very first render's key matches what the server already fetched
-    // for us — skip the redundant client-side re-fetch.
-    if (hasInitial && key === initialKeyRef.current) return;
+    // Only skip the very first render when the server already provided data —
+    // never skip subsequent navigations back to the same filter state.
+    if (!didMountRef.current && hasInitial && key === initialKeyRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    didMountRef.current = true;
 
     let active = true;
     setLoading(true);
