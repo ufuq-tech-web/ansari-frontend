@@ -18,11 +18,11 @@ export async function generateMetadata({
   const tierInfo = priceTiers[tier];
 
   if (!config || !tierInfo) {
-    return { title: "Page Not Found — Ansari Boot House" };
+    return { title: "Page Not Found — Ansary Footwear" };
   }
 
-  const title = `${config.name} ${tierInfo.label} — Ansari Boot House`;
-  const description = `Shop ${config.name} priced ${tierInfo.label.toLowerCase()} at Ansari Boot House. ${config.description}`;
+  const title = `${config.name} ${tierInfo.label} — Ansary Footwear`;
+  const description = `Shop ${config.name} priced ${tierInfo.label.toLowerCase()} at Ansary Footwear. ${config.description}`;
   return {
     title,
     description,
