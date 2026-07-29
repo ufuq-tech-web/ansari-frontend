@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { RefreshCw, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Returns & Exchanges — Ansari Boot House',
-  description: 'Ansari Boot House offers 7-day easy returns and exchanges on unworn footwear in original packaging. Read our full returns policy.',
+  title: 'Returns & Exchanges — Ansary Footwear',
+  description: 'Ansary Footwear offers 7-day easy returns and exchanges on unworn footwear in original packaging. Read our full returns policy.',
   alternates: { canonical: '/return-exchange' },
 };
 
