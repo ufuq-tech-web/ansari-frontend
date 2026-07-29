@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Privacy Policy — Ansari Boot House',
-  description: 'How Ansari Boot House collects, stores, and uses your information — including cart, wishlist, order data, and account details.',
+  title: 'Privacy Policy — Ansary Footwear',
+  description: 'How Ansary Footwear collects, stores, and uses your information — including cart, wishlist, order data, and account details.',
   alternates: { canonical: '/privacy-policy' },
 };
 
@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
       <div className="container-main py-10 sm:py-14 max-w-3xl">
         <div className="space-y-6 text-charcoal-700 font-inter leading-relaxed">
           <p>
-            This policy explains what information Ansari Boot House collects when you use our website, and how
+            This policy explains what information Ansary Footwear collects when you use our website, and how
             it's used. We keep this simple on purpose — we don't sell your data, and we don't share it with
             advertisers.
           </p>
