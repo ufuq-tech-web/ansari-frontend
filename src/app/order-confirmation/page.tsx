@@ -51,7 +51,13 @@ function OrderConfirmationContent() {
         };
     }, [orderNumber, authLoading, isAuthenticated, router]);
 
-    if (authLoading || !isAuthenticated || !loaded) return null;
+    if (authLoading || !isAuthenticated || !loaded) {
+        return (
+            <div className="min-h-screen bg-brand-ivory flex flex-col items-center justify-center pb-20">
+                <div className="w-10 h-10 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     if (!order) {
         return (
