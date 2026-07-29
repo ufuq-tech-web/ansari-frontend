@@ -14,7 +14,7 @@ import RecentlyViewed from "../components/RecentlyViewed";
 import { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
-  let title = "Ansari Boot House";
+  let title = "Ansary Footwear";
   let description = "Premium Footwear";
   let keywords = "";
 
@@ -38,7 +38,7 @@ export default async function Home() {
   const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Ansari Boot House",
+    "name": "Ansary Footwear",
     "url": "https://www.ansaribootthouse.com",
     "logo": "https://www.ansaribootthouse.com/images/logo.png",
     "contactPoint": {
