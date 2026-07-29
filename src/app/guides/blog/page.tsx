@@ -3,8 +3,8 @@ import { ArrowRight, Clock, BookOpen } from 'lucide-react';
 import { storefrontApi } from '../../../lib/storefront-api';
 
 export const metadata = {
-  title: 'Blog — Ansari Boot House',
-  description: 'Footwear buying guides, care tips, and style advice from Ansari Boot House — sizing, materials, and how to choose the right shoe for every occasion.',
+  title: 'Blog — Ansary Footwear',
+  description: 'Footwear buying guides, care tips, and style advice from Ansary Footwear — sizing, materials, and how to choose the right shoe for every occasion.',
   alternates: { canonical: '/blog' },
 };
 
