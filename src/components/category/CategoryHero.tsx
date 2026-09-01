@@ -32,9 +32,9 @@ export default function CategoryHero({ category, activeSubcategory }: Props) {
                     loading="eager"
                     className="w-full h-full object-cover opacity-60"
                     style={{
-                        objectPosition: category.key === 'women' ? 'right center' : 
-                                        category.key === 'accessories' ? 'center 25%' : 
-                                        'center'
+                        objectPosition: category.key === 'women' ? 'right center' :
+                            category.key === 'accessories' ? 'center 25%' :
+                                'center'
                     }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900 via-charcoal-900/80 to-transparent" />

@@ -4,7 +4,7 @@ import { storefrontApi } from "../../../../lib/storefront-api";
 import ProductDetailClient from "../../../../components/product/ProductDetailClient";
 import BreadcrumbJsonLd from "../../../../components/BreadcrumbJsonLd";
 
-const BASE_URL = "https://www.ansaribootthouse.com";
+const BASE_URL = "https://www.ansarifootwear.com";
 
 function getProductDescription(product: any): string {
   return `Buy ${product.name} by ${product.brand} online at the best price of ₹${product.salePrice.toLocaleString('en-IN')}. Explore high-quality shoes at Ansary Footwear.`;

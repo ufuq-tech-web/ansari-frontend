@@ -5,7 +5,7 @@ import CategoryPageClient from "./CategoryPageClient";
 import BreadcrumbJsonLd from "../../components/BreadcrumbJsonLd";
 import { buildProductQuery, filtersFromParams, searchParamsToURLSearchParams } from "../../lib/product-query";
 
-const BASE_URL = "https://www.ansaribootthouse.com";
+const BASE_URL = "https://www.ansarifootwear.com";
 
 export async function generateMetadata({
   params,

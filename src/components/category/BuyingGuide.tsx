@@ -12,23 +12,23 @@ export default function BuyingGuide({ category }: Props) {
     return (
         <section id="buying-guide" className="py-12 sm:py-16 bg-brand-ivory">
             <div className="container-main">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
-                    <div>
+                <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 sm:gap-3 mb-8 text-center sm:text-left">
+                    <div className="flex flex-col items-center sm:items-start">
                         <span className="text-leather-400 font-poppins font-semibold text-sm uppercase tracking-wide">Expert Advice</span>
                         <h2 className="section-heading text-2xl sm:text-3xl mt-1">Buying Guides</h2>
                         <p className="mt-1.5 text-black font-inter text-sm">Make the right choice with expert tips</p>
                     </div>
-                    <Link href="/guides" className="inline-flex items-center gap-1.5 text-brand-orange font-poppins font-semibold text-sm hover:gap-2.5 transition-all">
+                    <Link href="/guides" className="inline-flex items-center justify-center gap-1.5 text-brand-orange font-poppins font-semibold text-sm hover:gap-2.5 transition-all">
                         All Guides <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-4 sm:gap-5">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
                     {category.buyingGuides.map((guide) => (
                         <Link
                             key={guide.slug}
                             href={`/guides/${guide.slug}`}
-                            className="w-full sm:w-[calc(50%-10px)] lg:w-[calc(25%-15px)] bg-white rounded-2xl p-5 shadow-card hover:shadow-card-hover border border-charcoal-200 hover:border-brand-orange/30 transition-all duration-300 group flex flex-col items-center gap-3 text-center"
+                            className="bg-white rounded-2xl p-4 sm:p-5 shadow-card hover:shadow-card-hover border border-charcoal-200 hover:border-brand-orange/30 transition-all duration-300 group flex flex-col items-center gap-2 sm:gap-3 text-center"
                         >
                             <div className="w-11 h-11 rounded-xl bg-brand-orange/10 flex items-center justify-center flex-shrink-0 mx-auto">
                                 <BookOpen className="w-5 h-5 text-brand-orange" strokeWidth={2} />
