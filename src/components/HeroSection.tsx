@@ -75,8 +75,8 @@ export default function HeroSection() {
             alt={`Hero slide ${i + 1}`}
             loading={i === 0 ? 'eager' : 'lazy'}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out ${i === currentSlide
-                ? 'opacity-100 scale-100 transition-transform duration-[10000ms] ease-out'
-                : 'opacity-0 scale-110 transition-transform duration-[1000ms] ease-in'
+              ? 'opacity-100 scale-100 transition-transform duration-[10000ms] ease-out'
+              : 'opacity-0 scale-110 transition-transform duration-[1000ms] ease-in'
               }`}
           />
         ))}
@@ -152,14 +152,14 @@ export default function HeroSection() {
         {/* Slide navigation arrows */}
         <button
           onClick={prevSlide}
-          className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/25 transition-all duration-300 z-10"
+          className="hidden md:flex absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 items-center justify-center text-white hover:bg-white/25 transition-all duration-300 z-10"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/25 transition-all duration-300 z-10"
+          className="hidden md:flex absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 items-center justify-center text-white hover:bg-white/25 transition-all duration-300 z-10"
           aria-label="Next slide"
         >
           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
@@ -172,8 +172,8 @@ export default function HeroSection() {
               key={i}
               onClick={() => goToSlide(i, i > currentSlide ? 'right' : 'left')}
               className={`relative h-2.5 rounded-full transition-all duration-500 ${i === currentSlide
-                  ? 'w-10 bg-brand-orange'
-                  : 'w-2.5 bg-white/40 hover:bg-white/60'
+                ? 'w-10 bg-brand-orange'
+                : 'w-2.5 bg-white/40 hover:bg-white/60'
                 }`}
               aria-label={`Go to slide ${i + 1}`}
             >

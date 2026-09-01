@@ -3,20 +3,32 @@
 import Link from 'next/link';
 import { ArrowRight, Sparkles, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 export default function PromotionalBanner() {
-  // Countdown timer (set to end of current month)
+  const { data: banner, isLoading } = useQuery({
+    queryKey: ['promo-banner'],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/banner`);
+      if (!res.ok) throw new Error('Failed to fetch banner');
+      return res.json();
+    },
+  });
+
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + 1, 0);
-    endDate.setHours(23, 59, 59, 999);
+    if (!banner || !banner.endDate) return;
+
+    const endDate = new Date(banner.endDate);
 
     const tick = () => {
       const now = new Date();
       const diff = endDate.getTime() - now.getTime();
-      if (diff <= 0) return;
+      if (diff <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -28,15 +40,18 @@ export default function PromotionalBanner() {
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [banner]);
+
+  if (isLoading) return <div className="w-full min-h-[500px] bg-charcoal-900 animate-pulse" />;
+  if (!banner || !banner.isActive) return null;
 
   return (
     <section id="sale" className="relative w-full min-h-[500px] lg:min-h-[600px] flex items-center overflow-hidden bg-charcoal-900" aria-label="Seasonal promotion">
       {/* Full-width Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/images/promo/monsoon-banner.png"
-          alt="Seasonal footwear collection"
+          src={banner.image}
+          alt={banner.title}
           loading="lazy"
           className="w-full h-full object-cover object-right sm:object-center opacity-80"
         />
@@ -53,10 +68,10 @@ export default function PromotionalBanner() {
             <Sparkles className="w-3.5 h-3.5 text-accent" /> Limited Time Offer
           </span>
           <h2 className="font-sora font-extrabold tracking-tight text-white text-3xl sm:text-4xl lg:text-5xl lg:text-[3.5rem] leading-[1.1]">
-            Monsoon Collection <span className="text-accent">Sale</span>
+            {banner.title} <span className="text-accent">{banner.titleHighlight}</span>
           </h2>
           <p className="mt-4 text-white/90 text-base sm:text-lg font-inter max-w-md">
-            Step into the season with waterproof styles for the whole family. Up to 40% off on selected footwear.
+            {banner.description}
           </p>
 
           {/* Countdown timer */}
@@ -80,16 +95,24 @@ export default function PromotionalBanner() {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center gap-4">
-            <div className="flex items-baseline gap-2">
-              <span className="font-manrope font-extrabold text-white text-5xl tracking-tight">40%</span>
-              <span className="font-manrope font-bold text-white/80 text-lg">OFF</span>
+          {(banner.discountPercent > 0 || banner.couponCode) && (
+            <div className="mt-6 flex items-center gap-4">
+              {banner.discountPercent > 0 && (
+                <div className="flex items-baseline gap-2">
+                  <span className="font-manrope font-extrabold text-white text-5xl tracking-tight">{banner.discountPercent}%</span>
+                  <span className="font-manrope font-bold text-white/80 text-lg">OFF</span>
+                </div>
+              )}
+              {banner.discountPercent > 0 && banner.couponCode && (
+                <div className="h-12 w-px bg-white/30" />
+              )}
+              {banner.couponCode && (
+                <span className="text-white font-inter text-sm">Use code <span className="font-manrope font-bold text-white bg-white/15 px-2 py-0.5 rounded">{banner.couponCode}</span></span>
+              )}
             </div>
-            <div className="h-12 w-px bg-white/30" />
-            <span className="text-white font-inter text-sm">Use code <span className="font-manrope font-bold text-white bg-white/15 px-2 py-0.5 rounded">MONSOON40</span></span>
-          </div>
+          )}
 
-          <Link href="/sale" className="mt-8 inline-flex w-fit items-center gap-2 bg-accent text-white font-manrope font-bold px-8 py-4 rounded-full hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20 active:scale-95 transition-all duration-300 group/btn">
+          <Link href={banner.linkUrl} className="mt-8 inline-flex w-fit items-center gap-2 bg-accent text-white font-manrope font-bold px-8 py-4 rounded-full hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20 active:scale-95 transition-all duration-300 group/btn">
             Shop the Sale <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
           </Link>
         </div>
