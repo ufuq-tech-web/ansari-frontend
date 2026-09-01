@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border-b border-charcoal-200 py-2 font-inter text-charcoal-900 placeholder-charcoal-300 focus:outline-none focus:border-brand-orange transition-colors bg-transparent"
-            placeholder="admin@ansaribootthouse.com"
+            placeholder="admin@ansarifootwear.com"
           />
         </div>
         <div>

@@ -28,7 +28,7 @@ export default function TermsPage() {
       <div className="container-main py-10 sm:py-14 max-w-3xl">
         <div className="space-y-6 text-charcoal-700 font-inter leading-relaxed">
           <p>
-            By accessing or placing an order on ansaribootthouse.com, you agree to the terms below. Please read them
+            By accessing or placing an order on ansarifootwear.com, you agree to the terms below. Please read them
             before using our site.
           </p>
 
@@ -90,7 +90,7 @@ export default function TermsPage() {
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Contact</h2>
           <p>
             Questions about these terms can be sent to{' '}
-            <a href="mailto:care@ansaribootthouse.com" className="text-brand-orange hover:underline">care@ansaribootthouse.com</a>.
+            <a href="mailto:care@ansarifootwear.com" className="text-brand-orange hover:underline">care@ansarifootwear.com</a>.
           </p>
         </div>
       </div>

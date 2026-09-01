@@ -6,7 +6,7 @@ import { storefrontApi } from "../../../lib/storefront-api";
 import BreadcrumbJsonLd from "../../../components/BreadcrumbJsonLd";
 import ProductCard from "../../../components/ProductCard";
 
-const BASE_URL = "https://www.ansaribootthouse.com";
+const BASE_URL = "https://www.ansarifootwear.com";
 
 export async function generateMetadata({
   params,

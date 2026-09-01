@@ -39,8 +39,8 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Ansary Footwear",
-    "url": "https://www.ansaribootthouse.com",
-    "logo": "https://www.ansaribootthouse.com/images/logo.png",
+    "url": "https://www.ansarifootwear.com",
+    "logo": "https://www.ansarifootwear.com/images/logo.png",
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+91-98765-43210",

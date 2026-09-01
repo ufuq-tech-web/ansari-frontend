@@ -249,7 +249,7 @@ export default function CheckoutPage() {
                     key: keyId,
                     amount: initResponse.amount,
                     currency: initResponse.currency,
-                    name: 'Ufuq Boot House',
+                    name: 'Ansari Footwear',
                     description: 'Order Checkout',
                     order_id: initResponse.razorpayOrderId,
                     handler: async function (response: any) {
@@ -340,7 +340,7 @@ export default function CheckoutPage() {
             <header className="bg-white border-b border-charcoal-200 py-4">
                 <div className="container-main flex items-center justify-between">
                     <Link href="/" className="font-poppins font-extrabold text-2xl tracking-tight text-primary">
-                        UFUQ <span className="text-brand-orange">.</span>
+                        ANSARI <span className="text-brand-orange">.</span>
                     </Link>
                     <div className="flex items-center gap-2 text-charcoal-500 font-inter text-sm">
                         <Lock className="w-4 h-4" strokeWidth={2} />

@@ -74,7 +74,7 @@ export default function PrivacyPolicyPage() {
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Your Rights</h2>
           <p>
             You can clear your cart, wishlist, and locally stored order history at any time by clearing your
-            browser's site data for ansaribootthouse.com. If you've shared personal information with us directly
+            browser's site data for ansarifootwear.com. If you've shared personal information with us directly
             (for example, through a support request), you can ask us to review, correct, or delete it by reaching
             out via{' '}
             <Link href="/contact-us" className="text-brand-orange hover:underline">Contact Us</Link>.
@@ -89,7 +89,7 @@ export default function PrivacyPolicyPage() {
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Contact Us</h2>
           <p>
             Questions about this policy can be sent to{' '}
-            <a href="mailto:care@ansaribootthouse.com" className="text-brand-orange hover:underline">care@ansaribootthouse.com</a>.
+            <a href="mailto:care@ansarifootwear.com" className="text-brand-orange hover:underline">care@ansarifootwear.com</a>.
           </p>
         </div>
       </div>

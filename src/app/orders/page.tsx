@@ -73,7 +73,7 @@ export default function OrdersPage() {
                 key: keyId,
                 amount: res.amount,
                 currency: res.currency,
-                name: 'Ufuq Boot House',
+                name: 'Ansari Footwear',
                 description: 'Retry Payment',
                 order_id: res.razorpayOrderId,
                 handler: async function (response: any) {

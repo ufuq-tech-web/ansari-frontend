@@ -55,7 +55,7 @@ export default function ContactUsClient() {
               <Mail className="w-5 h-5 text-brand-orange flex-shrink-0 mt-0.5" strokeWidth={2} />
               <div>
                 <h3 className="font-poppins font-semibold text-charcoal-900 text-sm">Email Us</h3>
-                <p className="text-sm text-charcoal-500 font-inter mt-0.5">care@ansaribootthouse.com</p>
+                <p className="text-sm text-charcoal-500 font-inter mt-0.5">care@ansarifootwear.com</p>
               </div>
             </div>
             <div className="bg-white rounded-2xl border border-charcoal-200 p-5 flex items-start gap-3">
