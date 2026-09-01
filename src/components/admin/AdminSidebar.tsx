@@ -36,6 +36,7 @@ const NAV_ITEMS = [
   { href: "/admin/blogs", label: "Blogs", icon: FileText },
   { href: "/admin/guides", label: "Buying Guides", icon: BookOpen },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
+  { href: "/admin/banner", label: "Promo Banner", icon: Tag },
   { href: "/admin/seo", label: "SEO Config", icon: Search },
 ];
 

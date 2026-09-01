@@ -109,6 +109,7 @@ export async function apiUpload<T>(path: string, formData: FormData): Promise<T>
 export const adminApi = {
   get: <T>(path: string) => apiFetch<T>(path),
   post: <T>(path: string, data?: unknown) => apiFetch<T>(path, { method: "POST", body: data ? JSON.stringify(data) : undefined }),
+  put: <T>(path: string, data?: unknown) => apiFetch<T>(path, { method: "PUT", body: data ? JSON.stringify(data) : undefined }),
   patch: <T>(path: string, data?: unknown) => apiFetch<T>(path, { method: "PATCH", body: data ? JSON.stringify(data) : undefined }),
   delete: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
   upload: <T>(path: string, formData: FormData) => apiUpload<T>(path, formData),
