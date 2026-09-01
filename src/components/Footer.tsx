@@ -93,7 +93,7 @@ export default function Footer() {
               </div>
               <div className="leading-tight">
                 <div className="font-poppins font-bold text-lg">Ansari</div>
-                <div className="font-poppins font-medium text-leather-300 text-xs tracking-wider uppercase -mt-0.5">Boot House</div>
+                <div className="font-poppins font-medium text-leather-300 text-xs tracking-wider uppercase -mt-0.5">Footwear</div>
               </div>
             </Link>
             <p className="text-white font-inter text-sm leading-relaxed max-w-sm">
@@ -111,7 +111,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3 text-sm text-white font-inter">
                 <Mail className="w-4 h-4 text-brand-orange flex-shrink-0" strokeWidth={2} />
-                <span>care@ansaribootthouse.com</span>
+                <span>care@ansarifootwear.com</span>
               </div>
             </div>
           </div>

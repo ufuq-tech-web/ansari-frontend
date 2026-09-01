@@ -178,7 +178,7 @@ export default function Header() {
               </div>
               <div className="leading-tight">
                 <div className="font-poppins font-bold text-charcoal-900 text-base lg:text-lg">Ansari</div>
-                <div className="font-poppins font-medium text-leather-400 text-[10px] lg:text-xs tracking-wider uppercase -mt-0.5">Boot House</div>
+                <div className="font-poppins font-medium text-leather-400 text-[10px] lg:text-xs tracking-wider uppercase -mt-0.5">Footwear</div>
               </div>
             </Link>
           </div>
@@ -360,11 +360,11 @@ export default function Header() {
                     <div className="pl-8 pb-3 space-y-3">
                       {link.mega.columns.map((col) => (
                         <div key={col.title}>
-                          <div className="px-4 text-[11px] font-manrope font-semibold text-charcoal-400 uppercase tracking-wide mb-1">{col.title}</div>
+                          <div className="px-4 text-[11px] font-manrope font-semibold text-charcoal-600 uppercase tracking-wide mb-1">{col.title}</div>
                           <ul className="space-y-0.5">
                             {col.links.map((l) => (
                               <li key={l.label}>
-                                <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-500 hover:text-brand-orange font-inter transition-colors">
+                                <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
                                   {l.label}
                                 </Link>
                               </li>

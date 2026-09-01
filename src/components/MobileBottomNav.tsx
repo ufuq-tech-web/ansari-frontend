@@ -27,7 +27,7 @@ export default function MobileBottomNav() {
           <Link
             key={item.label}
             href={item.href}
-            className="relative flex flex-col items-center justify-center py-2.5 text-charcoal-500 hover:text-brand-orange active:text-brand-orange transition-colors"
+            className="relative flex flex-col items-center justify-center py-2.5 text-black hover:text-brand-orange active:text-brand-orange transition-colors"
             aria-label={item.label}
           >
             <div className="relative">

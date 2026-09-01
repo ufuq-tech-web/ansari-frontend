@@ -110,7 +110,7 @@ export default function WhyChooseUs() {
                   <stat.icon className="w-5 h-5 text-brand-orange" strokeWidth={2} />
                 </div>
                 <div className="font-poppins font-bold text-2xl sm:text-3xl text-white">{stat.value}</div>
-                <div className="text-sm text-white/50 font-inter mt-1">{stat.label}</div>
+                <div className="text-sm text-white font-inter mt-1">{stat.label}</div>
               </div>
             ))}
           </div>

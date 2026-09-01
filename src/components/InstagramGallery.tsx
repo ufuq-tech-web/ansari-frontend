@@ -26,7 +26,7 @@ export default function InstagramGallery() {
           </div>
           <h2 className="section-heading text-2xl sm:text-3xl lg:text-4xl mt-2">See How Our Community Styles It</h2>
           <p className="mt-2 text-charcoal-900 font-inter">
-            <span className="font-poppins font-semibold text-brand-orange">@ansaribootthouse</span> · Tag us to be featured
+            <span className="font-poppins font-semibold text-brand-orange">@ansarifootwear</span> · Tag us to be featured
           </p>
         </div>
       </div>
@@ -112,13 +112,13 @@ export default function InstagramGallery() {
       {/* CTA */}
       <div className="container-main mt-8 text-center">
         <a
-          href="https://instagram.com/ansaribootthouse"
+          href="https://instagram.com/ansarifootwear"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2.5 bg-gradient-to-r from-amber-500 via-brand-orange to-leather-400 text-white font-poppins font-semibold px-8 py-3.5 rounded-full hover:shadow-lg hover:shadow-brand-orange/30 hover:scale-105 active:scale-95 transition-all duration-300"
         >
           <Instagram className="w-5 h-5" strokeWidth={2} />
-          Follow @ansaribootthouse
+          Follow @ansarifootwear
         </a>
       </div>
     </section>

@@ -4,7 +4,7 @@ import SiteChrome from "../components/SiteChrome";
 import Providers from "../components/Providers";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.ansaribootthouse.com"),
+  metadataBase: new URL("https://www.ansarifootwear.com"),
   title: {
     default: "Ansary Footwear — Quality Footwear for Every Step of Life",
     template: "%s",
@@ -26,7 +26,7 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Ansary Footwear",
-  url: "https://www.ansaribootthouse.com",
+  url: "https://www.ansarifootwear.com",
   description:
     "Affordable, quality footwear for men, women, and kids. 25+ years of trusted retail experience.",
   address: {
@@ -41,7 +41,7 @@ const organizationJsonLd = {
     "@type": "ContactPoint",
     telephone: "+91-98765-43210",
     contactType: "customer service",
-    email: "care@ansaribootthouse.com",
+    email: "care@ansarifootwear.com",
   },
 };
 
@@ -53,7 +53,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
