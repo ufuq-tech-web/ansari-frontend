@@ -24,7 +24,17 @@ export default function Newsletter() {
   return (
     <section id="newsletter" className="py-12 sm:py-16 lg:py-20 bg-white" aria-label="Newsletter signup">
       <div className="container-main">
-        <div className="relative rounded-3xl bg-gradient-to-br from-charcoal-800 via-charcoal-900 to-charcoal-800 overflow-hidden p-8 sm:p-12 lg:p-16 text-center">
+        <div className="relative rounded-3xl bg-charcoal-900 overflow-hidden p-8 sm:p-12 lg:p-16 text-center">
+          {/* Sports background photo */}
+          <img
+            src="/images/br.png"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* Dark gradient overlay for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-br from-charcoal-900/95 via-charcoal-900/85 to-charcoal-900/95" />
+
           {/* Decorative shapes */}
           <div className="absolute top-0 right-0 w-60 h-60 bg-brand-orange/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-leather-400/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
