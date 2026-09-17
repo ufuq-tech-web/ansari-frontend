@@ -27,7 +27,7 @@ export default function ContactUsClient() {
               <li className="text-white font-medium">Contact Us</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">Get in Touch</h1>
+          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight">Get in Touch</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             Questions about an order, sizing, or anything else — we're here to help.
           </p>

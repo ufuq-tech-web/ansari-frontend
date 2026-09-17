@@ -72,7 +72,7 @@ export default async function ArticlePage({
               <li className="text-white font-medium">{post.title}</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight max-w-3xl">{post.title}</h1>
+          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight max-w-3xl">{post.title}</h1>
           <div className="mt-4 flex items-center gap-4 text-white/75 text-sm font-inter">
             <span>By {post.author}</span>
             <span className="flex items-center gap-1.5">

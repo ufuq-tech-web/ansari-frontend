@@ -22,7 +22,7 @@ export default async function BlogPage() {
               <li className="text-white font-medium">Blog</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">The Ansari Blog</h1>
+          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight">The Ansari Blog</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             Buying guides, care tips, and style advice from 25+ years in the footwear business.
           </p>

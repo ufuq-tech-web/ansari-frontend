@@ -26,7 +26,7 @@ export default function AboutUsPage() {
               <li className="text-white font-medium">About Us</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">Quality Footwear for Every Step of Life</h1>
+          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight">Quality Footwear for Every Step of Life</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             25+ years of trusted retail experience, serving families across India.
           </p>

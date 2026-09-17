@@ -33,7 +33,7 @@ export default async function JournalPage() {
               <li className="text-white font-medium">Journal</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight text-shadow-sm">{seo?.title || 'The Journal'}</h1>
+          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight text-shadow-sm">{seo?.title || 'The Journal'}</h1>
           <p className="mt-4 text-white/90 text-base sm:text-lg font-inter leading-relaxed max-w-xl text-shadow-sm">
             {seo?.description || 'Tips, trends, and tutorials from the Ansary Footwear team.'}
           </p>

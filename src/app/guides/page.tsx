@@ -23,7 +23,7 @@ export default async function GuidesPage() {
               <li className="text-white font-medium">Buying Guides</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">Buying Guides</h1>
+          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight">Buying Guides</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             Expert advice on sizing, materials, and care — so you can shop with confidence every time.
           </p>
