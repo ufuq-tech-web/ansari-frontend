@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import { Package, ChevronRight } from 'lucide-react';
@@ -154,8 +155,8 @@ export default function OrdersPage() {
                                     <div className="flex flex-row items-center gap-4 sm:gap-6 min-w-0">
                                         <div className="flex -space-x-2 sm:-space-x-4 flex-shrink-0">
                                             {order.items.slice(0, 3).map((item) => (
-                                                <div key={item.id} className="w-14 h-14 sm:w-16 sm:h-16 bg-charcoal-50 border-2 border-white shadow-sm z-10">
-                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover mix-blend-multiply" />
+                                                <div key={item.id} className="relative w-14 h-14 sm:w-16 sm:h-16 bg-charcoal-50 border-2 border-white shadow-sm z-10">
+                                                    <Image src={item.image} alt={item.name} fill sizes="(min-width: 640px) 64px, 56px" className="object-cover mix-blend-multiply" />
                                                 </div>
                                             ))}
                                             {order.items.length > 3 && (

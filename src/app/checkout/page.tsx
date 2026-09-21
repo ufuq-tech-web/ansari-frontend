@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import { Truck, ShieldCheck, Banknote, CreditCard, Smartphone, Tag, X, Lock } from 'lucide-react';
@@ -477,8 +478,8 @@ export default function CheckoutPage() {
                             <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                                 {items.map((item) => (
                                     <div key={item.id} className="flex gap-4 group">
-                                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-charcoal-100 flex-shrink-0 border border-charcoal-100">
-                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                                        <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-charcoal-100 flex-shrink-0 border border-charcoal-100">
+                                            <Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover group-hover:scale-110 transition-transform duration-300" />
                                         </div>
                                         <div className="flex-1 min-w-0 flex flex-col justify-center">
                                             <p className="text-sm font-sora font-semibold text-charcoal-900 truncate">{item.name}</p>

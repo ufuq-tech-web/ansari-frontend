@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Truck, Package } from 'lucide-react';
 import type { Order } from '../lib/orders';
 
@@ -38,8 +39,8 @@ export default function OrderSummaryCard({ order, showDelivery = true, onCancelI
                     return (
                     <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-3">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className={`w-14 h-14 rounded-lg overflow-hidden bg-charcoal-100 flex-shrink-0 ${isCancelled ? 'opacity-50 grayscale' : ''}`}>
-                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                            <div className={`relative w-14 h-14 rounded-lg overflow-hidden bg-charcoal-100 flex-shrink-0 ${isCancelled ? 'opacity-50 grayscale' : ''}`}>
+                                <Image src={item.image} alt={item.name} fill sizes="56px" className="object-cover" />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">

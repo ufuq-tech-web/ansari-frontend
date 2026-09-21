@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
 import { useCart } from '../../lib/cart-context';
@@ -82,8 +83,8 @@ export default function CartPage() {
           <div className="flex-1 min-w-0 space-y-4">
             {items.map((item) => (
               <div key={item.id} className="bg-white rounded-2xl shadow-card p-4 flex gap-4">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-charcoal-100 flex-shrink-0">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-charcoal-100 flex-shrink-0">
+                  <Image src={item.image} alt={item.name} fill sizes="(min-width: 640px) 112px, 96px" className="object-cover" />
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col">
                   <div className="flex items-start justify-between gap-2">
