@@ -17,8 +17,12 @@ function isNotFound(err: unknown): boolean {
   return err instanceof ApiError && err.status === 404;
 }
 
-async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+async function apiFetch<T>(path: string, options: RequestInit & { next?: NextFetchRequestConfig } = {}): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
+    // Cache storefront reads for 60s so catalog pages are served from
+    // Next's data cache instead of hitting the backend on every request.
+    // Callers can still override via options.next / options.cache.
+    next: { revalidate: 60 },
     ...options,
     headers: {
       "Content-Type": "application/json",
