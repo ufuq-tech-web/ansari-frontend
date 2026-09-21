@@ -4,14 +4,14 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                // Headings (H1–H3) and product names.
-                sora: ['Sora', 'sans-serif'],
+                // Headings (H1–H3) and product names. Self-hosted via next/font (see app/layout.tsx).
+                sora: ['var(--font-sora)', 'sans-serif'],
                 // Legacy fallback for other components using font-poppins that expect Sora.
-                poppins: ['Sora', 'sans-serif'],
+                poppins: ['var(--font-sora)', 'sans-serif'],
                 // Body copy — product descriptions, blog/guide content, footer.
-                inter: ['Inter', 'sans-serif'],
+                inter: ['var(--font-inter)', 'sans-serif'],
                 // CTA buttons, navigation, and price.
-                manrope: ['Manrope', 'sans-serif'],
+                manrope: ['var(--font-manrope)', 'sans-serif'],
             },
             colors: {
                 primary: 'rgb(var(--color-primary) / <alpha-value>)',

@@ -149,11 +149,11 @@ export default function AdminDashboardPage() {
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94A3B8", fontWeight: 600, fontFamily: "Inter" }} axisLine={false} tickLine={false} dy={10} />
-                      <YAxis tick={{ fontSize: 11, fill: "#94A3B8", fontWeight: 600, fontFamily: "Inter" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94A3B8", fontWeight: 600, fontFamily: "var(--font-inter)" }} axisLine={false} tickLine={false} dy={10} />
+                      <YAxis tick={{ fontSize: 11, fill: "#94A3B8", fontWeight: 600, fontFamily: "var(--font-inter)" }} axisLine={false} tickLine={false} />
                       <Tooltip
                         formatter={(value) => [`₹${Number(value ?? 0).toLocaleString("en-IN")}`, "Revenue"]}
-                        contentStyle={{ borderRadius: 16, border: "1px solid #E2E8F0", fontSize: 13, boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)", fontWeight: 500, fontFamily: "Inter", padding: "12px 16px" }}
+                        contentStyle={{ borderRadius: 16, border: "1px solid #E2E8F0", fontSize: 13, boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)", fontWeight: 500, fontFamily: "var(--font-inter)", padding: "12px 16px" }}
                         itemStyle={{ color: "#EA580C", fontWeight: 700 }}
                       />
                       <Area type="monotone" dataKey="revenue" stroke="#EA580C" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
@@ -174,8 +174,8 @@ export default function AdminDashboardPage() {
                         <Cell key={d.name} fill={STATUS_COLORS[d.name] ?? "#94A3B8"} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", fontSize: 13, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)", fontWeight: 600, fontFamily: "Inter" }} />
-                    <Legend wrapperStyle={{ fontSize: 11, fontFamily: "Inter", fontWeight: 600, paddingTop: "20px" }} iconType="circle" />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", fontSize: 13, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)", fontWeight: 600, fontFamily: "var(--font-inter)" }} />
+                    <Legend wrapperStyle={{ fontSize: 11, fontFamily: "var(--font-inter)", fontWeight: 600, paddingTop: "20px" }} iconType="circle" />
                   </PieChart>
                 </ResponsiveContainer>
               )}
@@ -194,8 +194,8 @@ export default function AdminDashboardPage() {
                         <Cell key={d.name} fill={CATEGORY_COLORS[i % CATEGORY_COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", fontSize: 13, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)", fontWeight: 600, fontFamily: "Inter" }} />
-                    <Legend wrapperStyle={{ fontSize: 11, fontFamily: "Inter", fontWeight: 600, paddingTop: "20px" }} iconType="circle" />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", fontSize: 13, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)", fontWeight: 600, fontFamily: "var(--font-inter)" }} />
+                    <Legend wrapperStyle={{ fontSize: 11, fontFamily: "var(--font-inter)", fontWeight: 600, paddingTop: "20px" }} iconType="circle" />
                   </PieChart>
                 </ResponsiveContainer>
               )}
@@ -212,8 +212,8 @@ export default function AdminDashboardPage() {
                         <Cell key={d.name} fill={STOCK_COLORS[d.name] ?? "#94A3B8"} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", fontSize: 13, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)", fontWeight: 600, fontFamily: "Inter" }} />
-                    <Legend wrapperStyle={{ fontSize: 11, fontFamily: "Inter", fontWeight: 600, paddingTop: "20px" }} iconType="circle" />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", fontSize: 13, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)", fontWeight: 600, fontFamily: "var(--font-inter)" }} />
+                    <Legend wrapperStyle={{ fontSize: 11, fontFamily: "var(--font-inter)", fontWeight: 600, paddingTop: "20px" }} iconType="circle" />
                   </PieChart>
                 </ResponsiveContainer>
               )}

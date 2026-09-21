@@ -30,7 +30,7 @@
     }
 
     body {
-        font-family: 'Inter', sans-serif;
+        font-family: var(--font-inter), sans-serif;
         background-color: rgb(var(--color-background));
         color: rgb(var(--color-primary));
         -webkit-font-smoothing: antialiased;
@@ -43,11 +43,11 @@
     h4,
     h5,
     h6 {
-        font-family: 'Sora', sans-serif;
+        font-family: var(--font-sora), sans-serif;
     }
 
     button {
-        font-family: 'Manrope', sans-serif;
+        font-family: var(--font-manrope), sans-serif;
     }
 
     * {
