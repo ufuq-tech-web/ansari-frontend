@@ -104,7 +104,7 @@ export default function HeroSection() {
 
             <h1
               key={`title-${currentSlide}`}
-              className="font-sora font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl xl:text-[3.4rem] leading-[1.1] tracking-tight animate-[fadeSlideUp_0.6s_ease-out_0.2s_both]"
+              className="font-sora font-extrabold text-white text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] leading-[1.1] tracking-tight animate-[fadeSlideUp_0.6s_ease-out_0.2s_both]"
             >
               {slide.title}
             </h1>

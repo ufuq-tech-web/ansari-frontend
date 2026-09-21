@@ -27,7 +27,7 @@ export default function CustomerReviews() {
         <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <div>
             <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Loved by Families</span>
-            <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary whitespace-nowrap">What Our <span className="text-secondary">Customers Say</span></h2>
+            <h2 className="section-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-tight text-primary whitespace-nowrap">What Our <span className="text-secondary">Customers Say</span></h2>
             <div className="mt-4 flex items-center justify-center gap-2">
               <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((i) => (

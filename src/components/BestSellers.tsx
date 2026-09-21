@@ -40,7 +40,7 @@ export default function BestSellers() {
         <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <div>
             <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Customer Favorites</span>
-            <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary">Best <span className="text-secondary">Sellers</span></h2>
+            <h2 className="section-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-tight text-primary">Best <span className="text-secondary">Sellers</span></h2>
             <p className="mt-4 text-black font-inter text-base md:text-lg">Top-rated styles loved by thousands of customers</p>
           </div>
           <Link href="/best-sellers" className="inline-flex items-center gap-1.5 text-brand-orange font-manrope font-semibold text-sm hover:gap-2.5 transition-all mt-2">

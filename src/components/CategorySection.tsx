@@ -74,7 +74,7 @@ export default function CategorySection() {
         {/* Luxury Header & Tabs */}
         <div className="flex flex-col items-center text-center gap-8 mb-12 max-w-4xl mx-auto">
           <div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-sora font-extrabold tracking-tight text-primary mb-4 whitespace-nowrap">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sora font-extrabold tracking-tight text-primary mb-4 whitespace-nowrap">
               Explore <span className="text-secondary">Collections</span>
             </h2>
             <p className="text-black font-inter text-base md:text-lg whitespace-normal max-w-2xl mx-auto">

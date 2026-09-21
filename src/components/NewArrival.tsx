@@ -29,7 +29,7 @@ export default function NewArrivals() {
         <div className="flex flex-col items-center text-center gap-4 mb-10">
           <div>
             <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Just In</span>
-            <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary">New <span className="text-secondary">Arrivals</span></h2>
+            <h2 className="section-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-tight text-primary">New <span className="text-secondary">Arrivals</span></h2>
           </div>
 
           {/* Carousel controls */}

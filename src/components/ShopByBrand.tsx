@@ -21,7 +21,7 @@ export default function ShopByBrand() {
       <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
         <div>
           <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Premium Partners</span>
-          <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary">Discover <span className="text-secondary">Brands</span></h2>
+          <h2 className="section-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-tight text-primary">Discover <span className="text-secondary">Brands</span></h2>
         </div>
       </div>
       
