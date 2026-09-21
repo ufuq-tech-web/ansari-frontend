@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { collections } from '../../lib/catalog-helpers';
@@ -25,7 +26,7 @@ export default async function CollectionsPage() {
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Collections hero">
         <div className="absolute inset-0">
-          <img src="/images/collections-banner.png" alt="Collections" loading="eager" className="w-full h-full object-cover object-[center_35%] opacity-40" />
+          <Image src="/images/collections-banner.png" alt="Collections" fill priority sizes="100vw" className="object-cover object-[center_35%] opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
         </div>
         <div className="relative container-main py-10 sm:py-14 lg:py-20 min-h-[320px] sm:min-h-[400px] lg:min-h-[450px] flex flex-col justify-center">
@@ -57,11 +58,12 @@ export default async function CollectionsPage() {
               href={col.href}
               className="group relative rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 aspect-[4/5]"
             >
-              <img
+              <Image
                 src={col.image}
                 alt={col.name}
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                fill
+                sizes="(min-width: 1024px) 33vw, 50vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/85 via-charcoal-900/25 to-transparent" />
               <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-end">

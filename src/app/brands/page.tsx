@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { storefrontApi, slugify } from '../../lib/storefront-api';
@@ -38,7 +39,7 @@ export default async function BrandsPage() {
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Brands hero">
         <div className="absolute inset-0">
-          <img src="/images/brands-banner.png" alt="Brands" loading="eager" className="w-full h-full object-cover object-[center_35%] opacity-40" />
+          <Image src="/images/brands-banner.png" alt="Brands" fill priority sizes="100vw" className="object-cover object-[center_35%] opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
         </div>
         <div className="relative container-main py-10 sm:py-14 lg:py-20 min-h-[320px] sm:min-h-[400px] lg:min-h-[450px] flex flex-col justify-center">
@@ -70,11 +71,12 @@ export default async function BrandsPage() {
               href={`/brands/${slugify(b.name)}`}
               className="group relative rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 aspect-[4/3] bg-charcoal-100"
             >
-              <img
+              <Image
                 src={b.image}
                 alt={`${b.name} footwear`}
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/90 via-charcoal-900/40 to-transparent" />
               <div className="absolute inset-0 p-5 flex flex-col justify-end">

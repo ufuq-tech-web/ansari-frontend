@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Clock, FileText } from "lucide-react";
@@ -59,7 +60,7 @@ export default async function ArticlePage({
       />
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Article hero">
         <div className="absolute inset-0">
-          <img src={post.image} alt="" loading="eager" className="w-full h-full object-cover opacity-30" />
+          <Image src={post.image} alt="" fill priority sizes="100vw" className="object-cover opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
         </div>
         <div className="relative container-main py-10 sm:py-14 lg:py-16">

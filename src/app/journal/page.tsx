@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Clock, FileText } from 'lucide-react';
 import { storefrontApi } from '../../lib/storefront-api';
@@ -21,7 +22,7 @@ export default async function JournalPage() {
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Articles hero">
         {seo?.heroImage && (
           <div className="absolute inset-0">
-            <img src={seo.heroImage} alt="" loading="eager" className="w-full h-full object-cover opacity-40 mix-blend-overlay" />
+            <Image src={seo.heroImage} alt="" fill priority sizes="100vw" className="object-cover opacity-40 mix-blend-overlay" />
             <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/80 via-charcoal-900/40 to-charcoal-900/60" />
           </div>
         )}
@@ -52,11 +53,12 @@ export default async function JournalPage() {
                 className="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover border border-charcoal-200 hover:border-brand-orange/30 transition-all duration-300 group flex flex-col"
               >
                 <div className="relative h-44 bg-charcoal-100 overflow-hidden">
-                  <img
+                  <Image
                     src={post.image}
                     alt=""
-                    loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="p-5 flex-1 flex flex-col">

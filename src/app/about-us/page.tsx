@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ShieldCheck, Heart, Users, Truck, Quote, Calendar, MapPin, Award } from 'lucide-react';
 import PageFaq from '../../components/PageFaq';
@@ -38,7 +39,7 @@ export default async function AboutUsPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-charcoal-900" aria-label="About us hero">
         <div className="absolute inset-0">
-          <img src="/images/accessories-banner.png" alt="" aria-hidden="true" className="w-full h-full object-cover opacity-35" />
+          <Image src="/images/accessories-banner.png" alt="" aria-hidden="true" fill priority sizes="100vw" className="object-cover opacity-35" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900 via-charcoal-900/85 to-charcoal-900/50" />
         </div>
         {/* Decorative blurs, consistent with other dark sections on the site */}
@@ -80,12 +81,15 @@ export default async function AboutUsPage() {
         {/* Our Story — image + copy */}
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-14 mb-16 sm:mb-20">
           <div className="order-2 lg:order-1 flex flex-col gap-5 h-full">
-            <img
-              src="/images/collections-banner.png"
-              alt="Footwear for every member of the family, displayed together"
-              loading="lazy"
-              className="w-full flex-1 min-h-[220px] object-cover rounded-2xl shadow-card"
-            />
+            <div className="relative flex-1 min-h-[220px] rounded-2xl overflow-hidden shadow-card">
+              <Image
+                src="/images/collections-banner.png"
+                alt="Footwear for every member of the family, displayed together"
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
             <div className="flex items-start gap-3 bg-charcoal-900 text-white rounded-2xl shadow-card p-5">
               <Quote className="w-6 h-6 text-brand-orange flex-shrink-0" strokeWidth={2} />
               <p className="text-sm font-inter leading-relaxed text-white/85">
