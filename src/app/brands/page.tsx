@@ -3,14 +3,26 @@ import { ArrowRight } from 'lucide-react';
 import { storefrontApi, slugify } from '../../lib/storefront-api';
 import RecentlyViewed from '../../components/RecentlyViewed';
 import Newsletter from '../../components/Newsletter';
+import PageFaq from '../../components/PageFaq';
+import { getPageFaqs } from '../../lib/seo-faqs';
 
 export const metadata = {
   title: 'Shop by Brand — Ansary Footwear',
   description: 'Explore footwear from Heritage, UrbanStep, FlexWalk, Grace, TrailMate, LittleSteps, Classic, and ComfortPro.',
 };
 
+const defaultBrandsFaqs = [
+  { question: 'Are all products from these brands 100% genuine?', answer: 'Yes, we source directly from each brand or their authorized distributors — every product listed is genuine.' },
+  { question: 'Do brand warranties apply when I buy from Ansary?', answer: 'Yes, manufacturer warranties on materials and workmanship apply the same way as buying in-store, alongside our own 7-day return policy.' },
+  { question: 'Can I filter products by multiple brands at once?', answer: 'Yes, use the Brand filter on any category page to select more than one brand and compare styles side by side.' },
+  { question: 'Will you add more brands in the future?', answer: 'We regularly evaluate new partners based on quality and customer demand — check back or follow our Journal for announcements.' },
+];
+
 export default async function BrandsPage() {
-  const productsRes = await storefrontApi.getProducts({ limit: 100 });
+  const [productsRes, faqs] = await Promise.all([
+    storefrontApi.getProducts({ limit: 100 }),
+    getPageFaqs('brands', defaultBrandsFaqs),
+  ]);
   const allProductsList = productsRes.items;
 
   const brandData = Array.from(new Set(allProductsList.map((p) => p.brand))).map((brand) => {
@@ -78,6 +90,8 @@ export default async function BrandsPage() {
           ))}
         </div>
       </div>
+
+      <PageFaq faqs={faqs} subtitle="What to know about shopping our brand partners." />
 
       <RecentlyViewed />
       <Newsletter />

@@ -11,7 +11,16 @@ import CustomerReviews from "../components/CustomerReviews";
 import InstagramGallery from "../components/InstagramGallery";
 import Newsletter from "../components/Newsletter";
 import RecentlyViewed from "../components/RecentlyViewed";
+import PageFaq from "../components/PageFaq";
+import { getPageFaqs, buildFaqJsonLd } from "../lib/seo-faqs";
 import { Metadata } from 'next';
+
+const defaultHomeFaqs = [
+  { question: "What payment methods do you accept?", answer: "We accept Cash on Delivery (COD), all major credit and debit cards, UPI, and net banking." },
+  { question: "How long does delivery take?", answer: "Most orders arrive within 4-6 business days for metro cities and 6-9 business days for other locations." },
+  { question: "Can I return or exchange an item?", answer: "Yes — unworn shoes in original packaging can be returned or exchanged within 7 days of delivery." },
+  { question: "Do you have physical stores?", answer: "Yes, our flagship store is at 123 Fashion Street, Mumbai, Maharashtra 400001." },
+];
 
 export async function generateMetadata(): Promise<Metadata> {
   let title = "Ansary Footwear";
@@ -48,28 +57,8 @@ export default async function Home() {
     }
   };
 
-  let faqs: any[] = [];
-  try {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
-    const res = await fetch(`${API_URL}/seo/home`, { next: { revalidate: 60 } });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.faqs && Array.isArray(data.faqs)) faqs = data.faqs;
-    }
-  } catch (err) {}
-
-  const faqJsonLd = faqs.length > 0 ? {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqs.map(f => ({
-      "@type": "Question",
-      "name": f.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": f.answer
-      }
-    }))
-  } : null;
+  const faqs = await getPageFaqs('home', defaultHomeFaqs);
+  const faqJsonLd = buildFaqJsonLd(faqs);
 
   return (
     <div className="min-h-screen bg-brand-ivory font-inter text-charcoal-900 pb-16 lg:pb-0">
@@ -87,6 +76,7 @@ export default async function Home() {
         <CustomerReviews />
         <WhyChooseUs />
         <InstagramGallery />
+        <PageFaq faqs={faqs} subtitle="Everything you need to know before you shop with us." />
         <Newsletter />
         <RecentlyViewed />
       </main>

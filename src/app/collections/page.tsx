@@ -3,6 +3,8 @@ import { ArrowRight } from 'lucide-react';
 import { collections } from '../../lib/catalog-helpers';
 import RecentlyViewed from '../../components/RecentlyViewed';
 import Newsletter from '../../components/Newsletter';
+import PageFaq from '../../components/PageFaq';
+import { getPageFaqs } from '../../lib/seo-faqs';
 
 export const metadata = {
   title: 'Shop by Collection — Ansary Footwear',
@@ -10,7 +12,15 @@ export const metadata = {
   alternates: { canonical: '/collections' },
 };
 
-export default function CollectionsPage() {
+const defaultCollectionsFaqs = [
+  { question: 'What are these curated collections based on?', answer: 'Each collection groups footwear by occasion — office wear, everyday comfort, sports, weddings, and school — so you can shop by need instead of browsing category by category.' },
+  { question: 'Can I mix items from different collections in one order?', answer: 'Yes, collections are just a browsing shortcut — you can add products from any collection or category to the same cart.' },
+  { question: 'Are collection prices different from individual item prices?', answer: 'No, collections don\'t carry a separate price — every item is priced the same whether you find it here or in its category page.' },
+  { question: 'How often are collections updated?', answer: 'We refresh collections seasonally and whenever new styles launch, so it\'s worth checking back before a big occasion.' },
+];
+
+export default async function CollectionsPage() {
+  const faqs = await getPageFaqs('collections', defaultCollectionsFaqs);
   return (
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Collections hero">
@@ -67,6 +77,8 @@ export default function CollectionsPage() {
           ))}
         </div>
       </div>
+
+      <PageFaq faqs={faqs} subtitle="What to know before you shop our curated collections." />
 
       <RecentlyViewed />
       <Newsletter />
