@@ -133,10 +133,14 @@ const buildNavLinks = (guides: BuyingGuideWithCategory[]): { label: string; href
   },
 ];
 
-const simpleLinks = [
+const moreLinks = [
   { label: 'Brands', href: '/brands' },
   { label: 'Collections', href: '/collections' },
   { label: 'Journal', href: '/journal' },
+  { label: 'About Us', href: '/about-us' },
+];
+
+const simpleLinks = [
   { label: 'Sale', href: '/sale', highlight: true },
 ];
 
@@ -231,6 +235,37 @@ export default function Header() {
                 </div>
               </div>
             ))}
+
+            <div
+              className="mega-menu-trigger relative"
+              onMouseEnter={() => openMegaMenu('More')}
+              onMouseLeave={closeMegaMenu}
+              onBlur={handleMegaMenuBlur}
+            >
+              <button
+                type="button"
+                onFocus={() => openMegaMenu('More')}
+                className="flex items-center gap-1 px-3 py-2 text-sm font-manrope font-medium text-charcoal-700 hover:text-brand-orange transition-colors rounded-lg"
+              >
+                More
+                <ChevronDown className="w-3.5 h-3.5" strokeWidth={2} />
+              </button>
+
+              <div className={`mega-menu absolute left-0 top-full pt-3 w-48 ${openMenu === 'More' ? 'is-open' : ''}`}>
+                <div className="bg-white rounded-2xl shadow-card-hover border border-charcoal-200 p-2">
+                  {moreLinks.map((link) => (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      onClick={closeMegaMenu}
+                      className="block px-3 py-2.5 text-sm text-charcoal-700 hover:text-brand-orange hover:bg-charcoal-50 rounded-lg transition-colors font-inter"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {simpleLinks.map((link) => (
               <Link
@@ -373,6 +408,13 @@ export default function Header() {
                         </div>
                       ))}
                     </div>
+                  </li>
+                ))}
+                {moreLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} onClick={closeMobileMenu} className="block px-4 py-3 rounded-xl font-manrope font-medium text-charcoal-800 hover:bg-charcoal-50 hover:text-brand-orange transition-colors">
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
                 {simpleLinks.map((link) => (
