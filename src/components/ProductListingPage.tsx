@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import FilterSidebar from './category/FilterSidebar';
@@ -76,7 +77,7 @@ export default function ProductListingPage({ title, subtitle, products, heroImag
             <section className="relative overflow-hidden bg-charcoal-800" aria-label={`${title} hero`}>
                 {heroImage && (
                     <div className="absolute inset-0">
-                        <img src={heroImage} alt={title} loading="eager" className="w-full h-full object-cover object-[center_35%] opacity-40" />
+                        <Image src={heroImage} alt={title} fill priority sizes="100vw" className="object-cover object-[center_35%] opacity-40" />
                         <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
                     </div>
                 )}

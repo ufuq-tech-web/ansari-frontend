@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import type { CategoryConfig } from '../../lib/catalog-helpers';
 
 interface Props {
@@ -29,12 +30,13 @@ export default function SubcategoryGrid({ category, activeSubcategory, onSubcate
                 aria-pressed={isActive}
                 className="group flex-shrink-0 snap-start flex flex-col items-center gap-3 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 rounded-xl w-[120px] sm:w-[140px] lg:w-[160px]"
               >
-                <div className={`w-full aspect-square rounded-xl overflow-hidden bg-charcoal-100 shadow-card group-hover:shadow-card-hover transition-all duration-300 ${isActive ? 'ring-2 ring-brand-orange ring-offset-2' : ''}`}>
-                  <img
+                <div className={`relative w-full aspect-square rounded-xl overflow-hidden bg-charcoal-100 shadow-card group-hover:shadow-card-hover transition-all duration-300 ${isActive ? 'ring-2 ring-brand-orange ring-offset-2' : ''}`}>
+                  <Image
                     src={sub.image}
                     alt={sub.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    fill
+                    sizes="(min-width: 1024px) 160px, (min-width: 640px) 140px, 120px"
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
                 <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { X, ShoppingBag, Heart, Truck, RefreshCw, ChevronLeft, ChevronRight, Star, BadgeCheck, Zap } from 'lucide-react';
 import type { Product } from '../../lib/catalog-helpers';
 import { useCart } from '../../lib/cart-context';
@@ -62,10 +63,12 @@ export default function QuickViewModal({ product, onClose, onAddedToCart }: Prop
         <div className="grid sm:grid-cols-2">
           {/* Image panel */}
           <div className="relative bg-charcoal-50 rounded-t-3xl sm:rounded-l-3xl sm:rounded-tr-none overflow-hidden aspect-square">
-            <img
+            <Image
               src={images[imgIndex]}
               alt={product.name}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(min-width: 640px) 384px, 100vw"
+              className="object-cover"
             />
 
             {/* Badges */}

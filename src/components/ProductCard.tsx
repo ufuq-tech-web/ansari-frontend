@@ -1,6 +1,7 @@
 "use client";
 
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, Star } from 'lucide-react';
 import { productHref as buildProductHref, type Product as CatalogProduct } from '../lib/catalog-helpers';
@@ -76,34 +77,38 @@ export default function ProductCard({ product, onWishlist }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/60 via-charcoal-900/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none" />
         {productHref ? (
           <Link href={productHref} className="absolute inset-0 block">
-            <img
+            <Image
               src={images.primary}
               alt={product.name}
-              loading="lazy"
-              className="product-img-primary absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+              fill
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+              className="product-img-primary object-cover transition-opacity duration-300"
             />
-            <img
+            <Image
               src={images.secondary}
               alt=""
               aria-hidden="true"
-              loading="lazy"
-              className="product-img-secondary absolute inset-0 w-full h-full object-cover"
+              fill
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+              className="product-img-secondary object-cover"
             />
           </Link>
         ) : (
           <>
-            <img
+            <Image
               src={images.primary}
               alt={product.name}
-              loading="lazy"
-              className="product-img-primary absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+              fill
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+              className="product-img-primary object-cover transition-opacity duration-300"
             />
-            <img
+            <Image
               src={images.secondary}
               alt=""
               aria-hidden="true"
-              loading="lazy"
-              className="product-img-secondary absolute inset-0 w-full h-full object-cover"
+              fill
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+              className="product-img-secondary object-cover"
             />
           </>
         )}

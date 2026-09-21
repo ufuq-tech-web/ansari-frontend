@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import type { CategoryConfig } from '../../lib/catalog-helpers';
 
@@ -27,11 +28,12 @@ export default function RelatedCategories({ category, onCategoryChange }: Props)
                             className="group relative rounded-2xl overflow-hidden aspect-[3/4] shadow-card hover:shadow-card-hover transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange"
                             aria-label={`Shop ${rel.name}`}
                         >
-                            <img
+                            <Image
                                 src={rel.image}
                                 alt={rel.name}
-                                loading="lazy"
-                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                fill
+                                sizes="(min-width: 640px) 33vw, 100vw"
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/80 to-transparent" />
                             <div className="absolute inset-0 p-6 flex flex-col justify-end">

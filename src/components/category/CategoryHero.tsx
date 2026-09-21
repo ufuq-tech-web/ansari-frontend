@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
 import type { CategoryConfig } from '../../lib/catalog-helpers';
@@ -26,11 +27,13 @@ export default function CategoryHero({ category, activeSubcategory }: Props) {
         >
             {/* Background image with overlay */}
             <div className="absolute inset-0">
-                <img
+                <Image
                     src={category.heroImage}
                     alt={category.name}
-                    loading="eager"
-                    className="w-full h-full object-cover opacity-60"
+                    fill
+                    priority
+                    sizes="100vw"
+                    className="object-cover opacity-60"
                     style={{
                         objectPosition: category.key === 'women' ? 'right center' :
                             category.key === 'accessories' ? 'center 25%' :

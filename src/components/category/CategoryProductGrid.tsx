@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Tag, Zap } from 'lucide-react';
 import ProductCard from '../ProductCard';
@@ -160,7 +161,7 @@ function ListCard({ product, onQuickView }: { product: Product; onQuickView: (p:
     return (
         <div className="bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 flex gap-4 p-4">
             <div className="relative w-32 sm:w-40 aspect-square rounded-xl overflow-hidden bg-charcoal-100 flex-shrink-0 group">
-                <img src={product.image} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <Image src={product.image} alt={product.name} fill sizes="(min-width: 640px) 160px, 128px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
             <div className="flex flex-col flex-1 min-w-0">
                 <span className="text-[11px] text-secondary font-manrope font-bold uppercase tracking-wider">{product.brand}</span>
