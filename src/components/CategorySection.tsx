@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { categories, slugify } from '../lib/catalog-helpers';
@@ -120,10 +121,12 @@ export default function CategorySection() {
                 className="group relative flex flex-col justify-end shrink-0 snap-start w-[240px] md:w-[280px] lg:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500"
               >
                 {/* Image with Parallax-like scale effect */}
-                <img 
+                <Image
                   src={sub.image}
                   alt={sub.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-110"
+                  fill
+                  sizes="(min-width: 1024px) 320px, (min-width: 768px) 280px, 240px"
+                  className="object-cover transition-all duration-700 ease-out group-hover:scale-110"
                 />
                 
                 {/* Intense Dark Gradient for Text Legibility */}

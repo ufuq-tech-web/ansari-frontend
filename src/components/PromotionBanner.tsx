@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Sparkles, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -49,11 +50,12 @@ export default function PromotionalBanner() {
     <section id="sale" className="relative w-full min-h-[500px] lg:min-h-[600px] flex items-center overflow-hidden bg-charcoal-900" aria-label="Seasonal promotion">
       {/* Full-width Background Image */}
       <div className="absolute inset-0 z-0">
-        <img
+        <Image
           src={banner.image}
           alt={banner.title}
-          loading="lazy"
-          className="w-full h-full object-cover object-right sm:object-center opacity-80"
+          fill
+          sizes="100vw"
+          className="object-cover object-right sm:object-center opacity-80"
         />
         {/* Gradient Overlay to ensure text readability on the left */}
         <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/95 via-charcoal-900/70 to-transparent" />

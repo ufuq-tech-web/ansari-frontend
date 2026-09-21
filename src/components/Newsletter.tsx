@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Mail, CheckCircle2, Gift, Percent, Truck } from 'lucide-react';
 
 const perks = [
@@ -26,11 +27,13 @@ export default function Newsletter() {
       <div className="container-main">
         <div className="relative rounded-3xl bg-charcoal-900 overflow-hidden p-8 sm:p-12 lg:p-16 text-center">
           {/* Sports background photo */}
-          <img
+          <Image
             src="/images/br.png"
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            sizes="(min-width: 1440px) 1440px, 100vw"
+            className="object-cover"
           />
           {/* Dark gradient overlay for text legibility */}
           <div className="absolute inset-0 bg-gradient-to-br from-charcoal-900/95 via-charcoal-900/85 to-charcoal-900/95" />

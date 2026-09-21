@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { collections } from '../lib/catalog-helpers';
@@ -55,11 +56,12 @@ export default function FeaturedCollections() {
               href={col.href}
               className="group relative overflow-hidden transition-all duration-500 aspect-[3/4] sm:aspect-[4/5] rounded-2xl flex-shrink-0 w-[55vw] sm:w-[40vw] lg:w-auto snap-start"
             >
-              <img
+              <Image
                 src={col.image}
                 alt={col.name}
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                fill
+                sizes="(min-width: 1024px) 20vw, (min-width: 640px) 40vw, 55vw"
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/85 via-charcoal-900/25 to-transparent group-hover:from-charcoal-900/90 transition-all duration-500" />
 

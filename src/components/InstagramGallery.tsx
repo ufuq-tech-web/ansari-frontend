@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { Instagram } from 'lucide-react';
 import { instagramImages } from '../lib/catalog-helpers';
 
@@ -29,11 +30,12 @@ export default function InstagramGallery() {
               className="group relative block overflow-hidden rounded-xl aspect-square"
               aria-label={`Instagram post ${i + 1}`}
             >
-              <img
+              <Image
                 src={src}
                 alt={`Ansary Footwear lifestyle photo ${i + 1}`}
-                loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                fill
+                sizes="(min-width: 640px) 16vw, 33vw"
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
               />
             </a>
           ))}

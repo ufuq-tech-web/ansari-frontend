@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Shield, Award, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -69,12 +70,14 @@ export default function HeroSection() {
       <div className="relative h-[560px] sm:h-[620px] lg:h-[680px] w-full">
         {/* Slide images with crossfade and Ken Burns effect */}
         {heroSlides.map((s, i) => (
-          <img
+          <Image
             key={i}
             src={s.image}
             alt={`Hero slide ${i + 1}`}
-            loading={i === 0 ? 'eager' : 'lazy'}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out ${i === currentSlide
+            fill
+            priority={i === 0}
+            sizes="100vw"
+            className={`object-cover transition-opacity duration-[1500ms] ease-in-out ${i === currentSlide
               ? 'opacity-100 scale-100 transition-transform duration-[10000ms] ease-out'
               : 'opacity-0 scale-110 transition-transform duration-[1000ms] ease-in'
               }`}
