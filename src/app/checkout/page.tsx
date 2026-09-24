@@ -9,7 +9,6 @@ import { Truck, ShieldCheck, Banknote, CreditCard, Smartphone, Tag, X, Lock } fr
 import { useCart } from '../../lib/cart-context';
 import { useAuthStore } from "../../lib/auth-store";
 import { customerApi, ApiError } from '../../lib/customer-api';
-import { storefrontApi } from '../../lib/storefront-api';
 
 interface Address {
     fullName: string;
@@ -120,7 +119,8 @@ export default function CheckoutPage() {
     const [orderError, setOrderError] = useState('');
     const redirecting = useRef(false);
 
-    const [shippingSettings, setShippingSettings] = useState({ flatRate: 79, freeShippingThreshold: 999 });
+    const [shippingQuote, setShippingQuote] = useState<{ shipping: number; etaDays: number | null }>({ shipping: 99, etaDays: null });
+    const [shippingLoading, setShippingLoading] = useState(false);
     const [couponInput, setCouponInput] = useState('');
     const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
     const [activeCoupons, setActiveCoupons] = useState<any[]>([]);
@@ -128,7 +128,6 @@ export default function CheckoutPage() {
     const [applyingCoupon, setApplyingCoupon] = useState(false);
 
     useEffect(() => {
-        storefrontApi.getShippingSettings().then(setShippingSettings);
         customerApi.get<any[]>('/users/me/addresses').then(addrs => {
             const uniqueAddrs = addrs.filter((addr, index, self) =>
                 index === self.findIndex((t) => (
@@ -140,6 +139,30 @@ export default function CheckoutPage() {
         }).catch(() => { });
         customerApi.get<any[]>('/coupons/active').then(setActiveCoupons).catch(() => { });
     }, []);
+
+    // Live shipping cost from Shiprocket, based on whichever address is
+    // currently selected (a saved one, or the pincode typed into the new
+    // address form). Debounced so we're not firing on every keystroke.
+    // checkout-init recomputes this again server-side when the order is
+    // actually placed — this is purely for display.
+    const effectivePincode = selectedAddressId === 'new'
+        ? address.pincode
+        : (savedAddresses.find((a) => a.id === selectedAddressId)?.pincode ?? '');
+
+    useEffect(() => {
+        if (effectivePincode.length !== 6 || subtotal === 0) return;
+        setShippingLoading(true);
+        const timer = setTimeout(() => {
+            customerApi.post<{ shipping: number; etaDays: number | null }>('/orders/shipping-rate', {
+                pincode: effectivePincode,
+                paymentMethod,
+            })
+                .then(setShippingQuote)
+                .catch(() => setShippingQuote({ shipping: 99, etaDays: null }))
+                .finally(() => setShippingLoading(false));
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [effectivePincode, paymentMethod, subtotal]);
 
     useEffect(() => {
         if (authLoading) return;
@@ -167,7 +190,7 @@ export default function CheckoutPage() {
     const isNewAddressValid = Object.values(address).every((v) => v.trim().length > 0);
     const isValid = selectedAddressId !== 'new' || isNewAddressValid;
 
-    const shipping = subtotal === 0 || subtotal >= shippingSettings.freeShippingThreshold ? 0 : shippingSettings.flatRate;
+    const shipping = subtotal === 0 ? 0 : shippingQuote.shipping;
     const discount = coupon?.discount ?? 0;
     const total = Math.max(subtotal + shipping - discount, 0);
 
@@ -527,9 +550,14 @@ export default function CheckoutPage() {
                                     </div>
                                 )}
                                 <div className="flex items-center justify-between text-charcoal-600">
-                                    <span>Shipping</span>
-                                    <span className={`font-manrope ${shipping === 0 ? 'text-brand-green font-semibold' : 'text-charcoal-900 font-semibold'}`}>
-                                        {shipping === 0 ? 'FREE' : `₹${shipping}`}
+                                    <span>
+                                        Shipping
+                                        {shippingQuote.etaDays && shipping > 0 && (
+                                            <span className="block text-xs text-charcoal-400 font-inter mt-0.5">Est. {shippingQuote.etaDays} day{shippingQuote.etaDays > 1 ? 's' : ''}</span>
+                                        )}
+                                    </span>
+                                    <span className={`font-manrope ${shippingLoading ? 'text-charcoal-400' : shipping === 0 ? 'text-brand-green font-semibold' : 'text-charcoal-900 font-semibold'}`}>
+                                        {shippingLoading ? 'Calculating…' : shipping === 0 ? 'FREE' : `₹${shipping}`}
                                     </span>
                                 </div>
                             </div>
