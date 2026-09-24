@@ -9,7 +9,7 @@ export default function FeaturedCategories() {
       {/* Men's Casuals */}
       <Link href="/men/casual-shoes" className="relative block w-full md:w-1/2 h-[50vh] md:h-[70vh] group overflow-hidden bg-gray-100">
         <Image
-          src="/images/mens-casuals-bright.png"
+          src="/images/category/men-catt.png"
           alt="Mens Casuals"
           fill
           sizes="(min-width: 768px) 50vw, 100vw"
@@ -35,7 +35,7 @@ export default function FeaturedCategories() {
       {/* Women's Heels */}
       <Link href="/women/heels" className="relative block w-full md:w-1/2 h-[50vh] md:h-[70vh] group overflow-hidden bg-gray-100">
         <Image
-          src="/images/womens-heels-bright.png"
+          src="/images/category/women-catt.png"
           alt="Womens Heels"
           fill
           sizes="(min-width: 768px) 50vw, 100vw"
@@ -62,11 +62,11 @@ export default function FeaturedCategories() {
       {/* Kids */}
       <Link href="/kids" className="relative block w-full h-[55vh] md:h-[70vh] group overflow-hidden bg-gray-100">
         <Image
-          src="/images/kii.png"
+          src="/images/category/kids-catt.png"
           alt="Kids"
           fill
           sizes="100vw"
-          className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
+          className="object-cover object-top transition-transform duration-1000 ease-out group-hover:scale-105"
         />
         {/* Subtle overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
