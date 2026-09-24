@@ -5,6 +5,7 @@ import AnnouncementBar from "./AnnouncementBar";
 import Header from "./Header";
 import Footer from "./Footer";
 import MobileBottomNav from "./MobileBottomNav";
+import StickyCta from "./StickyCta";
 
 // Admin routes render their own shell (sidebar + topbar) — skip the
 // storefront's header/footer/announcement bar there instead of nesting them.
@@ -22,12 +23,13 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="min-h-screen bg-brand-ivory font-inter text-charcoal-900 pb-16 lg:pb-0">
+    <div className="min-h-screen bg-brand-ivory font-inter text-charcoal-900 pb-32 lg:pb-20">
       <AnnouncementBar />
       <Header />
       {children}
       <Footer />
       <MobileBottomNav />
+      <StickyCta />
     </div>
   );
 }
