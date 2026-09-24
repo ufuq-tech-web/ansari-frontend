@@ -230,8 +230,14 @@ export const storefrontApi = {
     }
   },
 
-  async getShippingSettings(): Promise<{ flatRate: number; freeShippingThreshold: number }> {
-    return { flatRate: 99, freeShippingThreshold: 999 };
+  // Public — no auth required, works for guests and logged-in users alike.
+  // Always called client-side (form submit), so Next's server-fetch cache
+  // options don't apply here regardless.
+  subscribeToNewsletter(email: string): Promise<{ alreadySubscribed: boolean; couponCode: string }> {
+    return apiFetch('/newsletter/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
   },
 };
 
