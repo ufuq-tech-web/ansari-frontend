@@ -6,13 +6,15 @@ import { Heart, Search, Loader2 } from 'lucide-react';
 import ProductCard from '../../components/ProductCard';
 import QuickViewModal from '../../components/category/QuickViewModal';
 import type { Product } from '../../lib/catalog-helpers';
-import AccountLayout, { AccountLoading } from '../../components/account/AccountLayout';
+import AccountLayout from '../../components/account/AccountLayout';
 import { customerApi } from '../../lib/customer-api';
 import { mapProduct } from '../../lib/storefront-api';
 import { useWishlistStore } from '../../lib/wishlist-store';
+import { useAuthStore } from '../../lib/auth-store';
 
 export default function WishlistPage() {
   const { ids, hydrated, remove } = useWishlistStore();
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const [items, setItems] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -22,6 +24,11 @@ export default function WishlistPage() {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   const fetchItems = useCallback(async (p: number, q: string, append: boolean = false) => {
+    if (!isAuthenticated) {
+      setItems([]);
+      setTotal(0);
+      return;
+    }
     try {
       const qp = new URLSearchParams({ page: String(p), limit: '12' });
       if (q) qp.set('search', q);
@@ -32,7 +39,7 @@ export default function WishlistPage() {
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -56,10 +63,14 @@ export default function WishlistPage() {
     remove(productId);
   };
 
-  if (!hydrated || loading) return <AccountLoading />;
-
   return (
-    <AccountLayout>
+    <AccountLayout requireAuth={false}>
+      {!hydrated || loading ? (
+        <div className="border border-charcoal-200 p-16 flex justify-center rounded-2xl">
+          <div className="w-8 h-8 border-2 border-charcoal-200 border-t-charcoal-900 rounded-full animate-spin"></div>
+        </div>
+      ) : (
+      <>
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="font-poppins font-light text-2xl sm:text-3xl text-charcoal-900 tracking-tight">Wishlist</h2>
@@ -130,9 +141,11 @@ export default function WishlistPage() {
           )}
         </div>
       )}
+      </>
+      )}
 
-      <QuickViewModal 
-        product={quickViewProduct} 
+      <QuickViewModal
+        product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
         onAddedToCart={(p) => handleRemove(p.id)}
       />

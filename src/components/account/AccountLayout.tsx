@@ -10,9 +10,13 @@ interface Props {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
+  // Set false for pages that stay browsable while logged out (e.g. wishlist,
+  // matching how the cart page works — guests see an empty state, and the
+  // specific actions that need an account prompt for login themselves).
+  requireAuth?: boolean;
 }
 
-export default function AccountLayout({ children }: Props) {
+export default function AccountLayout({ children, requireAuth = true }: Props) {
   const user = useAuthStore(state => state.user);
     const authLoading = useAuthStore(state => state.loading);
     const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -21,13 +25,14 @@ export default function AccountLayout({ children }: Props) {
   const pathname = usePathname();
 
   useEffect(() => {
+    if (!requireAuth) return;
     if (authLoading) return;
     if (!isAuthenticated) {
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
     }
-  }, [authLoading, isAuthenticated, router, pathname]);
+  }, [requireAuth, authLoading, isAuthenticated, router, pathname]);
 
-  if (authLoading || !isAuthenticated || !user) return <AccountLoading />;
+  if (requireAuth && (authLoading || !isAuthenticated || !user)) return <AccountLoading />;
 
   const sidebarLinks = [
     { name: 'Account Overview', href: '/my-account', icon: User },
@@ -50,7 +55,7 @@ export default function AccountLayout({ children }: Props) {
             <h1 className="hidden lg:block font-poppins font-extrabold text-2xl text-brand-orange tracking-tight mb-8">MY ACCOUNT</h1>
             
             <div className="lg:hidden mb-6 px-6">
-               <h2 className="font-poppins font-bold text-2xl text-charcoal-900">Hello, {user.name}</h2>
+               <h2 className="font-poppins font-bold text-2xl text-charcoal-900">{user ? `Hello, ${user.name}` : 'Wishlist'}</h2>
             </div>
 
             <nav className="flex flex-col bg-white lg:bg-transparent shadow-sm lg:shadow-none">

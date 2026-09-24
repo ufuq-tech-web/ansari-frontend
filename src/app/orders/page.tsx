@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 import { Package, ChevronRight } from 'lucide-react';
 import { getOrders, cancelOrder, type Order } from '../../lib/orders';
 import { useAuthStore } from "../../lib/auth-store";
-import AccountLayout, { AccountLoading } from '../../components/account/AccountLayout';
+import AccountLayout from '../../components/account/AccountLayout';
 import ConfirmModal from '../../components/shared/ConfirmModal';
 import { customerApi } from '@/lib/customer-api';
 const loadRazorpayScript = () => {
@@ -119,8 +119,6 @@ export default function OrdersPage() {
                 .finally(() => setLoaded(true));
         }
     }, [authLoading, isAuthenticated]);
-
-    if (authLoading || !isAuthenticated) return <AccountLoading />;
 
     return (
         <AccountLayout>

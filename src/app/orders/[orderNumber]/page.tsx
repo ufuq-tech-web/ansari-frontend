@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react';
 import OrderSummaryCard from '../../../components/OrderSummaryCard';
 import { getOrder, cancelOrder, type Order } from '../../../lib/orders';
 import { useAuthStore } from "../../../lib/auth-store";
-import AccountLayout, { AccountLoading } from '../../../components/account/AccountLayout';
+import AccountLayout from '../../../components/account/AccountLayout';
 import ConfirmModal from '../../../components/shared/ConfirmModal';
 
 export default function OrderDetailPage() {
@@ -56,7 +56,19 @@ export default function OrderDetailPage() {
         }
     }, [params.orderNumber, authLoading, isAuthenticated]);
 
-    if (authLoading || !isAuthenticated || order === undefined) return <AccountLoading />;
+    // AccountLayout itself handles the loading state and redirect-to-login
+    // for unauthenticated visitors — it must always mount for that redirect
+    // to fire, so the "still fetching this order" state renders as its
+    // children instead of an early return that would bypass it.
+    if (order === undefined) {
+        return (
+            <AccountLayout>
+                <div className="border border-charcoal-200 p-16 flex justify-center">
+                    <div className="w-8 h-8 border-2 border-charcoal-200 border-t-charcoal-900 rounded-full animate-spin"></div>
+                </div>
+            </AccountLayout>
+        );
+    }
 
     if (order === null) {
         return (

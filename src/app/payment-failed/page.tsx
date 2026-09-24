@@ -1,13 +1,32 @@
 "use client";
 
+import { useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { XCircle, ArrowRight, Package } from 'lucide-react';
+import { useAuthStore } from '../../lib/auth-store';
 
 function PaymentFailedContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const orderNumber = searchParams.get('order');
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const authLoading = useAuthStore(state => state.loading);
+
+    useEffect(() => {
+        if (authLoading) return;
+        if (!isAuthenticated) {
+            router.replace(`/login?redirect=${encodeURIComponent('/payment-failed' + (orderNumber ? `?order=${orderNumber}` : ''))}`);
+        }
+    }, [authLoading, isAuthenticated, router, orderNumber]);
+
+    if (authLoading || !isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-brand-ivory flex flex-col items-center justify-center pb-20">
+                <div className="w-10 h-10 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center bg-brand-ivory px-4 py-12">

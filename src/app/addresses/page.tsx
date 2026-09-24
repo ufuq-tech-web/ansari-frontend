@@ -1,15 +1,11 @@
 "use client";
 
-import { useAuthStore } from "../../lib/auth-store";
-import AccountLayout, { AccountLoading } from '../../components/account/AccountLayout';
+import AccountLayout from '../../components/account/AccountLayout';
 
 export default function AddressesPage() {
-    const user = useAuthStore(state => state.user);
-    const authLoading = useAuthStore(state => state.loading);
-    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-
-    if (authLoading || !isAuthenticated || !user) return <AccountLoading />;
-
+    // AccountLayout itself handles the loading state and redirect-to-login
+    // for unauthenticated visitors — an early return here would bypass it
+    // (AccountLayout would never mount, so its redirect would never fire).
     return (
         <AccountLayout>
             <div className="mb-10">
