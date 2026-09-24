@@ -9,13 +9,14 @@ import { useCart } from '../../lib/cart-context';
 import { customerApi } from '../../lib/customer-api';
 import ConfirmModal from '../../components/shared/ConfirmModal';
 
-const FREE_SHIPPING_THRESHOLD = 999;
-const SHIPPING_FEE = 99;
+// Cart page shows an estimate only — no address yet to get a live
+// Shiprocket rate from. The real shipping cost is calculated at checkout.
+const ESTIMATED_SHIPPING_FEE = 99;
 
 export default function CartPage() {
   const router = useRouter();
   const { items, updateQty, removeItem, subtotal, itemCount, hydrated, refreshCart } = useCart();
-  const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const shipping = subtotal === 0 ? 0 : ESTIMATED_SHIPPING_FEE;
   const total = subtotal + shipping;
   const [validating, setValidating] = useState(false);
   const [validationError, setValidationError] = useState('');
@@ -150,29 +151,14 @@ export default function CartPage() {
                   <span className="text-charcoal-900 font-manrope font-medium">₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex items-center justify-between text-charcoal-600">
-                  <span>Shipping</span>
+                  <span>
+                    Shipping
+                    {shipping > 0 && <span className="block text-[11px] text-charcoal-400 font-inter mt-0.5">Estimated — final cost shown at checkout</span>}
+                  </span>
                   <span className={`font-manrope ${shipping === 0 ? 'text-brand-green font-medium' : 'text-charcoal-900 font-medium'}`}>
-                    {shipping === 0 ? 'Free' : `₹${shipping}`}
+                    {shipping === 0 ? 'Free' : `~₹${shipping}`}
                   </span>
                 </div>
-                {shipping > 0 ? (
-                  <div className="bg-charcoal-50 rounded-xl p-3 border border-charcoal-150 mt-2">
-                    <p className="text-xs text-charcoal-600 font-medium">
-                      Add <span className="font-bold text-brand-orange">₹{(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString('en-IN')}</span> more for FREE Shipping!
-                    </p>
-                    <div className="w-full bg-charcoal-200 h-1.5 rounded-full mt-1.5 overflow-hidden">
-                      <div
-                        className="bg-brand-orange h-full rounded-full transition-all duration-500"
-                        style={{ width: `${Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100 mt-2 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping flex-shrink-0" />
-                    <p className="text-xs text-emerald-800 font-semibold">Your order qualifies for FREE Shipping!</p>
-                  </div>
-                )}
               </div>
               <div className="border-t border-charcoal-200 mt-4 pt-4 flex items-center justify-between">
                 <span className="font-poppins font-semibold text-charcoal-900">Total</span>
@@ -200,7 +186,7 @@ export default function CartPage() {
                   <ShieldCheck className="w-3.5 h-3.5 text-brand-green" strokeWidth={2} /> Secure checkout
                 </span>
                 <span className="flex items-center gap-2 text-xs text-charcoal-500 font-inter">
-                  <Truck className="w-3.5 h-3.5 text-brand-green" strokeWidth={2} /> Free shipping above ₹999
+                  <Truck className="w-3.5 h-3.5 text-brand-green" strokeWidth={2} /> Live shipping rates at checkout
                 </span>
               </div>
             </div>

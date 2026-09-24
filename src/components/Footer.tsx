@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const trustBadges = [
-  { icon: Truck, label: 'Free Shipping', sub: 'On orders above ₹999' },
+  { icon: Truck, label: 'Nationwide Delivery', sub: 'Shipping calculated at checkout' },
   { icon: RefreshCw, label: 'Easy Returns', sub: '7-day return policy' },
   { icon: ShieldCheck, label: 'Secure Payments', sub: '100% protected checkout' },
   { icon: CreditCard, label: 'COD Available', sub: 'Pay when you receive' },

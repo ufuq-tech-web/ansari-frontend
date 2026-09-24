@@ -230,7 +230,7 @@ export default function QuickViewModal({ product, onClose, onAddedToCart }: Prop
             {/* Trust mini row */}
             <div className="flex flex-wrap gap-3 pt-3 border-t border-charcoal-200">
               <span className="flex items-center gap-1.5 text-xs text-charcoal-500 font-inter">
-                <Truck className="w-3.5 h-3.5 text-brand-green" strokeWidth={2} /> Free delivery ₹999+
+                <Truck className="w-3.5 h-3.5 text-brand-green" strokeWidth={2} /> Nationwide delivery
               </span>
               <span className="flex items-center gap-1.5 text-xs text-charcoal-500 font-inter">
                 <RefreshCw className="w-3.5 h-3.5 text-brand-green" strokeWidth={2} /> 7-day easy returns

@@ -89,7 +89,7 @@ export default function CategoryHero({ category, activeSubcategory }: Props) {
                     <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 animate-[fadeSlideUp_0.6s_ease-out_0.65s_both]">
                         {[
                             { icon: ShieldCheck, text: 'Authentic Products' },
-                            { icon: Truck, text: 'Free Shipping ₹999+' },
+                            { icon: Truck, text: 'Nationwide Delivery' },
                             { icon: RefreshCw, text: '7-Day Easy Returns' },
                         ].map(({ icon: Icon, text }) => (
                             <span key={text} className="flex items-center gap-2 text-sm text-white/80 font-manrope font-semibold">

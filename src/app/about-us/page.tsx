@@ -21,7 +21,7 @@ const values = [
   { icon: ShieldCheck, title: 'Quality First', text: 'Every pair is checked for stitching, sole grip, and material quality before it reaches a shelf — a habit from our earliest days that never changed.', gradient: 'from-amber-400 to-brand-orange' },
   { icon: Heart, title: 'Affordable for Every Family', text: 'Footwear is a necessity, not a luxury. We keep margins honest so a family of four can shoe everyone without a second thought.', gradient: 'from-rose-400 to-brand-orange' },
   { icon: Users, title: 'Serving Every Age', text: "From a toddler's first walking shoes to formal wear for a father's retirement, we stock for every stage of life under one roof.", gradient: 'from-emerald-400 to-brand-green' },
-  { icon: Truck, title: 'Reliable, Every Time', text: "COD, easy 7-day returns, and free shipping over ₹999 — the same promises we've built our reputation on since day one.", gradient: 'from-sky-400 to-blue-500' },
+  { icon: Truck, title: 'Reliable, Every Time', text: "COD, easy 7-day returns, and transparent live shipping rates — the same promises we've built our reputation on since day one.", gradient: 'from-sky-400 to-blue-500' },
 ];
 
 const stats = [

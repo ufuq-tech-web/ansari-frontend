@@ -3,10 +3,10 @@
 import { Truck, RefreshCw, Banknote } from 'lucide-react';
 
 const announcements = [
-  { icon: Truck, text: 'Free Shipping on Orders Above ₹999' },
+  { icon: Truck, text: 'Pan-India Delivery' },
   { icon: RefreshCw, text: '7-Day Easy Returns & Exchanges' },
   { icon: Banknote, text: 'Cash on Delivery Available' },
-  { icon: Truck, text: 'Free Shipping on Orders Above ₹999' },
+  { icon: Truck, text: 'Pan-India Delivery' },
   { icon: RefreshCw, text: '7-Day Easy Returns & Exchanges' },
   { icon: Banknote, text: 'Cash on Delivery Available' },
 ];

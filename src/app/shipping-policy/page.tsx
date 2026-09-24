@@ -3,12 +3,12 @@ import { Truck, Package, MapPin, Clock } from 'lucide-react';
 
 export const metadata = {
   title: 'Shipping Policy — Ansary Footwear',
-  description: 'Free shipping on orders above ₹999, Cash on Delivery available, and typical delivery timelines for Ansary Footwear orders across India.',
+  description: 'Live shipping rates calculated at checkout, Cash on Delivery available, and typical delivery timelines for Ansary Footwear orders across India.',
   alternates: { canonical: '/shipping-policy' },
 };
 
 const highlights = [
-  { icon: Truck, title: 'Free Shipping', text: 'Free on all orders above ₹999. Orders below that ship for a flat ₹99.' },
+  { icon: Truck, title: 'Shipping Cost', text: 'Calculated live at checkout based on your delivery location — shown upfront before you pay, no hidden charges.' },
   { icon: Package, title: 'Cash on Delivery', text: 'COD is available on all orders across India, no minimum order value required.' },
   { icon: Clock, title: 'Processing Time', text: 'Orders are packed and handed to our courier partner within 1-2 business days of confirmation.' },
   { icon: MapPin, title: 'Pan-India Delivery', text: 'We currently ship to all serviceable pin codes across India via our logistics partners.' },
@@ -28,7 +28,7 @@ export default function ShippingPolicyPage() {
           </nav>
           <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight">Shipping Info</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Free shipping over ₹999, Cash on Delivery, and delivery across India.
+            Live shipping rates, Cash on Delivery, and delivery across India.
           </p>
         </div>
       </section>
@@ -65,9 +65,10 @@ export default function ShippingPolicyPage() {
           </p>
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Shipping Charges</h2>
           <p>
-            We charge a flat ₹99 shipping fee on orders under ₹999. There are no hidden charges added at checkout —
-            the total you see in your cart is what you pay, plus COD charges only if you choose Cash on Delivery
-            on select high-value orders.
+            Shipping cost is calculated live at checkout based on your delivery location and order weight — enter
+            your address to see the exact cost before you pay. There are no hidden charges added afterward — the
+            total you see in your cart at checkout is what you pay, plus COD charges only if you choose Cash on
+            Delivery on select high-value orders.
           </p>
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Delays & Exceptions</h2>
           <p>
