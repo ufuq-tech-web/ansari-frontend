@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Clock, FileText } from "lucide-react";
+import { ArrowRight, Clock } from "lucide-react";
 import { storefrontApi } from "../../../lib/storefront-api";
 import BreadcrumbJsonLd from "../../../components/BreadcrumbJsonLd";
 import ProductCard from "../../../components/ProductCard";
@@ -96,8 +96,8 @@ export default async function ArticlePage({
               <div className="space-y-3">
                 {relatedPosts.map((p) => (
                   <Link key={p.slug} href={`/journal/${p.slug}`} className="flex items-start gap-3 group">
-                    <div className="w-9 h-9 rounded-lg bg-brand-orange/10 flex items-center justify-center flex-shrink-0">
-                      <FileText className="w-4 h-4 text-brand-orange" strokeWidth={2} />
+                    <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-brand-orange/10">
+                      <Image src={p.image} alt="" fill sizes="56px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>
                     <div>
                       <h4 className="font-poppins font-medium text-charcoal-900 text-sm leading-snug group-hover:text-brand-orange transition-colors">{p.title}</h4>
