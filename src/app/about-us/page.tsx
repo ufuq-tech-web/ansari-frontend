@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShieldCheck, Heart, Users, Truck, Quote, Calendar, MapPin, Award } from 'lucide-react';
+import { ShieldCheck, Heart, Users, Truck, Quote, Calendar, MapPin, Award, ArrowRight } from 'lucide-react';
 import PageFaq from '../../components/PageFaq';
 import { getPageFaqs } from '../../lib/seo-faqs';
 
@@ -31,6 +31,13 @@ const stats = [
   { icon: MapPin, value: '500+', label: 'Cities Served' },
 ];
 
+const familyCategories = [
+  { label: 'Men', description: "Formals to weekend casuals", href: '/men', image: '/images/hero-banner/hero-men.png' },
+  { label: 'Women', description: 'Heels, flats & everyday wear', href: '/women', image: '/images/hero-banner/hero-women.png' },
+  { label: 'Kids', description: 'Built for play, made to last', href: '/kids', image: '/images/hero-banner/hero-kids.png' },
+  { label: 'New Arrivals', description: "This season's freshest styles", href: '/new-arrivals', image: '/images/hero-banner/hero-sale.png' },
+];
+
 export default async function AboutUsPage() {
   const faqs = await getPageFaqs('about-us', defaultAboutFaqs);
 
@@ -39,7 +46,7 @@ export default async function AboutUsPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-charcoal-900" aria-label="About us hero">
         <div className="absolute inset-0">
-          <Image src="/images/accessories-banner.png" alt="" aria-hidden="true" fill priority sizes="100vw" className="object-cover opacity-35" />
+          <Image src="/images/hero-banner/hero-family.png" alt="" aria-hidden="true" fill priority sizes="100vw" className="object-cover object-top opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900 via-charcoal-900/85 to-charcoal-900/50" />
         </div>
         {/* Decorative blurs, consistent with other dark sections on the site */}
@@ -79,22 +86,32 @@ export default async function AboutUsPage() {
         </div>
 
         {/* Our Story — image + copy */}
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-14 mb-16 sm:mb-20">
-          <div className="order-2 lg:order-1 flex flex-col gap-5 h-full">
-            <div className="relative flex-1 min-h-[220px] rounded-2xl overflow-hidden shadow-card">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-14 mb-24 sm:mb-28">
+          <div className="order-2 lg:order-1 relative pt-10 sm:pt-14">
+            <div className="relative min-h-[320px] sm:min-h-[420px] lg:min-h-[480px] rounded-2xl overflow-hidden shadow-card-hover">
               <Image
-                src="/images/collections-banner.png"
-                alt="Footwear for every member of the family, displayed together"
+                src="/images/why-choose.png"
+                alt="A family fitting shoes together at Ansary Footwear"
                 fill
                 sizes="(min-width: 1024px) 50vw, 100vw"
-                className="object-cover"
+                className="object-cover object-top"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex items-start gap-3">
+                <Quote className="w-5 h-5 sm:w-6 sm:h-6 text-brand-orange flex-shrink-0 mt-0.5" strokeWidth={2} />
+                <p className="text-sm sm:text-base font-inter leading-relaxed text-white/90">
+                  Trust the shopkeeper to tell you the truth about fit, material, and durability — not just make a sale.
+                </p>
+              </div>
             </div>
-            <div className="flex items-start gap-3 bg-charcoal-900 text-white rounded-2xl shadow-card p-5">
-              <Quote className="w-6 h-6 text-brand-orange flex-shrink-0" strokeWidth={2} />
-              <p className="text-sm font-inter leading-relaxed text-white/85">
-                Trust the shopkeeper to tell you the truth about fit, material, and durability — not just make a sale.
-              </p>
+            <div className="absolute -top-2 -left-2 sm:top-0 sm:left-6 w-32 h-24 sm:w-44 sm:h-32 rounded-xl overflow-hidden border-4 border-brand-ivory shadow-xl">
+              <Image
+                src="/images/cta.png"
+                alt="A family shopping for shoes together"
+                fill
+                sizes="176px"
+                className="object-cover object-right"
+              />
             </div>
           </div>
 
@@ -121,6 +138,37 @@ export default async function AboutUsPage() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Shop the family — photo band */}
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+          <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide">What We Stock</span>
+          <h2 className="section-heading text-2xl sm:text-3xl mt-1">Footwear for Every Member of the Family</h2>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-16 sm:mb-20">
+          {familyCategories.map((c) => (
+            <Link
+              key={c.label}
+              href={c.href}
+              className="group relative block aspect-[3/4] rounded-2xl overflow-hidden shadow-card bg-charcoal-100"
+            >
+              <Image
+                src={c.image}
+                alt={`${c.label} footwear at Ansary Footwear`}
+                fill
+                sizes="(min-width: 1024px) 22vw, 45vw"
+                className="object-cover object-right transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+                <h3 className="text-white font-poppins font-semibold text-base sm:text-lg">{c.label}</h3>
+                <p className="text-white/70 font-inter text-xs sm:text-sm mt-0.5 hidden sm:block">{c.description}</p>
+                <span className="inline-flex items-center gap-1 mt-2 text-white text-xs sm:text-sm font-manrope font-semibold group-hover:gap-2 transition-all duration-300">
+                  Shop now <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.5} />
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
 
         {/* What We Stand For */}
