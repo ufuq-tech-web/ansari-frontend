@@ -84,7 +84,7 @@ export default function WhyChooseUs() {
             }`}
           >
             <Image
-              src="/images/cta.png"
+              src="/images/why-choose.png"
               alt="A family fitting shoes together at Ansary Footwear"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
