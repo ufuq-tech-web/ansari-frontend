@@ -7,13 +7,11 @@ import FilterSidebar from './FilterSidebar';
 import MobileFilterSheet from './MobileFilterSheet';
 import SortBar from './SortBar';
 import CategoryProductGrid from './CategoryProductGrid';
-import BuyingGuide from './BuyingGuide';
 import CategoryFAQ from './CategoryFaq';
 import RelatedCategories from './RelatedCategories';
 import QuickViewModal from './QuickViewModal';
 import CustomerReviews from '../CustomerReviews';
 import Newsletter from '../Newsletter';
-import RecentlyViewed from '../RecentlyViewed';
 import { type CategoryConfig, type Product, type ProductWithCategory } from '../../lib/catalog-helpers';
 import { useProductListing } from '../../hooks/useProductListing';
 import { useCategoryFilterUrl } from '../../hooks/useCategoryFilterUrl';
@@ -141,11 +139,9 @@ export default function CategoryPage({ category, activeSubcategory, onCategoryCh
                 </div>
             </div>
 
-            <BuyingGuide category={category} />
             <CategoryFAQ category={category} />
             <RelatedCategories category={category} onCategoryChange={onCategoryChange} />
             <CustomerReviews />
-            <RecentlyViewed />
             <Newsletter />
 
             {/* Quick View Modal */}

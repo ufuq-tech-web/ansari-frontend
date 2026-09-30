@@ -10,8 +10,6 @@ import {
   CheckCircle2, AlertTriangle, XCircle,
 } from "lucide-react";
 import ProductCard from "../ProductCard";
-import CategoryFAQ from "../category/CategoryFaq";
-import RecentlyViewed from "../RecentlyViewed";
 import { useCart } from "../../lib/cart-context";
 import { useWishlistStore } from "../../lib/wishlist-store";
 import { useImageZoom } from "../../hooks/useImageZoom";
@@ -580,9 +578,6 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
         </div>
       </div>
 
-      {/* FAQs */}
-      {categoryConfig && <CategoryFAQ category={categoryConfig} />}
-
       {/* Same color */}
       {sameColorProducts.length > 0 && (
         <section className="py-10 sm:py-16 bg-white border-t border-charcoal-200">
@@ -610,9 +605,6 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
           </div>
         </section>
       )}
-
-      {/* Recently viewed */}
-      <RecentlyViewed />
 
       {/* Sticky mobile CTA bar */}
       <div className="lg:hidden fixed bottom-16 inset-x-0 z-30 bg-white border-t border-charcoal-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-4 py-3 flex items-center gap-2">

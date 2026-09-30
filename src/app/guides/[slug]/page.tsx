@@ -74,7 +74,7 @@ export default async function GuidePage({
             </ol>
           </nav>
           <span className="text-leather-300 font-poppins font-semibold text-sm uppercase tracking-wide">{guide.categoryName}</span>
-          <h1 className="mt-1 font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight max-w-3xl">{guide.title}</h1>
+          <h1 className="mt-1 font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight max-w-3xl">{guide.title}</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-2xl">{guide.description}</p>
           <span className="mt-4 inline-flex items-center gap-1.5 text-white/60 text-sm font-inter">
             <Clock className="w-4 h-4" strokeWidth={2} /> {guide.readTime}
