@@ -7,16 +7,16 @@ import PageFaq from '../../components/PageFaq';
 import { getPageFaqs } from '../../lib/seo-faqs';
 
 export const metadata = {
-  title: 'Best Sellers — Ansary Footwear',
-  description: 'Our most-loved footwear styles across Men, Women, and Kids — top-rated by thousands of customers, aligned by category.',
-  alternates: { canonical: '/best-sellers' },
+  title: 'Trending Products — Ansary Footwear',
+  description: "The styles everyone's talking about right now — trending picks for Men, Women, and Kids, aligned by category.",
+  alternates: { canonical: '/trending' },
 };
 
-const defaultBestSellerFaqs = [
-  { question: 'How do you decide what counts as a best seller?', answer: 'We track order volume and customer reviews across the catalog — the styles families keep buying and rating highly earn the Bestseller badge.' },
-  { question: 'Are best sellers restocked quickly?', answer: "Yes, we prioritize restocking popular sizes and styles first, since they're the ones most likely to sell out." },
-  { question: 'Do best sellers cost more than regular listings?', answer: "No, best sellers aren't priced any differently — you'll find the same price here as on the item's own category page." },
-  { question: 'How often is this list updated?', answer: 'We refresh it regularly as new sales and review data comes in, so it reflects what customers are actually loving right now.' },
+const defaultTrendingFaqs = [
+  { question: "What makes a product 'trending'?", answer: "Trending picks are our highest-rated styles right now — footwear that's earning consistently strong reviews from customers across Men, Women, and Kids." },
+  { question: 'Is trending different from best sellers?', answer: "Yes — best sellers reflect total order volume over time, while trending reflects what's rated highest right now, so the two lists can differ." },
+  { question: 'How often does the trending list change?', answer: "We refresh it regularly as new ratings come in, so it stays current with what customers are loving this week." },
+  { question: 'Can I browse trending by category?', answer: 'Yes — use the Men, Women, and Kids sections above, or jump straight into any category page to filter further.' },
 ];
 
 const genderSections: { key: 'men' | 'women' | 'kids'; label: string }[] = [
@@ -25,14 +25,13 @@ const genderSections: { key: 'men' | 'women' | 'kids'; label: string }[] = [
   { key: 'kids', label: "Kids'" },
 ];
 
-export default async function BestSellersPage() {
-  const faqs = await getPageFaqs('best-sellers', defaultBestSellerFaqs);
-
+export default async function TrendingPage() {
+  const faqs = await getPageFaqs('trending', defaultTrendingFaqs);
   return (
     <div className="min-h-screen bg-brand-ivory">
-      <section className="relative overflow-hidden bg-charcoal-800 aspect-auto min-h-[320px] sm:min-h-[400px] lg:aspect-[16/9] lg:min-h-0" aria-label="Best sellers hero">
+      <section className="relative overflow-hidden bg-charcoal-800 aspect-auto min-h-[320px] sm:min-h-[400px] lg:aspect-[21/9] lg:min-h-0" aria-label="Trending products hero">
         <div className="absolute inset-0">
-          <Image src="/images/why-choose.png" alt="Best sellers" fill priority sizes="100vw" className="object-cover opacity-40" />
+          <Image src="/images/hero-banner/hero-sale.png" alt="Trending products" fill priority sizes="100vw" className="object-cover opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
         </div>
         <div className="relative container-main py-10 sm:py-14 lg:py-20 h-full flex flex-col justify-center">
@@ -40,12 +39,12 @@ export default async function BestSellersPage() {
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">Best Sellers</li>
+              <li className="text-white font-medium">Trending Products</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Best Sellers</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Trending Products</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Top-rated styles loved by thousands of customers — best sellers for Men, Women, and Kids, aligned by category.
+            The styles everyone&apos;s talking about right now — trending picks for Men, Women, and Kids, aligned by category.
           </p>
         </div>
       </section>
@@ -54,9 +53,9 @@ export default async function BestSellersPage() {
         {genderSections.map(({ key, label }) => (
           <div key={key}>
             <div className="flex flex-col items-center text-center gap-4 mb-8 sm:mb-10 max-w-3xl mx-auto px-2">
-              <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide">Customer Favorites</span>
+              <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide">Trending Now</span>
               <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary sm:whitespace-nowrap">
-                Explore Our <span className="text-secondary">{label} Best Seller Collection</span>
+                Explore Our <span className="text-secondary">{label} Trending Collection</span>
               </h2>
               <p className="text-charcoal-500 font-inter text-sm sm:text-base">
                 {label} favorites, aligned by category — find your next pair without the scroll.
@@ -67,7 +66,7 @@ export default async function BestSellersPage() {
               {subcategoryShowcase[key].map((sub) => (
                 <Link
                   key={sub.name}
-                  href={`/${key}/${slugify(sub.name)}?sort=best_selling`}
+                  href={`/${key}/${slugify(sub.name)}?sort=rating`}
                   className="group relative flex-shrink-0 w-[240px] sm:w-[260px] lg:w-[280px] snap-start rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 aspect-[4/5]"
                 >
                   <Image
@@ -93,7 +92,7 @@ export default async function BestSellersPage() {
         ))}
       </div>
 
-      <PageFaq faqs={faqs} subtitle="What to know before you shop our best sellers." />
+      <PageFaq faqs={faqs} subtitle="What to know before you shop what's trending." />
 
       <Newsletter />
     </div>
