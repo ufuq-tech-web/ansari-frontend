@@ -1,17 +1,13 @@
 "use client";
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef } from 'react';
 import { Star, BadgeCheck, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
-import { storefrontApi } from '../lib/storefront-api';
 import type { Review } from '../lib/catalog-helpers';
 
-export default function CustomerReviews() {
+export default function CustomerReviews({ reviews = [] }: { reviews?: Review[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [reviewsList, setReviewsList] = useState<Review[]>([]);
 
-  useEffect(() => {
-    storefrontApi.getReviews().then(setReviewsList);
-  }, []);
+  if (!reviews.length) return null;
 
   const scroll = (dir: 'left' | 'right') => {
     const track = trackRef.current;
@@ -27,7 +23,7 @@ export default function CustomerReviews() {
         <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <div>
             <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Loved by Families</span>
-            <h2 className="section-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-tight text-primary whitespace-nowrap">What Our <span className="text-secondary">Customers Say</span></h2>
+            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary whitespace-nowrap">What Our <span className="text-secondary">Customers Say</span></h2>
             <div className="mt-4 flex items-center justify-center gap-2">
               <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -60,7 +56,7 @@ export default function CustomerReviews() {
           ref={trackRef}
           className="flex gap-4 sm:gap-5 overflow-x-auto scrollbar-hide snap-x -mx-4 px-4 sm:mx-0 sm:px-0"
         >
-          {reviewsList.map((r) => (
+          {reviews.map((r) => (
             <div
               key={r.id}
               data-review-card

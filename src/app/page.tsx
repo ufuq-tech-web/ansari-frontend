@@ -10,9 +10,9 @@ import PromotionalBanner from "../components/PromotionBanner";
 import CustomerReviews from "../components/CustomerReviews";
 import InstagramGallery from "../components/InstagramGallery";
 import Newsletter from "../components/Newsletter";
-import RecentlyViewed from "../components/RecentlyViewed";
 import PageFaq from "../components/PageFaq";
 import { getPageFaqs, buildFaqJsonLd } from "../lib/seo-faqs";
+import { storefrontApi } from "../lib/storefront-api";
 import { Metadata } from 'next';
 
 const defaultHomeFaqs = [
@@ -20,6 +20,7 @@ const defaultHomeFaqs = [
   { question: "How long does delivery take?", answer: "Most orders arrive within 4-6 business days for metro cities and 6-9 business days for other locations." },
   { question: "Can I return or exchange an item?", answer: "Yes — unworn shoes in original packaging can be returned or exchanged within 7 days of delivery." },
   { question: "Do you have physical stores?", answer: "Yes, our flagship store is at 123 Fashion Street, Mumbai, Maharashtra 400001." },
+  { question: "How can I track my order?", answer: "Once your order ships, you'll get a tracking link by email and SMS. You can also check your order status anytime from the Track Order page." },
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -57,8 +58,15 @@ export default async function Home() {
     }
   };
 
-  const faqs = await getPageFaqs('home', defaultHomeFaqs);
+  const [faqs, productsPool, brands, reviews] = await Promise.all([
+    getPageFaqs('home', defaultHomeFaqs),
+    storefrontApi.getProducts({ limit: 100 }),
+    storefrontApi.getBrands(),
+    storefrontApi.getReviews(),
+  ]);
   const faqJsonLd = buildFaqJsonLd(faqs);
+  const newArrivals = productsPool.items.filter((p) => p.isNew);
+  const bestSellers = productsPool.items.filter((p) => p.badge === "Bestseller").slice(0, 8);
 
   return (
     <div className="min-h-screen bg-brand-ivory font-inter text-charcoal-900 pb-16 lg:pb-0">
@@ -68,17 +76,16 @@ export default async function Home() {
         <HeroSection />
         <CategorySection />
         <FeaturedCategories />
-        <NewArrivals />
-        <BestSellers />
-        <ShopByBrand />
+        <NewArrivals products={newArrivals} />
+        <BestSellers products={bestSellers} />
+        <ShopByBrand brands={brands} />
         <FeaturedCollections />
         <PromotionalBanner />
-        <CustomerReviews />
+        <CustomerReviews reviews={reviews} />
         <WhyChooseUs />
         <InstagramGallery />
         <PageFaq faqs={faqs} subtitle="Everything you need to know before you shop with us." />
         <Newsletter />
-        <RecentlyViewed />
       </main>
     </div>
   );
