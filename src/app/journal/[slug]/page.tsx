@@ -73,7 +73,7 @@ export default async function ArticlePage({
               <li className="text-white font-medium">{post.title}</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight max-w-3xl">{post.title}</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight max-w-3xl">{post.title}</h1>
           <div className="mt-4 flex items-center gap-4 text-white/75 text-sm font-inter">
             <span>By {post.author}</span>
             <span className="flex items-center gap-1.5">
@@ -84,10 +84,14 @@ export default async function ArticlePage({
       </section>
 
       <div className="container-main py-10 sm:py-12">
+        <div className="relative w-full h-64 sm:h-80 lg:h-[420px] rounded-2xl overflow-hidden shadow-card mb-10 sm:mb-12">
+          <Image src={post.image} alt={post.title} fill priority sizes="100vw" className="object-cover" />
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-10">
-          <article 
-            className="lg:col-span-2 min-w-0 overflow-hidden break-words prose prose-charcoal prose-lg max-w-none prose-img:rounded-2xl prose-img:shadow-sm" 
-            dangerouslySetInnerHTML={{ __html: post.content }} 
+          <article
+            className="lg:col-span-2 min-w-0 overflow-hidden break-words prose prose-charcoal prose-lg max-w-none prose-img:rounded-2xl prose-img:shadow-sm"
+            dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
           <aside>

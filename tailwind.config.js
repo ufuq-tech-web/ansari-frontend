@@ -62,7 +62,42 @@ module.exports = {
                 xl: '12px',
                 '2xl': '16px',
             },
+            typography: (theme) => ({
+                charcoal: {
+                    css: {
+                        '--tw-prose-body': theme('colors.charcoal.700'),
+                        '--tw-prose-headings': theme('colors.charcoal.900'),
+                        '--tw-prose-lead': theme('colors.charcoal.600'),
+                        '--tw-prose-links': theme('colors.brand.orange'),
+                        '--tw-prose-bold': theme('colors.charcoal.900'),
+                        '--tw-prose-counters': theme('colors.charcoal.500'),
+                        '--tw-prose-bullets': theme('colors.charcoal.300'),
+                        '--tw-prose-hr': theme('colors.charcoal.200'),
+                        '--tw-prose-quotes': theme('colors.charcoal.900'),
+                        '--tw-prose-quote-borders': theme('colors.brand.orange'),
+                        '--tw-prose-captions': theme('colors.charcoal.500'),
+                        '--tw-prose-code': theme('colors.charcoal.900'),
+                        '--tw-prose-pre-code': theme('colors.charcoal.100'),
+                        '--tw-prose-pre-bg': theme('colors.charcoal.900'),
+                        '--tw-prose-th-borders': theme('colors.charcoal.300'),
+                        '--tw-prose-td-borders': theme('colors.charcoal.200'),
+                        h2: {
+                            fontFamily: theme('fontFamily.sora').join(', '),
+                            fontWeight: '600',
+                            marginTop: '2em',
+                            marginBottom: '0.75em',
+                        },
+                        h3: {
+                            fontFamily: theme('fontFamily.sora').join(', '),
+                            fontWeight: '600',
+                        },
+                        p: {
+                            lineHeight: '1.8',
+                        },
+                    },
+                },
+            }),
         },
     },
-    plugins: [],
+    plugins: [require('@tailwindcss/typography')],
 };
