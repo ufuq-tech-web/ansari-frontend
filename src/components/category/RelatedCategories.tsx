@@ -9,6 +9,15 @@ interface Props {
     onCategoryChange: (key: string) => void;
 }
 
+// Dedicated portrait (3:4) shots for this card grid — the category heroImage
+// is a wide 21:9 banner and crops badly when forced into this aspect ratio.
+const relatedCardImages: Record<string, string> = {
+    men: '/images/Banner/ymen.png',
+    women: '/images/Banner/ywomen.png',
+    kids: '/images/Banner/ykid.png',
+    accessories: '/images/Banner/yacc.png',
+};
+
 export default function RelatedCategories({ category, onCategoryChange }: Props) {
     return (
         <section id="related-categories" className="py-12 sm:py-14 bg-brand-ivory border-t border-charcoal-200">
@@ -16,7 +25,7 @@ export default function RelatedCategories({ category, onCategoryChange }: Props)
                 <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
                     <div>
                         <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Keep Exploring</span>
-                        <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary">You Might Also <span className="text-secondary">Like</span></h2>
+                        <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">You Might Also <span className="text-secondary">Like</span></h2>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
@@ -29,7 +38,7 @@ export default function RelatedCategories({ category, onCategoryChange }: Props)
                             aria-label={`Shop ${rel.name}`}
                         >
                             <Image
-                                src={rel.image}
+                                src={relatedCardImages[rel.key] ?? rel.image}
                                 alt={rel.name}
                                 fill
                                 sizes="(min-width: 640px) 33vw, 100vw"

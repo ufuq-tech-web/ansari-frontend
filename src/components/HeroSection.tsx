@@ -16,7 +16,7 @@ const heroSlides = [
     secondaryLink: { href: '/women', label: 'Shop Women' },
   },
   {
-    image: '/images/hero-banner/hero-men.png',
+    image: '/images/hero-banner/hero-slide-men.png',
     badge: 'Handcrafted Leather',
     badgeIcon: Shield,
     title: <>Sharp, Refined{' '}<br className="hidden sm:block" /><span className="text-secondary">Men&apos;s</span> Footwear</>,
@@ -25,7 +25,7 @@ const heroSlides = [
     secondaryLink: { href: '/men/formal-shoes', label: 'Shop Formals' },
   },
   {
-    image: '/images/hero-banner/hero-women.png',
+    image: '/images/hero-banner/hero-slide-women.png',
     badge: 'New Season Collection',
     badgeIcon: Star,
     title: <>Elegant <span className="text-secondary">Women&apos;s</span>{' '}<br className="hidden sm:block" />Footwear Collection</>,
@@ -34,7 +34,7 @@ const heroSlides = [
     secondaryLink: { href: '/new-arrivals', label: 'New Arrivals' },
   },
   {
-    image: '/images/hero-banner/hero-kids.png',
+    image: '/images/hero-banner/hero-slide-kids.png',
     badge: 'Back to School Ready',
     badgeIcon: Shield,
     title: <>Fun & Durable{' '}<br className="hidden sm:block" /><span className="text-secondary">Kids&apos; Shoes</span> They&apos;ll Love</>,
@@ -43,13 +43,13 @@ const heroSlides = [
     secondaryLink: { href: '/best-sellers', label: 'Best Sellers' },
   },
   {
-    image: '/images/hero-banner/hero-sale.png',
+    image: '/images/hero-banner/hero-slide-sale.png',
     badge: 'Limited-Time Offer',
     badgeIcon: Star,
     title: <>The Family <span className="text-secondary">Sale</span>{' '}<br className="hidden sm:block" />Everyone&apos;s Been Waiting For</>,
     description: 'Handpicked styles for men, women, and kids — now at prices that make it easy to shop for the whole family.',
     primaryLink: { href: '/sale', label: 'Shop Sale' },
-    secondaryLink: { href: '/collections', label: 'View Collections' },
+    secondaryLink: { href: '/trending', label: 'Trending Products' },
   },
 ];
 
@@ -85,7 +85,7 @@ export default function HeroSection() {
 
   return (
     <section className="relative bg-charcoal-900 overflow-hidden" aria-label="Hero">
-      <div className="relative h-[560px] sm:h-[620px] lg:h-[680px] w-full">
+      <div className="relative aspect-auto min-h-[560px] sm:min-h-[620px] lg:aspect-[21/9] lg:min-h-0 w-full">
         {/* Slide images with crossfade and Ken Burns effect */}
         {heroSlides.map((s, i) => (
           <Image

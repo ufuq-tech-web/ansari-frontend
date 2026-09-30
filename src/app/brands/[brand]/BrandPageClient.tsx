@@ -26,7 +26,7 @@ export default function BrandPageClient({ brandName, products }: Props) {
       title={brandName}
       subtitle={`${products.length} products from ${brandName}`}
       products={products}
-      heroImage="/images/brands-banner.png"
+      heroImage="/images/hero-banner/hero-brand-detail.png"
     />
   );
 }

@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { storefrontApi, slugify } from '../../lib/storefront-api';
-import RecentlyViewed from '../../components/RecentlyViewed';
 import Newsletter from '../../components/Newsletter';
 import PageFaq from '../../components/PageFaq';
 import { getPageFaqs } from '../../lib/seo-faqs';
@@ -37,12 +36,12 @@ export default async function BrandsPage() {
 
   return (
     <div className="min-h-screen bg-brand-ivory">
-      <section className="relative overflow-hidden bg-charcoal-800" aria-label="Brands hero">
+      <section className="relative overflow-hidden bg-charcoal-800 aspect-auto min-h-[320px] sm:min-h-[400px] lg:aspect-[21/9] lg:min-h-0" aria-label="Brands hero">
         <div className="absolute inset-0">
-          <Image src="/images/brands-banner.png" alt="Brands" fill priority sizes="100vw" className="object-cover object-[center_35%] opacity-40" />
+          <Image src="/images/hero-banner/hero-brands.png" alt="Brands" fill priority sizes="100vw" className="object-cover opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
         </div>
-        <div className="relative container-main py-10 sm:py-14 lg:py-20 min-h-[320px] sm:min-h-[400px] lg:min-h-[450px] flex flex-col justify-center">
+        <div className="relative container-main py-10 sm:py-14 lg:py-20 h-full flex flex-col justify-center">
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
@@ -50,7 +49,7 @@ export default async function BrandsPage() {
               <li className="text-white font-medium">Brands</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight">Shop by Brand</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Shop by Brand</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             Trusted brands for every need and budget — from heritage leathercraft to everyday comfort.
           </p>
@@ -61,15 +60,15 @@ export default async function BrandsPage() {
         <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide">Our Partners</span>
           <h2 className="section-heading text-3xl sm:text-4xl tracking-tight text-primary">Discover Top <span className="text-secondary">Brands</span></h2>
-          <p className="text-charcoal-500 font-inter text-sm sm:text-base">We curate only the highest quality footwear from brands that share our commitment to craftsmanship, comfort, and durability.</p>
+          <p className="text-black font-inter text-sm sm:text-base">We curate only the highest quality footwear from brands that share our commitment to craftsmanship, comfort, and durability.</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
           {brandData.map((b) => (
             <Link
               key={b.name}
               href={`/brands/${slugify(b.name)}`}
-              className="group relative rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 aspect-[4/3] bg-charcoal-100"
+              className="group relative rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 aspect-[4/3] bg-charcoal-100 w-[calc(50%-8px)] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)]"
             >
               <Image
                 src={b.image}
@@ -95,7 +94,6 @@ export default async function BrandsPage() {
 
       <PageFaq faqs={faqs} subtitle="What to know about shopping our brand partners." />
 
-      <RecentlyViewed />
       <Newsletter />
     </div>
   );

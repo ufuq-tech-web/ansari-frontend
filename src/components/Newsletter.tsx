@@ -107,11 +107,11 @@ export default function Newsletter() {
           {/* Family photo */}
           <div className="relative min-h-[280px] sm:min-h-[360px] lg:min-h-0">
             <Image
-              src="/images/collections-banner.png"
+              src="/images/cta.png"
               alt="A family shopping for shoes together"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover object-[center_35%]"
+              className="object-cover object-right"
             />
             {/* Dark navy gradient — near-opaque where the photo meets the
                 text panel, fading toward the family so they stay visible. */}
