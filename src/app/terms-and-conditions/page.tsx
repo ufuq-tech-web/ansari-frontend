@@ -18,7 +18,7 @@ export default function TermsPage() {
               <li className="text-white font-medium">Terms & Conditions</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight">Terms & Conditions</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Terms & Conditions</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             Last updated: July 2026
           </p>

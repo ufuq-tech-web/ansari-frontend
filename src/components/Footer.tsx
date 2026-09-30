@@ -23,7 +23,6 @@ const footerColumns: { title: string; links: { label: string; href?: string }[] 
       { label: 'Women', href: '/women' },
       { label: 'Kids', href: '/kids' },
       { label: 'Accessories', href: '/accessories' },
-      { label: 'Collections', href: '/collections' },
       { label: 'New Arrivals', href: '/new-arrivals' },
       { label: 'Sale', href: '/sale' },
     ],

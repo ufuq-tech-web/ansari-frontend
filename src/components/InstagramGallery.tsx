@@ -44,14 +44,14 @@ export default function InstagramGallery() {
   };
 
   return (
-    <section id="instagram" className="py-12 sm:py-16 lg:py-20 bg-white overflow-hidden" aria-label="Community showcase">
+    <section id="instagram" className="pt-12 sm:pt-16 lg:pt-20 pb-4 sm:pb-6 lg:pb-8 bg-white overflow-hidden" aria-label="Community showcase">
       <div className="container-main">
         <div className="text-center max-w-2xl mx-auto mb-6">
           <span className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-amber-400 via-brand-orange to-leather-400 shadow-lg shadow-brand-orange/20">
             <Instagram className="w-5 h-5 text-white" strokeWidth={2.5} />
           </span>
           <p className="mt-3 text-brand-orange font-manrope font-semibold text-xs uppercase tracking-[0.2em]">The Ansari Community</p>
-          <h2 className="font-poppins font-bold text-3xl sm:text-4xl text-charcoal-900 mt-1">See how our community wears it</h2>
+          <h2 className="font-poppins font-bold text-3xl sm:text-4xl text-charcoal-900 mt-1">See how our <span className="text-secondary">community</span> wears it</h2>
           <p className="mt-2 text-charcoal-500 font-inter">
             <span className="font-poppins font-semibold text-brand-orange">@ansarifootwear</span> · Tag us to be featured
             <span className="mx-2 text-charcoal-300">·</span>
@@ -98,20 +98,11 @@ export default function InstagramGallery() {
                 sizes="(min-width: 1024px) 19vw, (min-width: 640px) 38vw, 70vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/25 transition-colors duration-300" />
 
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="w-12 h-12 rounded-full bg-white/15 border border-white/40 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/25 group-hover:scale-110 transition-all duration-300">
                   <Play className="w-4 h-4 text-white translate-x-[1px]" fill="currentColor" strokeWidth={0} />
-                </span>
-              </div>
-
-              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-                <h3 className="text-white font-poppins font-semibold text-base sm:text-lg leading-tight">{story.title}</h3>
-                <p className="text-white/75 font-inter text-xs sm:text-sm mt-1">{story.description}</p>
-                <span className="inline-flex items-center gap-1.5 mt-3 bg-white text-charcoal-900 text-xs sm:text-sm font-manrope font-semibold px-3.5 py-1.5 rounded-full group-hover:bg-brand-orange group-hover:text-white transition-colors duration-300">
-                  {story.cta}
-                  <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.5} />
                 </span>
               </div>
             </Link>

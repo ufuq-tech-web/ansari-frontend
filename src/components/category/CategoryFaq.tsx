@@ -18,7 +18,7 @@ export default function CategoryFAQ({ category }: Props) {
                 <div className="max-w-3xl mx-auto">
                     <div className="text-center mb-8">
                         <span className="text-leather-400 font-poppins font-semibold text-sm uppercase tracking-wide">Need Help?</span>
-                        <h2 className="section-heading text-2xl sm:text-3xl mt-1">Frequently Asked Questions</h2>
+                        <h2 className="section-heading text-2xl sm:text-3xl mt-1">Frequently Asked <span className="text-secondary">Questions</span></h2>
                         <p className="mt-2 text-black font-inter">Everything you need to know about shopping {category.name}</p>
                     </div>
 

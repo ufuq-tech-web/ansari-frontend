@@ -36,7 +36,7 @@ export default function TrackOrderPage() {
               <li className="text-white font-medium">Track Order</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-bold text-white text-2xl sm:text-3xl lg:text-4xl leading-tight">Track Your Order</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Track Your Order</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             Enter your order number to check its current status and delivery progress.
           </p>

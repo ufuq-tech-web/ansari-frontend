@@ -65,7 +65,7 @@
     }
 
     .section-heading {
-        @apply font-sora font-bold text-primary;
+        @apply font-sora font-semibold text-primary;
     }
 
     .container-main {

@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { FaqItem } from '../lib/seo-faqs';
 
 interface PageFaqProps {
   faqs: FaqItem[];
   eyebrow?: string;
-  title?: string;
+  title?: ReactNode;
   subtitle?: string;
 }
 
-export default function PageFaq({ faqs, eyebrow = 'Got Questions?', title = 'Frequently Asked Questions', subtitle }: PageFaqProps) {
+const defaultTitle = <>Frequently Asked <span className="text-secondary">Questions</span></>;
+
+export default function PageFaq({ faqs, eyebrow = 'Got Questions?', title = defaultTitle, subtitle }: PageFaqProps) {
   const [open, setOpen] = useState<number | null>(null);
 
   if (!faqs || faqs.length === 0) return null;
