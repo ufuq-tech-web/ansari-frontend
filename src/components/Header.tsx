@@ -2,13 +2,13 @@
 
 import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Search, Heart, User, ShoppingBag, Menu, X, ChevronDown, ArrowRight,
 } from 'lucide-react';
-import { slugify, priceTiers, type BuyingGuideWithCategory } from '../lib/catalog-helpers';
+import { slugify } from '../lib/catalog-helpers';
 import { useCart } from '../lib/cart-context';
 import { useWishlistStore } from '../lib/wishlist-store';
-import { useGuides } from '../hooks/useGuides';
 import { useHeaderScroll } from '../hooks/useHeaderScroll';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useHeaderMenus } from '../hooks/useHeaderMenus';
@@ -22,126 +22,116 @@ const subcatLink = (category: string, subcategory: string, extra?: Record<string
   if (!extra || Object.keys(extra).length === 0) return base;
   return `${base}?${new URLSearchParams(extra).toString()}`;
 };
-const sortLink = (category: string, sort: string) => `/${category}?sort=${sort}`;
-const ageLink = (age: string) => `/kids?age=${encodeURIComponent(age)}`;
-
 const popularColumn = (category: string): MegaColumn => ({
   title: 'Popular',
   links: [
-    { label: 'New Arrivals', to: sortLink(category, 'newest') },
-    { label: 'Best Sellers', to: sortLink(category, 'best_selling') },
-    { label: 'Sale', to: sortLink(category, 'discount') },
+    { label: 'New Arrivals', to: `/new-arrivals/${category}` },
+    { label: 'Best Sellers', to: '/best-sellers' },
+    { label: 'Sale', to: `/sale/${category}` },
   ],
 });
 
-const priceColumn = (category: string): MegaColumn => ({
-  title: 'Price',
-  links: Object.entries(priceTiers).map(([tier, info]) => ({ label: info.label, to: `/${category}/price/${tier}` })),
-});
-
-const buyingGuidesColumn = (category: string, guides: BuyingGuideWithCategory[]): MegaColumn => ({
-  title: 'Buying Guides',
-  links: guides.filter((g) => g.categoryKey === category).map((g) => ({ label: g.title, to: `/guides/${g.slug}` })),
-});
-
-const buildNavLinks = (guides: BuyingGuideWithCategory[]): { label: string; href: string; mega: { columns: MegaColumn[] } }[] => [
+const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaColumn[] }; banner?: { image: string; alt: string } }[] => [
   {
     label: 'Men',
     href: '/men',
+    banner: { image: '/images/Banner/men.png', alt: "Shop Men's footwear" },
     mega: {
       columns: [
         {
           title: 'Footwear',
-          links: ['Formal Shoes', 'Casual Shoes', 'Sports Shoes', 'Boots', 'Loafers'].map((l) => ({ label: l, to: subcatLink('men', l) })),
+          links: ['Formal Shoes', 'Casual Shoes', 'Sneakers', 'Loafers'].map((l) => ({ label: l, to: subcatLink('men', l) })),
         },
         {
-          title: 'Sandals',
-          links: ['Flip Flops', 'Slides', 'Leather Sandals'].map((l) => ({ label: l, to: subcatLink('men', l) })),
+          title: 'Active & Outdoor',
+          links: ['Sports Shoes', 'Sandals', 'Slippers & Flip Flops', 'Boots'].map((l) => ({ label: l, to: subcatLink('men', l) })),
         },
         popularColumn('men'),
-        priceColumn('men'),
-        buyingGuidesColumn('men', guides),
       ],
     },
   },
   {
     label: 'Women',
     href: '/women',
+    banner: { image: '/images/Banner/wom.png', alt: "Shop Women's footwear" },
     mega: {
       columns: [
         {
           title: 'Footwear',
-          links: ['Heels', 'Flats', 'Sneakers', 'Wedges', 'Boots'].map((l) => ({ label: l, to: subcatLink('women', l) })),
+          links: ['Flats', 'Mojari Shoes'].map((l) => ({ label: l, to: subcatLink('women', l) })),
         },
         {
           title: 'Sandals',
-          links: ['Strappy Sandals', 'Slippers', 'Ethnic Sandals'].map((l) => ({ label: l, to: subcatLink('women', l) })),
+          links: ['Sandals', 'Slippers', 'Kolhapuri Chappal'].map((l) => ({ label: l, to: subcatLink('women', l) })),
         },
         popularColumn('women'),
-        priceColumn('women'),
-        buyingGuidesColumn('women', guides),
       ],
     },
   },
   {
     label: 'Kids',
     href: '/kids',
+    banner: { image: '/images/Banner/kiid.png', alt: "Shop Kids' footwear" },
     mega: {
       columns: [
         {
-          title: 'Boys',
-          links: ['School Shoes', 'Sneakers', 'Sandals'].map((l) => ({ label: l, to: subcatLink('kids', l, { gender: 'boys' }) })),
+          title: 'Shop By',
+          links: ['Boys', 'Girls', 'New born baby', 'Toddler (2–5 Years)', 'Big Kids Shoes (10–14 Years)'].map((l) => ({ label: l, to: subcatLink('kids', l) })),
         },
         {
-          title: 'Girls',
-          links: ['School Shoes', 'Ballerinas', 'Sandals'].map((l) => ({ label: l, to: subcatLink('kids', l, { gender: 'girls' }) })),
+          title: 'Shoe Type',
+          links: ['School Shoes', 'Casual Shoes', 'Sneakers', 'Sandals', 'Slippers'].map((l) => ({ label: l, to: subcatLink('kids', l) })),
         },
-        {
-          title: 'Age',
-          links: [
-            { label: '2-5 Years', to: ageLink('2-5') },
-            { label: '6-9 Years', to: ageLink('6-9') },
-            { label: '10-14 Years', to: ageLink('10-14') },
-          ],
-        },
-        priceColumn('kids'),
-        buyingGuidesColumn('kids', guides),
       ],
     },
   },
   {
     label: 'Accessories',
     href: '/accessories',
+    banner: { image: '/images/Banner/acc.png', alt: 'Shop Accessories' },
     mega: {
       columns: [
         {
-          title: 'Care',
-          links: ['Shoe Polish', 'Brushes', 'Waterproof Spray'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
+          title: 'Shoe Care',
+          links: ['Shoe Care Products', 'Shoes Polish'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
         },
         {
-          title: 'Comfort',
-          links: ['Insoles', 'Shoe Horns', 'Laces'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
+          title: 'Essentials',
+          links: ['Shoes Brush', 'Socks'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
         },
-        {
-          title: 'Bags',
-          links: ['Shoe Bags', 'Travel Bags'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
-        },
-        priceColumn('accessories'),
-        buyingGuidesColumn('accessories', guides),
       ],
     },
   },
 ];
 
 const moreLinks = [
+  { label: 'New Arrivals', href: '/new-arrivals' },
   { label: 'Brands', href: '/brands' },
-  { label: 'Collections', href: '/collections' },
   { label: 'Journal', href: '/journal' },
   { label: 'About Us', href: '/about-us' },
 ];
 
-const simpleLinks = [
-  { label: 'Sale', href: '/sale', highlight: true },
+// Simple single-column dropdowns — same trigger/hover mechanics as the
+// category mega-menus, but a flat link list instead of multi-column groups.
+const dropdownNavLinks: { label: string; href?: string; highlight?: boolean; links: MegaLink[] }[] = [
+  {
+    label: 'Sale',
+    href: '/sale',
+    highlight: true,
+    links: [
+      { label: 'Men Sale', to: '/sale/men' },
+      { label: 'Women Sale', to: '/sale/women' },
+      { label: 'Kids Sale', to: '/sale/kids' },
+      { label: 'Accessory Sale', to: '/sale/accessories' },
+    ],
+  },
+  {
+    label: 'Collection',
+    links: [
+      { label: 'Trending Products', to: '/trending' },
+      { label: 'Best Sellers', to: '/best-sellers' },
+    ],
+  },
 ];
 
 export default function Header() {
@@ -156,11 +146,10 @@ export default function Header() {
     const isAuthenticated = useAuthStore(state => state.isAuthenticated);
     const logout = useAuthStore(state => state.logout);
 
-  const guides = useGuides();
   const scrolled = useHeaderScroll();
   useBodyScrollLock(mobileOpen);
 
-  const navLinks = useMemo(() => buildNavLinks(guides), [guides]);
+  const navLinks = useMemo(() => buildNavLinks(), []);
 
   return (
     <header className={`sticky top-0 z-50 bg-white transition-shadow duration-300 ${scrolled ? 'shadow-sticky' : 'shadow-sm'}`}>
@@ -208,29 +197,98 @@ export default function Header() {
                 </Link>
 
                 {/* Mega Menu Panel */}
-                <div className={`mega-menu absolute left-0 top-full pt-3 w-[880px] ${openMenu === link.label ? 'is-open' : ''}`}>
+                <div className={`mega-menu absolute left-0 top-full pt-3 ${link.banner ? 'w-[780px]' : 'w-[560px]'} ${openMenu === link.label ? 'is-open' : ''}`}>
                   <div className="bg-white rounded-2xl shadow-card-hover border border-charcoal-200 p-6">
-                    <div className="grid grid-cols-5 gap-6">
-                      {link.mega.columns.map((col) => (
-                        <div key={col.title}>
-                          <h4 className="font-manrope font-semibold text-charcoal-900 text-sm mb-3">{col.title}</h4>
-                          <ul className="space-y-2">
-                            {col.links.map((l) => (
-                              <li key={l.label}>
-                                <Link href={l.to} className="text-sm text-charcoal-500 hover:text-brand-orange transition-colors font-inter" onClick={closeMegaMenu}>
-                                  {l.label}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
+                    <div className="flex gap-6">
+                      <div className="flex-1">
+                        <div className={`grid gap-6 ${link.mega.columns.length >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                          {link.mega.columns.map((col) => (
+                            <div key={col.title}>
+                              <h4 className="font-manrope font-semibold text-charcoal-900 text-sm mb-3">{col.title}</h4>
+                              <ul className="space-y-2">
+                                {col.links.map((l) => (
+                                  <li key={l.label}>
+                                    <Link href={l.to} className="text-sm text-charcoal-500 hover:text-brand-orange transition-colors font-inter" onClick={closeMegaMenu}>
+                                      {l.label}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                        <div className="mt-5 pt-4 border-t border-charcoal-200">
+                          <Link href={link.href} className="inline-flex items-center gap-1.5 text-sm font-manrope font-semibold text-brand-orange hover:gap-2.5 transition-all" onClick={closeMegaMenu}>
+                            View all {link.label} <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        </div>
+                      </div>
+
+                      {link.banner && (
+                        <Link
+                          href={link.href}
+                          onClick={closeMegaMenu}
+                          className="relative w-[200px] shrink-0 rounded-xl overflow-hidden group"
+                        >
+                          <Image src={link.banner.image} alt={link.banner.alt} fill sizes="200px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/80 via-charcoal-900/0 to-transparent" />
+                          <div className="absolute bottom-0 left-0 right-0 p-4">
+                            <span className="inline-flex items-center gap-1.5 text-sm font-manrope font-semibold text-white group-hover:gap-2.5 transition-all">
+                              Shop {link.label} <ArrowRight className="w-3.5 h-3.5" />
+                            </span>
+                          </div>
+                        </Link>
+                      )}
                     </div>
-                    <div className="mt-5 pt-4 border-t border-charcoal-200">
-                      <Link href={link.href} className="inline-flex items-center gap-1.5 text-sm font-manrope font-semibold text-brand-orange hover:gap-2.5 transition-all" onClick={closeMegaMenu}>
-                        View all {link.label} <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {dropdownNavLinks.map((link) => (
+              <div
+                key={link.label}
+                className="mega-menu-trigger relative"
+                onMouseEnter={() => openMegaMenu(link.label)}
+                onMouseLeave={closeMegaMenu}
+                onBlur={handleMegaMenuBlur}
+              >
+                {link.href ? (
+                  <Link
+                    href={link.href}
+                    onFocus={() => openMegaMenu(link.label)}
+                    onClick={closeMegaMenu}
+                    className={`flex items-center gap-1 px-3 py-2 text-sm font-manrope font-medium transition-colors rounded-lg ${link.highlight
+                      ? 'text-brand-orange font-semibold hover:bg-brand-orange/5'
+                      : 'text-charcoal-700 hover:text-brand-orange'
+                      }`}
+                  >
+                    {link.label}
+                    <ChevronDown className="w-3.5 h-3.5" strokeWidth={2} />
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onFocus={() => openMegaMenu(link.label)}
+                    className="flex items-center gap-1 px-3 py-2 text-sm font-manrope font-medium text-charcoal-700 hover:text-brand-orange transition-colors rounded-lg"
+                  >
+                    {link.label}
+                    <ChevronDown className="w-3.5 h-3.5" strokeWidth={2} />
+                  </button>
+                )}
+
+                <div className={`mega-menu absolute left-0 top-full pt-3 w-60 ${openMenu === link.label ? 'is-open' : ''}`}>
+                  <div className="bg-white rounded-2xl shadow-card-hover border border-charcoal-200 p-2">
+                    {link.links.map((l) => (
+                      <Link
+                        key={l.label}
+                        href={l.to}
+                        onClick={closeMegaMenu}
+                        className="block px-3 py-2.5 text-sm text-charcoal-700 hover:text-brand-orange hover:bg-charcoal-50 rounded-lg transition-colors font-inter"
+                      >
+                        {l.label}
                       </Link>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -266,19 +324,6 @@ export default function Header() {
                 </div>
               </div>
             </div>
-
-            {simpleLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={`px-3 py-2 text-sm font-manrope font-medium transition-colors rounded-lg ${link.highlight
-                  ? 'text-brand-orange font-semibold hover:bg-brand-orange/5'
-                  : 'text-charcoal-700 hover:text-brand-orange'
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
           </nav>
 
           {/* Right: actions */}
@@ -410,21 +455,36 @@ export default function Header() {
                     </div>
                   </li>
                 ))}
+                {dropdownNavLinks.map((link) => (
+                  <li key={link.label}>
+                    {link.href ? (
+                      <Link
+                        href={link.href}
+                        onClick={closeMobileMenu}
+                        className={`block px-4 py-3 rounded-xl font-manrope font-medium transition-colors ${link.highlight ? 'text-brand-orange font-semibold bg-brand-orange/5' : 'text-charcoal-800 hover:bg-charcoal-50'
+                          }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <span className="block px-4 py-3 font-manrope font-medium text-charcoal-800">
+                        {link.label}
+                      </span>
+                    )}
+                    <ul className="pl-8 pb-3 space-y-0.5">
+                      {link.links.map((l) => (
+                        <li key={l.label}>
+                          <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
+                            {l.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
                 {moreLinks.map((link) => (
                   <li key={link.label}>
                     <Link href={link.href} onClick={closeMobileMenu} className="block px-4 py-3 rounded-xl font-manrope font-medium text-charcoal-800 hover:bg-charcoal-50 hover:text-brand-orange transition-colors">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-                {simpleLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      onClick={closeMobileMenu}
-                      className={`block px-4 py-3 rounded-xl font-manrope font-medium transition-colors ${link.highlight ? 'text-brand-orange font-semibold bg-brand-orange/5' : 'text-charcoal-800 hover:bg-charcoal-50'
-                        }`}
-                    >
                       {link.label}
                     </Link>
                   </li>
