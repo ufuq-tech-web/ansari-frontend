@@ -17,12 +17,12 @@ export default function FeaturedCollections() {
   };
 
   return (
-    <section id="collections" className="py-12 sm:py-16 lg:py-20 bg-white" aria-label="Featured collections">
+    <section id="collections" className="pt-4 sm:pt-6 lg:pt-8 pb-12 sm:pb-16 lg:pb-20 bg-white" aria-label="Featured collections">
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
         <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <div>
             <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Curated for You</span>
-            <h2 className="section-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-tight text-primary">Featured <span className="text-secondary">Collections</span></h2>
+            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">Featured <span className="text-secondary">Collections</span></h2>
             <p className="mt-4 text-black font-inter text-base md:text-lg">Handpicked styles for every occasion — from office to wedding day</p>
           </div>
           <div className="hidden sm:flex items-center gap-2 mt-4">
