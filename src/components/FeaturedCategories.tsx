@@ -60,13 +60,13 @@ export default function FeaturedCategories() {
       </div>
 
       {/* Kids */}
-      <Link href="/kids" className="relative block w-full h-[55vh] md:h-[70vh] group overflow-hidden bg-gray-100">
+      <Link href="/kids" className="relative block w-full aspect-[1983/793] min-h-[300px] sm:min-h-[360px] md:min-h-0 group overflow-hidden bg-gray-100">
         <Image
           src="/images/category/kids-catt.png"
           alt="Kids"
           fill
           sizes="100vw"
-          className="object-cover object-top transition-transform duration-1000 ease-out group-hover:scale-105"
+          className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
         />
         {/* Subtle overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-100" />

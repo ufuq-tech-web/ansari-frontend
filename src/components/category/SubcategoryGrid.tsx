@@ -16,7 +16,7 @@ export default function SubcategoryGrid({ category, activeSubcategory, onSubcate
         <div className="flex flex-col items-center text-center gap-4 mb-8 max-w-2xl mx-auto">
           <div>
             <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Curated Categories</span>
-            <h2 className="section-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-primary">Shop by <span className="text-secondary">Style</span></h2>
+            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">Shop by <span className="text-secondary">Style</span></h2>
           </div>
         </div>
 
@@ -30,7 +30,7 @@ export default function SubcategoryGrid({ category, activeSubcategory, onSubcate
                 aria-pressed={isActive}
                 className="group flex-shrink-0 snap-start flex flex-col items-center gap-3 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 rounded-xl w-[120px] sm:w-[140px] lg:w-[160px]"
               >
-                <div className={`relative w-full aspect-square rounded-xl overflow-hidden bg-charcoal-100 shadow-card group-hover:shadow-card-hover transition-all duration-300 ${isActive ? 'ring-2 ring-brand-orange ring-offset-2' : ''}`}>
+                <div className={`relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-charcoal-100 shadow-card group-hover:shadow-card-hover transition-all duration-300 ${isActive ? 'ring-2 ring-brand-orange ring-offset-2' : ''}`}>
                   <Image
                     src={sub.image}
                     alt={sub.name}

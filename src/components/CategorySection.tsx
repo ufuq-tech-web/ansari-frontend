@@ -9,44 +9,39 @@ import { categories, slugify } from '../lib/catalog-helpers';
 // Subcategory mapping for display
 const subcategoriesData: Record<string, { name: string; image: string }[]> = {
   men: [
-    { name: 'Formal Shoes', image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Casual Shoes', image: 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Sports Shoes', image: 'https://images.pexels.com/photos/5710082/pexels-photo-5710082.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Leather Sandals', image: 'https://images.pexels.com/photos/298864/pexels-photo-298864.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Loafers', image: 'https://images.pexels.com/photos/267301/pexels-photo-267301.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Boots', image: 'https://images.pexels.com/photos/1240892/pexels-photo-1240892.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Flip Flops', image: 'https://images.pexels.com/photos/1750045/pexels-photo-1750045.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Slides', image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Oxfords', image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Sneakers', image: 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Slip Ons', image: 'https://images.pexels.com/photos/267301/pexels-photo-267301.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
+    { name: 'Formal Shoes', image: '/images/men-collection/men-formal-shoes.png' },
+    { name: 'Casual Shoes', image: '/images/men-collection/men-casual-shoes.png' },
+    { name: 'Sneakers', image: '/images/men-collection/men-sneakers.png' },
+    { name: 'Sports Shoes', image: '/images/men-collection/men-sports-shoes.png' },
+    { name: 'Sandals', image: '/images/men-collection/men-sandals.png' },
+    { name: 'Slippers & Flip Flops', image: '/images/men-collection/men-slippers-flip-flops.png' },
+    { name: 'Loafers', image: '/images/men-collection/men-loafers.png' },
+    { name: 'Boots', image: '/images/men-collection/men-boots.png' },
   ],
   women: [
-    { name: 'Heels', image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Wedges', image: 'https://images.pexels.com/photos/1376042/pexels-photo-1376042.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Flats', image: 'https://images.pexels.com/photos/1750045/pexels-photo-1750045.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Sneakers', image: 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Strappy Sandals', image: 'https://images.pexels.com/photos/2421374/pexels-photo-2421374.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Ethnic Sandals', image: 'https://images.pexels.com/photos/5710082/pexels-photo-5710082.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Slippers', image: 'https://images.pexels.com/photos/1240892/pexels-photo-1240892.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Boots', image: 'https://images.pexels.com/photos/267301/pexels-photo-267301.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Slides', image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Flip Flops', image: 'https://images.pexels.com/photos/1750045/pexels-photo-1750045.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
+    { name: 'Flats', image: '/images/women-collection/women-flats.png' },
+    { name: 'Sandals', image: '/images/women-collection/women-sandals.png' },
+    { name: 'Slippers', image: '/images/women-collection/women-slippers.png' },
+    { name: 'Kolhapuri Chappal', image: '/images/women-collection/women-kolhapuri-chappal.png' },
+    { name: 'Mojari Shoes', image: '/images/women-collection/women-mojari-shoes.png' },
   ],
   kids: [
-    { name: 'School Shoes', image: 'https://images.pexels.com/photos/5275375/pexels-photo-5275375.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Sneakers', image: 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Sports', image: 'https://images.pexels.com/photos/5710082/pexels-photo-5710082.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Sandals', image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Slippers', image: 'https://images.pexels.com/photos/1750045/pexels-photo-1750045.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Slides', image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
+    { name: 'School Shoes', image: '/images/kids-collection/kids-school-shoes.png' },
+    { name: 'Casual Shoes', image: '/images/kids-collection/kids-casual-shoes.png' },
+    { name: 'Sneakers', image: '/images/kids-collection/kids-sneakers.png' },
+    { name: 'Sandals', image: '/images/kids-collection/kids-sandals.png' },
+    { name: 'Slippers', image: '/images/kids-collection/kids-slippers.png' },
+    { name: 'Boys', image: '/images/kids-collection/kids-boys.png' },
+    { name: 'Girls', image: '/images/kids-collection/kids-girls.png' },
+    { name: 'New born baby', image: '/images/kids-collection/kids-new-born.png' },
+    { name: 'Toddler (2–5 Years)', image: '/images/kids-collection/kids-toddler.png' },
+    { name: 'Big Kids Shoes (10–14 Years)', image: '/images/kids-collection/kids-big-kids.png' },
   ],
   accessories: [
-    { name: 'Shoe Polish', image: 'https://images.pexels.com/photos/1240892/pexels-photo-1240892.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Brushes', image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Insoles', image: 'https://images.pexels.com/photos/1376042/pexels-photo-1376042.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Shoe Bags', image: 'https://images.pexels.com/photos/2421374/pexels-photo-2421374.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
-    { name: 'Travel Bags', image: 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop' },
+    { name: 'Socks', image: '/images/accessories-collection/accessories-socks.png' },
+    { name: 'Shoe Care Products', image: '/images/accessories-collection/accessories-shoe-care-products.png' },
+    { name: 'Shoes Polish', image: '/images/accessories-collection/accessories-shoes-polish.png' },
+    { name: 'Shoes Brush', image: '/images/accessories-collection/accessories-shoes-brush.png' },
   ],
 };
 
@@ -67,6 +62,10 @@ export default function CategorySection() {
   };
 
   const currentSubcategories = subcategoriesData[activeTab] || [];
+  // Few enough cards to fit one row without scrolling (Women/Kids' 5,
+  // Accessories' 4) — center them instead of left-aligning with empty
+  // space on the right. Only Men's 8 still needs the scrollable row.
+  const isScrollable = currentSubcategories.length > 5;
 
   return (
     <section id="categories" className="py-16 md:py-24 bg-white text-charcoal-900" aria-label="Shop by category">
@@ -75,10 +74,10 @@ export default function CategorySection() {
         {/* Luxury Header & Tabs */}
         <div className="flex flex-col items-center text-center gap-8 mb-12 max-w-4xl mx-auto">
           <div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sora font-extrabold tracking-tight text-primary mb-4 whitespace-nowrap">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-sora font-semibold tracking-tight text-primary mb-4 whitespace-nowrap">
               Explore <span className="text-secondary">Collections</span>
             </h2>
-            <p className="text-black font-inter text-base md:text-lg whitespace-normal max-w-2xl mx-auto">
+            <p className="text-black font-inter text-sm md:text-base whitespace-normal max-w-2xl mx-auto">
               Discover our meticulously curated selection of premium footwear and accessories, designed for every occasion.
             </p>
           </div>
@@ -112,7 +111,7 @@ export default function CategorySection() {
         <div className="relative w-full group/slider">
           <div 
             ref={scrollContainerRef}
-            className="flex gap-4 md:gap-6 lg:gap-8 overflow-x-auto scrollbar-hide snap-x pb-8"
+            className={`flex gap-4 md:gap-6 lg:gap-8 pb-8 ${isScrollable ? 'overflow-x-auto scrollbar-hide snap-x' : 'flex-wrap justify-center'}`}
           >
             {currentSubcategories.map((sub) => (
               <Link
@@ -134,7 +133,7 @@ export default function CategorySection() {
                 
                 {/* Content Block */}
                 <div className="relative z-10 p-6 md:p-8 w-full">
-                  <h3 className="text-2xl md:text-3xl font-sora font-semibold text-white uppercase tracking-wide group-hover:text-brand-orange transition-colors duration-300 drop-shadow-lg">
+                  <h3 className="text-base md:text-lg font-sora font-semibold text-white uppercase tracking-wide whitespace-nowrap overflow-hidden text-ellipsis group-hover:text-brand-orange transition-colors duration-300 drop-shadow-lg">
                     {sub.name}
                   </h3>
                   
@@ -149,20 +148,24 @@ export default function CategorySection() {
           </div>
 
           {/* Premium Glassmorphism Navigation Arrows */}
-          <button 
-            onClick={scrollLeft}
-            className="hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full items-center justify-center shadow-lg hover:shadow-xl hover:bg-gray-50 opacity-0 group-hover/slider:opacity-100 transition-all duration-300 z-10 text-charcoal-900 hover:text-brand-orange"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button 
-            onClick={scrollRight}
-            className="hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full items-center justify-center shadow-lg hover:shadow-xl hover:bg-gray-50 opacity-0 group-hover/slider:opacity-100 transition-all duration-300 z-10 text-charcoal-900 hover:text-brand-orange"
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+          {isScrollable && (
+            <>
+              <button
+                onClick={scrollLeft}
+                className="hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full items-center justify-center shadow-lg hover:shadow-xl hover:bg-gray-50 opacity-0 group-hover/slider:opacity-100 transition-all duration-300 z-10 text-charcoal-900 hover:text-brand-orange"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={scrollRight}
+                className="hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full items-center justify-center shadow-lg hover:shadow-xl hover:bg-gray-50 opacity-0 group-hover/slider:opacity-100 transition-all duration-300 z-10 text-charcoal-900 hover:text-brand-orange"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </section>
