@@ -88,10 +88,10 @@ const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaCo
 ];
 
 const moreLinks = [
-  { label: 'New Arrivals', href: '/new-arrivals' },
   { label: 'Brands', href: '/brands' },
   { label: 'Journal', href: '/journal' },
   { label: 'About Us', href: '/about-us' },
+  { label: 'Contact Us', href: '/contact-us' },
 ];
 
 // Second nav group — same trigger/hover mechanics as the category mega-menus.
