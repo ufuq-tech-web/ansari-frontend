@@ -31,19 +31,20 @@ const popularColumn = (category: string): MegaColumn => ({
   ],
 });
 
-const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaColumn[] }; banner?: { image: string; alt: string } }[] => [
+const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaColumn[]; groupTitle?: string }; banner?: { image: string; alt: string } }[] => [
   {
     label: 'Men',
     href: '/men',
     banner: { image: '/images/Banner/men.png', alt: "Shop Men's footwear" },
     mega: {
+      groupTitle: 'Types of Shoes for Men',
       columns: [
         {
-          title: 'Footwear',
+          title: '',
           links: ['Formal Shoes', 'Casual Shoes', 'Sneakers', 'Loafers'].map((l) => ({ label: l, to: subcatLink('men', l) })),
         },
         {
-          title: 'Active & Outdoor',
+          title: '',
           links: ['Sports Shoes', 'Sandals', 'Slippers & Flip Flops', 'Boots'].map((l) => ({ label: l, to: subcatLink('men', l) })),
         },
         popularColumn('men'),
@@ -55,13 +56,14 @@ const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaCo
     href: '/women',
     banner: { image: '/images/Banner/wom.png', alt: "Shop Women's footwear" },
     mega: {
+      groupTitle: 'Types of Shoes for Women',
       columns: [
         {
-          title: 'Footwear',
+          title: '',
           links: ['Flats', 'Mojari Shoes'].map((l) => ({ label: l, to: subcatLink('women', l) })),
         },
         {
-          title: 'Sandals',
+          title: '',
           links: ['Sandals', 'Slippers', 'Kolhapuri Chappal'].map((l) => ({ label: l, to: subcatLink('women', l) })),
         },
         popularColumn('women'),
@@ -117,10 +119,10 @@ const dropdownNavLinks: NavDropdownLink[] = [
     href: '/sale',
     highlight: true,
     links: [
-      { label: 'Men Sale', to: '/sale/men' },
-      { label: 'Women Sale', to: '/sale/women' },
-      { label: 'Kids Sale', to: '/sale/kids' },
-      { label: 'Accessory Sale', to: '/sale/accessories' },
+      { label: 'Men Shoes Sale', to: '/sale/men' },
+      { label: 'Women Shoes Sale', to: '/sale/women' },
+      { label: 'Kids Shoes Sale', to: '/sale/kids' },
+      { label: 'Shoes Accessories Sale', to: '/sale/accessories' },
     ],
   },
   {
@@ -216,22 +218,60 @@ export default function Header() {
                   <div className="bg-white rounded-2xl shadow-card-hover border border-charcoal-200 p-6">
                     <div className="flex gap-6">
                       <div className="flex-1">
-                        <div className={`grid gap-6 ${link.mega.columns.length >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                          {link.mega.columns.map((col) => (
-                            <div key={col.title}>
-                              <h4 className="font-manrope font-semibold text-charcoal-900 text-sm mb-3">{col.title}</h4>
-                              <ul className="space-y-2">
-                                {col.links.map((l) => (
-                                  <li key={l.label}>
-                                    <Link href={l.to} className="text-sm text-charcoal-500 hover:text-brand-orange transition-colors font-inter" onClick={closeMegaMenu}>
-                                      {l.label}
-                                    </Link>
-                                  </li>
+                        {link.mega.groupTitle ? (
+                          <div className="grid grid-cols-3 gap-6">
+                            <div className="col-span-2">
+                              <h4 className="font-manrope font-semibold text-charcoal-900 text-sm mb-3">{link.mega.groupTitle}</h4>
+                              <div className="grid grid-cols-2 gap-6">
+                                {link.mega.columns.slice(0, -1).map((col, i) => (
+                                  <ul key={i} className="space-y-2">
+                                    {col.links.map((l) => (
+                                      <li key={l.label}>
+                                        <Link href={l.to} className="text-sm text-charcoal-500 hover:text-brand-orange transition-colors font-inter" onClick={closeMegaMenu}>
+                                          {l.label}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
                                 ))}
-                              </ul>
+                              </div>
                             </div>
-                          ))}
-                        </div>
+                            {(() => {
+                              const popular = link.mega.columns[link.mega.columns.length - 1];
+                              return (
+                                <div key={popular.title}>
+                                  <h4 className="font-manrope font-semibold text-charcoal-900 text-sm mb-3">{popular.title}</h4>
+                                  <ul className="space-y-2">
+                                    {popular.links.map((l) => (
+                                      <li key={l.label}>
+                                        <Link href={l.to} className="text-sm text-charcoal-500 hover:text-brand-orange transition-colors font-inter" onClick={closeMegaMenu}>
+                                          {l.label}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        ) : (
+                          <div className={`grid gap-6 ${link.mega.columns.length >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                            {link.mega.columns.map((col) => (
+                              <div key={col.title}>
+                                <h4 className="font-manrope font-semibold text-charcoal-900 text-sm mb-3">{col.title}</h4>
+                                <ul className="space-y-2">
+                                  {col.links.map((l) => (
+                                    <li key={l.label}>
+                                      <Link href={l.to} className="text-sm text-charcoal-500 hover:text-brand-orange transition-colors font-inter" onClick={closeMegaMenu}>
+                                        {l.label}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         <div className="mt-5 pt-4 border-t border-charcoal-200">
                           <Link href={link.href} className="inline-flex items-center gap-1.5 text-sm font-manrope font-semibold text-brand-orange hover:gap-2.5 transition-all" onClick={closeMegaMenu}>
                             View all {link.label} <ArrowRight className="w-4 h-4" />
@@ -513,20 +553,54 @@ export default function Header() {
                       {link.label}
                     </Link>
                     <div className="pl-8 pb-3 space-y-3">
-                      {link.mega.columns.map((col) => (
-                        <div key={col.title}>
-                          <div className="px-4 text-[11px] font-manrope font-semibold text-charcoal-600 uppercase tracking-wide mb-1">{col.title}</div>
-                          <ul className="space-y-0.5">
-                            {col.links.map((l) => (
-                              <li key={l.label}>
-                                <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
-                                  {l.label}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
+                      {link.mega.groupTitle ? (
+                        <>
+                          <div>
+                            <div className="px-4 text-[11px] font-manrope font-semibold text-charcoal-600 uppercase tracking-wide mb-1">{link.mega.groupTitle}</div>
+                            <ul className="space-y-0.5">
+                              {link.mega.columns.slice(0, -1).flatMap((col) => col.links).map((l) => (
+                                <li key={l.label}>
+                                  <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
+                                    {l.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          {(() => {
+                            const popular = link.mega.columns[link.mega.columns.length - 1];
+                            return (
+                              <div key={popular.title}>
+                                <div className="px-4 text-[11px] font-manrope font-semibold text-charcoal-600 uppercase tracking-wide mb-1">{popular.title}</div>
+                                <ul className="space-y-0.5">
+                                  {popular.links.map((l) => (
+                                    <li key={l.label}>
+                                      <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
+                                        {l.label}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            );
+                          })()}
+                        </>
+                      ) : (
+                        link.mega.columns.map((col) => (
+                          <div key={col.title}>
+                            <div className="px-4 text-[11px] font-manrope font-semibold text-charcoal-600 uppercase tracking-wide mb-1">{col.title}</div>
+                            <ul className="space-y-0.5">
+                              {col.links.map((l) => (
+                                <li key={l.label}>
+                                  <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
+                                    {l.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </li>
                 ))}
