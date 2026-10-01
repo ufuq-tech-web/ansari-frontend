@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ShieldCheck, Heart, Users, Truck, Quote, Calendar, MapPin, Award, ArrowRight } from 'lucide-react';
 import PageFaq from '../../components/PageFaq';
+import Newsletter from '../../components/Newsletter';
 import { getPageFaqs } from '../../lib/seo-faqs';
 
 export const metadata = {
@@ -27,15 +28,15 @@ const values = [
 const stats = [
   { icon: Calendar, value: '1998', label: 'Founded' },
   { icon: Award, value: '25+', label: 'Years of Trust' },
-  { icon: Users, value: '1,00,000+', label: 'Happy Customers' },
-  { icon: MapPin, value: '500+', label: 'Cities Served' },
+  { icon: Users, value: '100K+', label: 'Happy Customers' },
+  { icon: MapPin, value: '5', label: 'Cities Served' },
 ];
 
 const familyCategories = [
-  { label: 'Men', description: "Formals to weekend casuals", href: '/men', image: '/images/hero-banner/hero-men.png' },
-  { label: 'Women', description: 'Heels, flats & everyday wear', href: '/women', image: '/images/hero-banner/hero-women.png' },
-  { label: 'Kids', description: 'Built for play, made to last', href: '/kids', image: '/images/hero-banner/hero-kids.png' },
-  { label: 'New Arrivals', description: "This season's freshest styles", href: '/new-arrivals', image: '/images/hero-banner/hero-sale.png' },
+  { label: 'Men', description: "Formals to weekend casuals", href: '/men', image: '/images/Banner/new-arrival-men.png' },
+  { label: 'Women', description: 'Heels, flats & everyday wear', href: '/women', image: '/images/Banner/new-arrival-women.png' },
+  { label: 'Kids', description: 'Built for play, made to last', href: '/kids', image: '/images/Banner/new-arrival-kid.png' },
+  { label: 'New Arrivals', description: "This season's freshest styles", href: '/new-arrivals', image: '/images/men-collection/men-sneakers.png' },
 ];
 
 export default async function AboutUsPage() {
@@ -157,7 +158,7 @@ export default async function AboutUsPage() {
                 alt={`${c.label} footwear at Ansary Footwear`}
                 fill
                 sizes="(min-width: 1024px) 22vw, 45vw"
-                className="object-cover object-right transition-transform duration-700 group-hover:scale-105"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
@@ -191,18 +192,7 @@ export default async function AboutUsPage() {
 
       <PageFaq faqs={faqs} eyebrow="Got Questions?" title="About Ansary Footwear" subtitle="Everything you might want to know about our story and how to reach us." />
 
-      <div className="container-main">
-        {/* CTA */}
-        <div className="relative rounded-3xl bg-gradient-to-br from-charcoal-800 via-charcoal-900 to-charcoal-800 overflow-hidden p-8 sm:p-12 text-center mb-16 sm:mb-20">
-          <div className="absolute top-0 right-0 w-60 h-60 bg-brand-orange/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-leather-400/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl pointer-events-none" />
-          <div className="relative">
-            <h2 className="font-poppins font-bold text-white text-xl sm:text-2xl mb-2">Have a question for us?</h2>
-            <p className="text-white/70 font-inter text-sm mb-6">We're always happy to help you find the right pair.</p>
-            <Link href="/contact-us" className="btn-primary inline-flex">Get in Touch</Link>
-          </div>
-        </div>
-      </div>
+      <Newsletter />
     </div>
   );
 }
