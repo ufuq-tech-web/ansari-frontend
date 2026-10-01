@@ -85,23 +85,6 @@ const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaCo
       ],
     },
   },
-  {
-    label: 'Accessories',
-    href: '/accessories',
-    banner: { image: '/images/Banner/acc.png', alt: 'Shop Accessories' },
-    mega: {
-      columns: [
-        {
-          title: 'Shoe Care',
-          links: ['Shoe Care Products', 'Shoes Polish'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
-        },
-        {
-          title: 'Essentials',
-          links: ['Shoes Brush', 'Socks'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
-        },
-      ],
-    },
-  },
 ];
 
 const moreLinks = [
@@ -111,9 +94,24 @@ const moreLinks = [
   { label: 'About Us', href: '/about-us' },
 ];
 
-// Simple single-column dropdowns — same trigger/hover mechanics as the
-// category mega-menus, but a flat link list instead of multi-column groups.
-const dropdownNavLinks: { label: string; href?: string; highlight?: boolean; links: MegaLink[] }[] = [
+// Second nav group — same trigger/hover mechanics as the category mega-menus.
+// Most are a flat single-column link list (`links`); Accessories keeps its
+// full multi-column mega layout (`mega` + `banner`) in this relocated slot.
+interface NavDropdownLink {
+  label: string;
+  href?: string;
+  highlight?: boolean;
+  links?: MegaLink[];
+  mega?: { columns: MegaColumn[] };
+  banner?: { image: string; alt: string };
+}
+
+// Plain top-level links with no dropdown at all.
+const plainNavLinks = [
+  { label: 'New Arrivals', href: '/new-arrivals' },
+];
+
+const dropdownNavLinks: NavDropdownLink[] = [
   {
     label: 'Sale',
     href: '/sale',
@@ -131,6 +129,23 @@ const dropdownNavLinks: { label: string; href?: string; highlight?: boolean; lin
       { label: 'Trending Products', to: '/trending' },
       { label: 'Best Sellers', to: '/best-sellers' },
     ],
+  },
+  {
+    label: 'Accessories',
+    href: '/accessories',
+    banner: { image: '/images/Banner/acc.png', alt: 'Shop Accessories' },
+    mega: {
+      columns: [
+        {
+          title: 'Shoe Care',
+          links: ['Shoe Care Products', 'Shoes Polish'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
+        },
+        {
+          title: 'Essentials',
+          links: ['Shoes Brush', 'Socks'].map((l) => ({ label: l, to: subcatLink('accessories', l) })),
+        },
+      ],
+    },
   },
 ];
 
@@ -245,6 +260,16 @@ export default function Header() {
               </div>
             ))}
 
+            {plainNavLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="flex items-center px-3 py-2 text-sm font-manrope font-medium text-charcoal-700 hover:text-brand-orange transition-colors rounded-lg"
+              >
+                {link.label}
+              </Link>
+            ))}
+
             {dropdownNavLinks.map((link) => (
               <div
                 key={link.label}
@@ -277,20 +302,70 @@ export default function Header() {
                   </button>
                 )}
 
-                <div className={`mega-menu absolute left-0 top-full pt-3 w-60 ${openMenu === link.label ? 'is-open' : ''}`}>
-                  <div className="bg-white rounded-2xl shadow-card-hover border border-charcoal-200 p-2">
-                    {link.links.map((l) => (
-                      <Link
-                        key={l.label}
-                        href={l.to}
-                        onClick={closeMegaMenu}
-                        className="block px-3 py-2.5 text-sm text-charcoal-700 hover:text-brand-orange hover:bg-charcoal-50 rounded-lg transition-colors font-inter"
-                      >
-                        {l.label}
-                      </Link>
-                    ))}
+                {link.mega ? (
+                  <div className={`mega-menu absolute left-0 top-full pt-3 ${link.banner ? 'w-[780px]' : 'w-[560px]'} ${openMenu === link.label ? 'is-open' : ''}`}>
+                    <div className="bg-white rounded-2xl shadow-card-hover border border-charcoal-200 p-6">
+                      <div className="flex gap-6">
+                        <div className="flex-1">
+                          <div className={`grid gap-6 ${link.mega.columns.length >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                            {link.mega.columns.map((col) => (
+                              <div key={col.title}>
+                                <h4 className="font-manrope font-semibold text-charcoal-900 text-sm mb-3">{col.title}</h4>
+                                <ul className="space-y-2">
+                                  {col.links.map((l) => (
+                                    <li key={l.label}>
+                                      <Link href={l.to} className="text-sm text-charcoal-500 hover:text-brand-orange transition-colors font-inter" onClick={closeMegaMenu}>
+                                        {l.label}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                          {link.href && (
+                            <div className="mt-5 pt-4 border-t border-charcoal-200">
+                              <Link href={link.href} className="inline-flex items-center gap-1.5 text-sm font-manrope font-semibold text-brand-orange hover:gap-2.5 transition-all" onClick={closeMegaMenu}>
+                                View all {link.label} <ArrowRight className="w-4 h-4" />
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+
+                        {link.banner && (
+                          <Link
+                            href={link.href ?? '#'}
+                            onClick={closeMegaMenu}
+                            className="relative w-[200px] shrink-0 rounded-xl overflow-hidden group"
+                          >
+                            <Image src={link.banner.image} alt={link.banner.alt} fill sizes="200px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/80 via-charcoal-900/0 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-4">
+                              <span className="inline-flex items-center gap-1.5 text-sm font-manrope font-semibold text-white group-hover:gap-2.5 transition-all">
+                                Shop {link.label} <ArrowRight className="w-3.5 h-3.5" />
+                              </span>
+                            </div>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className={`mega-menu absolute left-0 top-full pt-3 w-60 ${openMenu === link.label ? 'is-open' : ''}`}>
+                    <div className="bg-white rounded-2xl shadow-card-hover border border-charcoal-200 p-2">
+                      {link.links?.map((l) => (
+                        <Link
+                          key={l.label}
+                          href={l.to}
+                          onClick={closeMegaMenu}
+                          className="block px-3 py-2.5 text-sm text-charcoal-700 hover:text-brand-orange hover:bg-charcoal-50 rounded-lg transition-colors font-inter"
+                        >
+                          {l.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
 
@@ -455,6 +530,13 @@ export default function Header() {
                     </div>
                   </li>
                 ))}
+                {plainNavLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} onClick={closeMobileMenu} className="block px-4 py-3 rounded-xl font-manrope font-medium text-charcoal-800 hover:bg-charcoal-50 hover:text-brand-orange transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
                 {dropdownNavLinks.map((link) => (
                   <li key={link.label}>
                     {link.href ? (
@@ -471,15 +553,34 @@ export default function Header() {
                         {link.label}
                       </span>
                     )}
-                    <ul className="pl-8 pb-3 space-y-0.5">
-                      {link.links.map((l) => (
-                        <li key={l.label}>
-                          <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
-                            {l.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                    {link.mega ? (
+                      <div className="pl-8 pb-3 space-y-3">
+                        {link.mega.columns.map((col) => (
+                          <div key={col.title}>
+                            <div className="px-4 text-[11px] font-manrope font-semibold text-charcoal-600 uppercase tracking-wide mb-1">{col.title}</div>
+                            <ul className="space-y-0.5">
+                              {col.links.map((l) => (
+                                <li key={l.label}>
+                                  <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
+                                    {l.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <ul className="pl-8 pb-3 space-y-0.5">
+                        {link.links?.map((l) => (
+                          <li key={l.label}>
+                            <Link href={l.to} onClick={closeMobileMenu} className="block px-4 py-1.5 text-sm text-charcoal-800 hover:text-brand-orange font-inter transition-colors">
+                              {l.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
                 {moreLinks.map((link) => (
