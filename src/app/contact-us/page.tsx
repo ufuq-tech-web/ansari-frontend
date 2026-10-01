@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ContactUsClient from "./ContactUsClient";
 import PageFaq from "../../components/PageFaq";
+import Newsletter from "../../components/Newsletter";
 import { getPageFaqs } from "../../lib/seo-faqs";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default async function ContactUsPage() {
     <>
       <ContactUsClient />
       <PageFaq faqs={faqs} subtitle="Quick answers before you reach out." />
+      <Newsletter />
     </>
   );
 }
