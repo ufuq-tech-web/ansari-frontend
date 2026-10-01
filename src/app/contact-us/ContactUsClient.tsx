@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, MessageCircle, Instagram, Facebook } from "lucide-react";
 
@@ -31,10 +32,14 @@ export default function ContactUsClient() {
 
   return (
     <div className="min-h-screen bg-brand-ivory">
-      <section className="relative overflow-hidden bg-charcoal-900" aria-label="Contact us hero">
+      <section className="relative overflow-hidden bg-charcoal-900 aspect-auto min-h-[320px] sm:min-h-[380px] lg:aspect-[3/1] lg:min-h-0" aria-label="Contact us hero">
+        <div className="absolute inset-0">
+          <Image src="/images/hero-banner/hero-contact-us.png" alt="" aria-hidden="true" fill priority sizes="100vw" className="object-cover opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900 via-charcoal-900/85 to-charcoal-900/50" />
+        </div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/10 rounded-full -translate-y-1/3 translate-x-1/4 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-leather-400/10 rounded-full translate-y-1/3 -translate-x-1/4 blur-3xl pointer-events-none" />
-        <div className="relative container-main py-10 sm:py-14 lg:py-16">
+        <div className="relative container-main py-10 sm:py-14 lg:py-16 h-full flex flex-col justify-center">
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
