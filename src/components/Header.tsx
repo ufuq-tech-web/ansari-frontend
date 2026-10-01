@@ -81,7 +81,7 @@ const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaCo
           links: ['Boys', 'Girls', 'New born baby', 'Toddler (2–5 Years)', 'Big Kids Shoes (10–14 Years)'].map((l) => ({ label: l, to: subcatLink('kids', l) })),
         },
         {
-          title: 'Shoe Type',
+          title: 'Types of Shoes for Kids',
           links: ['School Shoes', 'Casual Shoes', 'Sneakers', 'Sandals', 'Slippers'].map((l) => ({ label: l, to: subcatLink('kids', l) })),
         },
       ],
