@@ -12,6 +12,8 @@ interface Props {
   initialConfig: CategoryConfig | null;
   initialProducts: ProductWithCategory[];
   initialTotal: number;
+  pageTitle?: string;
+  pageDescription?: string;
 }
 
 export default function SubcategoryPageClient({
@@ -20,6 +22,8 @@ export default function SubcategoryPageClient({
   initialConfig,
   initialProducts,
   initialTotal,
+  pageTitle,
+  pageDescription,
 }: Props) {
   const router = useRouter();
   const { config, loading } = useCategory(categoryKey, initialConfig);
@@ -57,7 +61,19 @@ export default function SubcategoryPageClient({
       key={categoryKey}
       category={config}
       activeSubcategory={match.name}
-      onCategoryChange={(key) => router.push(`/${key}`)}
+      pageTitle={pageTitle}
+      pageDescription={pageDescription}
+      onCategoryChange={(key) =>
+        router.push(
+          key === "men"
+            ? "/mens-shoes"
+            : key === "women"
+            ? "/womens-shoes"
+            : key === "kids"
+            ? "/kids-shoes"
+            : `/${key}`
+        )
+      }
       initialProducts={initialProducts}
       initialTotal={initialTotal}
     />
