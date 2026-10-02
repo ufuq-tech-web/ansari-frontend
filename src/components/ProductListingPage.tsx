@@ -20,6 +20,7 @@ interface Props {
     products: Product[];
     heroImage?: string;
     defaultSort?: string;
+    breadcrumbParent?: { label: string; href: string };
 }
 
 function applyFilters(products: Product[], filters: FilterState, sort: string): Product[] {
@@ -59,7 +60,7 @@ function applyFilters(products: Product[], filters: FilterState, sort: string): 
     return result;
 }
 
-export default function ProductListingPage({ title, subtitle, products, heroImage, defaultSort = 'popularity' }: Props) {
+export default function ProductListingPage({ title, subtitle, products, heroImage, defaultSort = 'popularity', breadcrumbParent }: Props) {
     const [filters, setFilters] = useState<FilterState>({ ...defaultFilters });
     const [sort, setSort] = useState(defaultSort);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -85,6 +86,12 @@ export default function ProductListingPage({ title, subtitle, products, heroImag
                         <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
                             <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
                             <li aria-hidden><span className="text-white/30">/</span></li>
+                            {breadcrumbParent && (
+                                <>
+                                    <li><Link href={breadcrumbParent.href} className="hover:text-white transition-colors">{breadcrumbParent.label}</Link></li>
+                                    <li aria-hidden><span className="text-white/30">/</span></li>
+                                </>
+                            )}
                             <li className="text-white font-medium">{title}</li>
                         </ol>
                     </nav>
