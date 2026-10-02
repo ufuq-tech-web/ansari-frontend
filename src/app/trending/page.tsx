@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -6,11 +7,35 @@ import Newsletter from '../../components/Newsletter';
 import PageFaq from '../../components/PageFaq';
 import { getPageFaqs } from '../../lib/seo-faqs';
 
-export const metadata = {
-  title: 'Trending Products — Ansary Footwear',
-  description: "The styles everyone's talking about right now — trending picks for Men, Women, and Kids, aligned by category.",
-  alternates: { canonical: '/trending' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/trending`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "Trending Shoes | Stylish & Latest Shoes for Men, Women & Kids";
+  const description =
+    seoDesc ||
+    "Shop trending shoes for men, women, girls and boys in stylish, latest designs. Browse new shoe trends and trending footwear for every occasion.";
+  const canonicalUrl = "https://www.ansarifootwear.com/shoes-collection/trending-shoes/";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", url: canonicalUrl },
+    alternates: { canonical: canonicalUrl },
+  };
+}
 
 const defaultTrendingFaqs = [
   { question: "What makes a product 'trending'?", answer: "Trending picks are our highest-rated styles right now — footwear that's earning consistently strong reviews from customers across Men, Women, and Kids." },
@@ -29,9 +54,9 @@ export default async function TrendingPage() {
   const faqs = await getPageFaqs('trending', defaultTrendingFaqs);
   return (
     <div className="min-h-screen bg-brand-ivory">
-      <section className="relative overflow-hidden bg-charcoal-800 aspect-auto min-h-[320px] sm:min-h-[400px] lg:aspect-[21/9] lg:min-h-0" aria-label="Trending products hero">
+      <section className="relative overflow-hidden bg-charcoal-800 aspect-auto min-h-[320px] sm:min-h-[400px] lg:aspect-[21/9] lg:min-h-0" aria-label="Trending shoes hero">
         <div className="absolute inset-0">
-          <Image src="/images/hero-banner/hero-trending.png" alt="Trending products" fill priority sizes="100vw" className="object-cover opacity-40" />
+          <Image src="/images/hero-banner/hero-trending.png" alt="Trending shoes" fill priority sizes="100vw" className="object-cover opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
         </div>
         <div className="relative container-main py-10 sm:py-14 lg:py-20 h-full flex flex-col justify-center">
@@ -39,12 +64,12 @@ export default async function TrendingPage() {
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">Trending Products</li>
+              <li className="text-white font-medium">Trending Shoes</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Trending Products</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Trending Shoes</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            The styles everyone&apos;s talking about right now — trending picks for Men, Women, and Kids, aligned by category.
+            Shop trending shoes for men, women, girls and boys in stylish, latest designs. Browse new shoe trends and trending footwear for every occasion.
           </p>
         </div>
       </section>
