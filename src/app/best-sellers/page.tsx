@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -6,11 +7,35 @@ import Newsletter from '../../components/Newsletter';
 import PageFaq from '../../components/PageFaq';
 import { getPageFaqs } from '../../lib/seo-faqs';
 
-export const metadata = {
-  title: 'Best Sellers — Ansary Footwear',
-  description: 'Our most-loved footwear styles across Men, Women, and Kids — top-rated by thousands of customers, aligned by category.',
-  alternates: { canonical: '/best-sellers' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/best-sellers`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "Best Selling Shoes | Popular Shoes for Men & Women";
+  const description =
+    seoDesc ||
+    "Buy best selling shoes and popular footwear for men and women. Browse customer-favorite styles and explore popular shoes for everyday and occasion wear.";
+  const canonicalUrl = "https://www.ansarifootwear.com/shoes-collection/best-selling-shoes/";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", url: canonicalUrl },
+    alternates: { canonical: canonicalUrl },
+  };
+}
 
 const defaultBestSellerFaqs = [
   { question: 'How do you decide what counts as a best seller?', answer: 'We track order volume and customer reviews across the catalog — the styles families keep buying and rating highly earn the Bestseller badge.' },
@@ -40,12 +65,12 @@ export default async function BestSellersPage() {
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">Best Sellers</li>
+              <li className="text-white font-medium">Best Selling Shoes</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Best Sellers</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Best Selling Shoes</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Top-rated styles loved by thousands of customers — best sellers for Men, Women, and Kids, aligned by category.
+            Buy best selling shoes and popular footwear for men and women. Browse customer-favorite styles and explore popular shoes for everyday and occasion wear.
           </p>
         </div>
       </section>
