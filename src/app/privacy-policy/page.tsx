@@ -1,12 +1,43 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
-export const metadata = {
-  title: 'Privacy Policy — Ansary Footwear',
-  description: 'How Ansary Footwear collects, stores, and uses your information — including cart, wishlist, order data, and account details.',
-  alternates: { canonical: '/privacy-policy' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
 
-export default function PrivacyPolicyPage() {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/privacy-policy`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "Privacy Policy | Ansari Footwear";
+  const description =
+    seoDesc ||
+    "Read the Ansari Footwear Privacy Policy to understand how we collect, use, protect and manage information when you use our website and services.";
+  const canonicalUrl = "https://www.ansarifootwear.com/privacy-policy/";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", url: canonicalUrl },
+    alternates: { canonical: canonicalUrl },
+  };
+}
+
+export default async function PrivacyPolicyPage() {
+  let seo = null;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api"}/seo/privacy-policy`, { next: { revalidate: 60 } });
+    if (res.ok) seo = await res.json();
+  } catch (err) {}
+
   return (
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Privacy policy hero">
@@ -20,7 +51,7 @@ export default function PrivacyPolicyPage() {
           </nav>
           <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Privacy Policy</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Last updated: July 2026
+            {seo?.description || "Read the Ansari Footwear Privacy Policy to understand how we collect, use, protect and manage information when you use our website and services."}
           </p>
         </div>
       </section>
@@ -77,7 +108,7 @@ export default function PrivacyPolicyPage() {
             browser's site data for ansarifootwear.com. If you've shared personal information with us directly
             (for example, through a support request), you can ask us to review, correct, or delete it by reaching
             out via{' '}
-            <Link href="/contact-us" className="text-brand-orange hover:underline">Contact Us</Link>.
+            <Link href="/shoes-shop-contact-numbers" className="text-brand-orange hover:underline">Contact Us</Link>.
           </p>
 
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Changes to This Policy</h2>
