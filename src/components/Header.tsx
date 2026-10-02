@@ -17,8 +17,43 @@ import { useAuthStore } from "../lib/auth-store";
 interface MegaLink { label: string; to: string; }
 interface MegaColumn { title: string; links: MegaLink[]; }
 
+const CUSTOM_SUBCAT_LINKS: Record<string, string> = {
+  "men/formal-shoes": "/mens-shoes/formal-shoes-for-men",
+  "men/casual-shoes": "/mens-shoes/casual-shoes-for-men",
+  "men/sneakers": "/mens-shoes/sneakers-for-men",
+  "men/sports-shoes": "/mens-shoes/sports-shoes-for-men",
+  "men/sandals": "/mens-shoes/mens-sandals",
+  "men/slippers-flip-flops": "/mens-shoes/slippers-flip-flops-for-men",
+  "men/loafers": "/mens-shoes/loafers-for-men",
+  "men/boots": "/mens-shoes/mens-boots",
+  "women/flats": "/womens-shoes/womens-flats",
+  "women/mojari-shoes": "/womens-shoes/mojari-shoes-for-women",
+  "women/sandals": "/womens-shoes/sandals-for-women",
+  "women/slippers": "/womens-shoes/slippers-for-women",
+  "women/kolhapuri-chappal": "/womens-shoes/kolhapuri-chappal-for-women",
+  "kids/boys": "/kids-shoes/boys-shoes",
+  "kids/girls": "/kids-shoes/girls-shoes",
+  "kids/new-born-baby": "/kids-shoes/baby-shoes",
+  "kids/toddler-2-5-years": "/kids-shoes/toddler-shoes",
+  "kids/big-kids-shoes-10-14-years": "/kids-shoes/junior-shoes",
+  "kids/school-shoes": "/kids-shoes/school-shoes",
+  "kids/casual-shoes": "/kids-shoes/kids-casual-shoes",
+  "kids/sneakers": "/kids-shoes/kids-sneakers",
+  "kids/sandals": "/kids-shoes/kids-sandals",
+  "kids/slippers": "/kids-shoes/kids-slippers",
+  "accessories/socks": "/accessories/shoe-accessories/socks",
+  "accessories/shoe-care-products": "/accessories/shoe-accessories/shoes-care-products",
+  "accessories/shoes-care-products": "/accessories/shoe-accessories/shoes-care-products",
+  "accessories/shoes-polish": "/accessories/shoe-accessories/shoe-polish",
+  "accessories/shoe-polish": "/accessories/shoe-accessories/shoe-polish",
+  "accessories/shoes-brush": "/accessories/shoe-accessories/shoe-brush",
+  "accessories/shoe-brush": "/accessories/shoe-accessories/shoe-brush",
+};
+
 const subcatLink = (category: string, subcategory: string, extra?: Record<string, string>) => {
-  const base = `/${category}/${slugify(subcategory)}`;
+  const custom = CUSTOM_SUBCAT_LINKS[`${category}/${slugify(subcategory)}`];
+  const catBase = category === "men" ? "/mens-shoes" : category === "women" ? "/womens-shoes" : category === "kids" ? "/kids-shoes" : `/${category}`;
+  const base = custom || `${catBase}/${slugify(subcategory)}`;
   if (!extra || Object.keys(extra).length === 0) return base;
   return `${base}?${new URLSearchParams(extra).toString()}`;
 };
@@ -26,7 +61,7 @@ const popularColumn = (category: string): MegaColumn => ({
   title: 'Popular',
   links: [
     { label: 'New Arrivals', to: `/new-arrivals/${category}` },
-    { label: 'Best Sellers', to: '/best-sellers' },
+    { label: 'Best Sellers', to: '/shoes-collection/best-selling-shoes' },
     { label: 'Sale', to: `/sale/${category}` },
   ],
 });
@@ -34,7 +69,7 @@ const popularColumn = (category: string): MegaColumn => ({
 const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaColumn[]; groupTitle?: string }; banner?: { image: string; alt: string } }[] => [
   {
     label: 'Men',
-    href: '/men',
+    href: '/mens-shoes',
     banner: { image: '/images/Banner/men.png', alt: "Shop Men's footwear" },
     mega: {
       groupTitle: 'Types of Shoes for Men',
@@ -53,7 +88,7 @@ const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaCo
   },
   {
     label: 'Women',
-    href: '/women',
+    href: '/womens-shoes',
     banner: { image: '/images/Banner/wom.png', alt: "Shop Women's footwear" },
     mega: {
       groupTitle: 'Types of Shoes for Women',
@@ -72,7 +107,7 @@ const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaCo
   },
   {
     label: 'Kids',
-    href: '/kids',
+    href: '/kids-shoes',
     banner: { image: '/images/Banner/kiid.png', alt: "Shop Kids' footwear" },
     mega: {
       columns: [
@@ -91,9 +126,9 @@ const buildNavLinks = (): { label: string; href: string; mega: { columns: MegaCo
 
 const moreLinks = [
   { label: 'Brands', href: '/brands' },
-  { label: 'Journal', href: '/journal' },
-  { label: 'About Us', href: '/about-us' },
-  { label: 'Contact Us', href: '/contact-us' },
+  { label: 'Journal', href: '/footwears-journal' },
+  { label: 'About Us', href: '/shoes-shop-in-india' },
+  { label: 'Contact Us', href: '/shoes-shop-contact-numbers' },
 ];
 
 // Second nav group — same trigger/hover mechanics as the category mega-menus.
@@ -128,8 +163,8 @@ const dropdownNavLinks: NavDropdownLink[] = [
   {
     label: 'Collection',
     links: [
-      { label: 'Trending Products', to: '/trending' },
-      { label: 'Best Sellers', to: '/best-sellers' },
+      { label: 'Trending Products', to: '/shoes-collection/trending-shoes' },
+      { label: 'Best Sellers', to: '/shoes-collection/best-selling-shoes' },
     ],
   },
   {
