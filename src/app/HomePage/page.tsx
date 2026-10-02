@@ -24,8 +24,9 @@ const defaultHomeFaqs = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
-  let title = "Ansary Footwear";
-  let description = "Premium Footwear";
+  let title = "Best Shoes Shop in India | Buy Shoes & Footwear Online";
+  let description =
+    "Shop shoes online at Ansari Footwear, a trusted shoes shop in India. Explore Sparx, Bata & Red Tape footwear for men, women & kids with COD across India.";
   let keywords = "";
 
   try {

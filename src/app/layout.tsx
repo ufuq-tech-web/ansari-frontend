@@ -31,10 +31,11 @@ export const metadata: Metadata = {
     template: "%s",
   },
   description:
-    "Discover affordable, quality footwear for men, women, and kids at Ansary Footwear. 25+ years of trusted retail experience. Shop boots, sandals, sneakers and more.",
+    "Shop shoes online at Ansari Footwear, a trusted shoes shop in India. Explore Sparx, Bata & Red Tape footwear for men, women & kids with COD across India.",
   openGraph: {
     title: "Ansary Footwear — Quality Footwear for Every Step of Life",
-    description: "Affordable footwear for the whole family. Men, Women, Kids & Accessories.",
+    description:
+      "Shop shoes online at Ansari Footwear, a trusted shoes shop in India. Explore Sparx, Bata & Red Tape footwear for men, women & kids with COD across India.",
     type: "website",
   },
   robots: {
