@@ -19,9 +19,9 @@ const footerColumns: { title: string; links: { label: string; href?: string }[] 
   {
     title: 'Shop',
     links: [
-      { label: 'Men', href: '/men' },
-      { label: 'Women', href: '/women' },
-      { label: 'Kids', href: '/kids' },
+      { label: 'Men', href: '/mens-shoes' },
+      { label: 'Women', href: '/womens-shoes' },
+      { label: 'Kids', href: '/kids-shoes' },
       { label: 'Accessories', href: '/accessories' },
       { label: 'New Arrivals', href: '/new-arrivals' },
       { label: 'Sale', href: '/sale' },
@@ -30,24 +30,24 @@ const footerColumns: { title: string; links: { label: string; href?: string }[] 
   {
     title: 'Customer Service',
     links: [
-      { label: 'Contact Us', href: '/contact-us' },
-      { label: 'Order Tracking', href: '/track-order' },
-      { label: 'Shipping Info', href: '/shipping-policy' },
-      { label: 'Returns & Exchanges', href: '/return-exchange' },
+      { label: 'Contact Us', href: '/shoes-shop-contact-numbers' },
+      { label: 'Order Tracking', href: '/order-tracking' },
+      { label: 'Shipping Info', href: '/shipping-information' },
+      { label: 'Returns & Exchanges', href: '/returns-exchanges' },
       { label: 'Size Guide' },
-      { label: 'FAQs', href: '/faq' },
+      { label: 'FAQs', href: '/faqs' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'About Us', href: '/about-us' },
-      { label: 'Our Story', href: '/about-us' },
+      { label: 'About Us', href: '/shoes-shop-in-india' },
+      { label: 'Our Story', href: '/shoes-shop-in-india' },
       { label: 'Store Locator' },
       { label: 'Careers' },
-      { label: 'Journal', href: '/journal' },
+      { label: 'Journal', href: '/footwears-journal' },
       { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'Terms & Conditions', href: '/terms-and-conditions' },
+      { label: 'Terms & Conditions', href: '/terms-conditions' },
     ],
   },
 ];
