@@ -7,7 +7,7 @@ export default function FeaturedCategories() {
     <section className="w-full flex flex-col">
       <div className="w-full flex flex-col md:flex-row">
       {/* Men's Casuals */}
-      <Link href="/men/casual-shoes" className="relative block w-full md:w-1/2 h-[50vh] md:h-[70vh] group overflow-hidden bg-gray-100">
+      <Link href="/mens-shoes/casual-shoes-for-men" className="relative block w-full md:w-1/2 h-[50vh] md:h-[70vh] group overflow-hidden bg-gray-100">
         <Image
           src="/images/category/men-catt.png"
           alt="Mens Casuals"
