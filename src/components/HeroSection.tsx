@@ -12,8 +12,8 @@ const heroSlides = [
     badgeIcon: Award,
     title: <>Quality Footwear for{' '}<br className="hidden sm:block" /><span className="text-secondary">Every Step</span> of Life</>,
     description: 'Discover affordable footwear for men, women, and kids with trusted quality, stylish designs, and over 25 years of retail experience.',
-    primaryLink: { href: '/men', label: 'Shop Men' },
-    secondaryLink: { href: '/women', label: 'Shop Women' },
+    primaryLink: { href: '/mens-shoes', label: 'Shop Men' },
+    secondaryLink: { href: '/womens-shoes', label: 'Shop Women' },
   },
   {
     image: '/images/hero-banner/hero-slide-men.png',
@@ -21,8 +21,8 @@ const heroSlides = [
     badgeIcon: Shield,
     title: <>Sharp, Refined{' '}<br className="hidden sm:block" /><span className="text-secondary">Men&apos;s</span> Footwear</>,
     description: 'From boardroom loafers to weekend casuals — premium leather footwear built for comfort and made to last.',
-    primaryLink: { href: '/men', label: 'Shop Men' },
-    secondaryLink: { href: '/men/formal-shoes', label: 'Shop Formals' },
+    primaryLink: { href: '/mens-shoes', label: 'Shop Men' },
+    secondaryLink: { href: '/mens-shoes/formal-shoes-for-men', label: 'Shop Formals' },
   },
   {
     image: '/images/hero-banner/hero-slide-women.png',
@@ -30,7 +30,7 @@ const heroSlides = [
     badgeIcon: Star,
     title: <>Elegant <span className="text-secondary">Women&apos;s</span>{' '}<br className="hidden sm:block" />Footwear Collection</>,
     description: 'From stunning heels to comfortable flats — find the perfect pair for every occasion. Premium quality at prices you\'ll love.',
-    primaryLink: { href: '/women', label: 'Shop Women' },
+    primaryLink: { href: '/womens-shoes', label: 'Shop Women' },
     secondaryLink: { href: '/new-arrivals', label: 'New Arrivals' },
   },
   {
@@ -39,8 +39,8 @@ const heroSlides = [
     badgeIcon: Shield,
     title: <>Fun & Durable{' '}<br className="hidden sm:block" /><span className="text-secondary">Kids&apos; Shoes</span> They&apos;ll Love</>,
     description: 'Colorful, comfortable, and built to last — explore our vibrant collection of school shoes, sneakers, and sports shoes for kids.',
-    primaryLink: { href: '/kids', label: 'Shop Kids' },
-    secondaryLink: { href: '/best-sellers', label: 'Best Sellers' },
+    primaryLink: { href: '/kids-shoes', label: 'Shop Kids' },
+    secondaryLink: { href: '/shoes-collection/best-selling-shoes', label: 'Best Sellers' },
   },
   {
     image: '/images/sale.png',
@@ -49,7 +49,7 @@ const heroSlides = [
     title: <>The Family <span className="text-secondary">Sale</span>{' '}<br className="hidden sm:block" />Everyone&apos;s Been Waiting For</>,
     description: 'Handpicked styles for men, women, and kids — now at prices that make it easy to shop for the whole family.',
     primaryLink: { href: '/sale', label: 'Shop Sale' },
-    secondaryLink: { href: '/trending', label: 'Trending Products' },
+    secondaryLink: { href: '/shoes-collection/trending-shoes', label: 'Trending Products' },
   },
 ];
 
