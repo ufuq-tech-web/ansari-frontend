@@ -7,12 +7,12 @@ import { Instagram, Play, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-r
 import { instagramImages } from '../lib/catalog-helpers';
 
 const stories = [
-  { title: "Men's styles", description: 'Classic looks for every move.', cta: 'Shop men', href: '/men/casual-shoes' },
+  { title: "Men's styles", description: 'Classic looks for every move.', cta: 'Shop men', href: '/mens-shoes/casual-shoes-for-men' },
   { title: "Women's picks", description: 'From everyday to standout.', cta: 'Shop women', href: '/women/heels' },
   { title: "Kids' favorites", description: 'Little steps, big adventures.', cta: 'Shop kids', href: '/kids/school-shoes' },
-  { title: 'Everyday comfort', description: 'Made for real life.', cta: 'Shop sneakers', href: '/men/sports-shoes' },
+  { title: 'Everyday comfort', description: 'Made for real life.', cta: 'Shop sneakers', href: '/mens-shoes/sports-shoes-for-men' },
   { title: 'Family moments', description: 'Shoes for every story.', cta: 'Shop all', href: '/' },
-  { title: 'Office ready', description: 'Sharp looks for the workday.', cta: 'Shop formals', href: '/men/formal-shoes' },
+  { title: 'Office ready', description: 'Sharp looks for the workday.', cta: 'Shop formals', href: '/mens-shoes/formal-shoes-for-men' },
   { title: 'Finishing touches', description: 'The details that complete a look.', cta: 'Shop accessories', href: '/accessories' },
   { title: 'New season edit', description: "What's new this week.", cta: 'Shop new', href: '/new-arrivals' },
 ];
