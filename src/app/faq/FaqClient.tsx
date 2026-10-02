@@ -71,7 +71,7 @@ function FaqSection({ id, title, subtitle, faqs }: FaqSectionProps) {
   );
 }
 
-export default function FaqClient() {
+export default function FaqClient({ heroDescription }: { heroDescription?: string } = {}) {
   const [categories, setCategories] = useState<CategoryConfig[]>([]);
 
   useEffect(() => {
@@ -96,9 +96,9 @@ export default function FaqClient() {
               <li className="text-white font-medium">FAQs</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Frequently Asked Questions</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">FAQs</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Answers about shipping, returns, sizing, and more.
+            {heroDescription || "Find answers to frequently asked questions about Ansari Footwear products, orders, payments, shipping, returns and exchanges."}
           </p>
         </div>
       </section>
@@ -119,7 +119,7 @@ export default function FaqClient() {
         <div className="rounded-2xl bg-charcoal-900 p-8 text-center">
           <h2 className="font-poppins font-bold text-white text-xl mb-2">Still have questions?</h2>
           <p className="text-white/70 font-inter text-sm mb-5">Our team is available Monday to Saturday, 10 AM to 8:30 PM.</p>
-          <Link href="/contact-us" className="btn-primary inline-flex">Contact Support <ArrowRight className="w-4 h-4" /></Link>
+          <Link href="/shoes-shop-contact-numbers" className="btn-primary inline-flex">Contact Support <ArrowRight className="w-4 h-4" /></Link>
         </div>
       </div>
     </div>
