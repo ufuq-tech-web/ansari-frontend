@@ -56,7 +56,7 @@ export default function CategoryFAQ({ category }: Props) {
                             <h3 className="font-poppins font-semibold text-charcoal-900">Still have questions?</h3>
                             <p className="text-sm text-charcoal-500 font-inter mt-0.5">Our team is available Mon–Sat, 9 AM to 7 PM</p>
                         </div>
-                        <Link href="/contact-us" className="btn-secondary flex-shrink-0">Contact Support</Link>
+                        <Link href="/shoes-shop-contact-numbers" className="btn-secondary flex-shrink-0">Contact Support</Link>
                     </div>
                 </div>
             </div>
