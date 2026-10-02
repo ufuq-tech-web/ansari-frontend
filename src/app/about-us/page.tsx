@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ShieldCheck, Heart, Users, Truck, Quote, Calendar, MapPin, Award, ArrowRight } from 'lucide-react';
@@ -5,11 +6,35 @@ import PageFaq from '../../components/PageFaq';
 import Newsletter from '../../components/Newsletter';
 import { getPageFaqs } from '../../lib/seo-faqs';
 
-export const metadata = {
-  title: 'About Us — Ansary Footwear',
-  description: 'Ansary Footwear has been serving families across India with quality, affordable footwear for over 25 years. Learn our story.',
-  alternates: { canonical: '/about-us' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/about-us`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "About Ansari Footwear | Shoes Shop in India";
+  const description =
+    seoDesc ||
+    "Learn about Ansari Footwear, our journey, footwear collections and commitment to serving customers across India with quality shoes and footwear.";
+  const canonicalUrl = "https://www.ansarifootwear.com/shoes-shop-in-india/";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", url: canonicalUrl },
+    alternates: { canonical: canonicalUrl },
+  };
+}
 
 const defaultAboutFaqs = [
   { question: 'How long has Ansary Footwear been in business?', answer: 'Since 1998 — over 25 years serving families across India, starting from a single storefront in Mumbai.' },
@@ -33,14 +58,19 @@ const stats = [
 ];
 
 const familyCategories = [
-  { label: 'Men', description: "Formals to weekend casuals", href: '/men', image: '/images/Banner/new-arrival-men.png' },
-  { label: 'Women', description: 'Heels, flats & everyday wear', href: '/women', image: '/images/Banner/new-arrival-women.png' },
-  { label: 'Kids', description: 'Built for play, made to last', href: '/kids', image: '/images/Banner/new-arrival-kid.png' },
+  { label: 'Men', description: "Formals to weekend casuals", href: '/mens-shoes', image: '/images/Banner/new-arrival-men.png' },
+  { label: 'Women', description: 'Heels, flats & everyday wear', href: '/womens-shoes', image: '/images/Banner/new-arrival-women.png' },
+  { label: 'Kids', description: 'Built for play, made to last', href: '/kids-shoes', image: '/images/Banner/new-arrival-kid.png' },
   { label: 'New Arrivals', description: "This season's freshest styles", href: '/new-arrivals', image: '/images/men-collection/men-sneakers.png' },
 ];
 
 export default async function AboutUsPage() {
   const faqs = await getPageFaqs('about-us', defaultAboutFaqs);
+  let seo = null;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api"}/seo/about-us`, { next: { revalidate: 60 } });
+    if (res.ok) seo = await res.json();
+  } catch (err) {}
 
   return (
     <div className="min-h-screen bg-brand-ivory">
@@ -63,9 +93,9 @@ export default async function AboutUsPage() {
             </ol>
           </nav>
           <span className="text-brand-orange font-manrope font-semibold text-sm uppercase tracking-widest">Our Heritage</span>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-2 max-w-2xl">Quality Footwear for Every Step of Life</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-2 max-w-2xl">About Us</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            25+ years of trusted retail experience, serving families across India.
+            {seo?.description || "Learn about Ansari Footwear, our journey, footwear collections and commitment to serving customers across India with quality shoes and footwear."}
           </p>
         </div>
       </section>
