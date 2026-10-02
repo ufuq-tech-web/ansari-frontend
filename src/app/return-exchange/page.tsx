@@ -1,11 +1,36 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { RefreshCw, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 
-export const metadata = {
-  title: 'Returns & Exchanges — Ansary Footwear',
-  description: 'Ansary Footwear offers 7-day easy returns and exchanges on unworn footwear in original packaging. Read our full returns policy.',
-  alternates: { canonical: '/return-exchange' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/return-exchange`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "Returns & Exchanges | Ansari Footwear";
+  const description =
+    seoDesc ||
+    "Learn about Ansari Footwear’s returns and exchanges process, eligibility requirements and steps for requesting a return or product exchange.";
+  const canonicalUrl = "https://www.ansarifootwear.com/returns-exchanges/";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", url: canonicalUrl },
+    alternates: { canonical: canonicalUrl },
+  };
+}
 
 const steps = [
   { step: '1', title: 'Request a return', text: 'Go to My Orders, select the item, and choose Return or Exchange — no login required if you have your order number from Track Order.' },
@@ -28,7 +53,13 @@ const notEligible = [
   'Shoe care/accessory items that have been opened or used',
 ];
 
-export default function ReturnExchangePage() {
+export default async function ReturnExchangePage() {
+  let seo = null;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api"}/seo/return-exchange`, { next: { revalidate: 60 } });
+    if (res.ok) seo = await res.json();
+  } catch (err) {}
+
   return (
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Returns and exchanges hero">
@@ -42,7 +73,7 @@ export default function ReturnExchangePage() {
           </nav>
           <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Returns & Exchanges</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            7-day hassle-free returns on unworn shoes in original packaging.
+            {seo?.description || "Learn about Ansari Footwear’s returns and exchanges process, eligibility requirements and steps for requesting a return or product exchange."}
           </p>
         </div>
       </section>
@@ -114,7 +145,7 @@ export default function ReturnExchangePage() {
           <RefreshCw className="w-8 h-8 text-brand-orange mx-auto mb-3" strokeWidth={2} />
           <h2 className="font-poppins font-bold text-white text-xl mb-2">Ready to start a return?</h2>
           <p className="text-white/70 font-inter text-sm mb-5">Find your order and begin the process in a couple of clicks.</p>
-          <Link href="/track-order" className="btn-primary inline-flex">Track My Order <ArrowRight className="w-4 h-4" /></Link>
+          <Link href="/order-tracking" className="btn-primary inline-flex">Track My Order <ArrowRight className="w-4 h-4" /></Link>
         </div>
       </div>
     </div>
