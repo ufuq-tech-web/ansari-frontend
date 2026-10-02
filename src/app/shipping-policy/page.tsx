@@ -1,11 +1,36 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Truck, Package, MapPin, Clock } from 'lucide-react';
 
-export const metadata = {
-  title: 'Shipping Policy — Ansary Footwear',
-  description: 'Live shipping rates calculated at checkout, Cash on Delivery available, and typical delivery timelines for Ansary Footwear orders across India.',
-  alternates: { canonical: '/shipping-policy' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/shipping-policy`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "Shipping Information | Ansari Footwear";
+  const description =
+    seoDesc ||
+    "Find shipping information for Ansari Footwear, including delivery timelines, order processing and important details about receiving your footwear order.";
+  const canonicalUrl = "https://www.ansarifootwear.com/shipping-information/";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", url: canonicalUrl },
+    alternates: { canonical: canonicalUrl },
+  };
+}
 
 const highlights = [
   { icon: Truck, title: 'Shipping Cost', text: 'Calculated live at checkout based on your delivery location — shown upfront before you pay, no hidden charges.' },
@@ -14,7 +39,13 @@ const highlights = [
   { icon: MapPin, title: 'Pan-India Delivery', text: 'We currently ship to all serviceable pin codes across India via our logistics partners.' },
 ];
 
-export default function ShippingPolicyPage() {
+export default async function ShippingPolicyPage() {
+  let seo = null;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api"}/seo/shipping-policy`, { next: { revalidate: 60 } });
+    if (res.ok) seo = await res.json();
+  } catch (err) {}
+
   return (
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Shipping policy hero">
@@ -23,12 +54,12 @@ export default function ShippingPolicyPage() {
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">Shipping Policy</li>
+              <li className="text-white font-medium">Shipping Info</li>
             </ol>
           </nav>
           <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Shipping Info</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Live shipping rates, Cash on Delivery, and delivery across India.
+            {seo?.description || "Find shipping information for Ansari Footwear, including delivery timelines, order processing and important details about receiving your footwear order."}
           </p>
         </div>
       </section>
@@ -58,7 +89,7 @@ export default function ShippingPolicyPage() {
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Order Tracking</h2>
           <p>
             Once your order ships, you'll be able to follow its status from the{' '}
-            <Link href="/track-order" className="text-brand-orange hover:underline">Track Order</Link> page using
+            <Link href="/order-tracking" className="text-brand-orange hover:underline">Track Order</Link> page using
             your order number, or from{' '}
             <Link href="/orders" className="text-brand-orange hover:underline">My Orders</Link> if you're on the
             same device you ordered from.
