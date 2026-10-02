@@ -6,10 +6,12 @@ import type { Product } from "../../../lib/catalog-helpers";
 
 interface Props {
   brandName: string | null;
+  pageTitle?: string | null;
+  pageDescription?: string | null;
   products: Product[];
 }
 
-export default function BrandPageClient({ brandName, products }: Props) {
+export default function BrandPageClient({ brandName, pageTitle, pageDescription, products }: Props) {
   const router = useRouter();
 
   if (!brandName) {
@@ -21,12 +23,16 @@ export default function BrandPageClient({ brandName, products }: Props) {
     );
   }
 
+  const title = pageTitle || brandName;
+  const subtitle = pageDescription || `${products.length} products from ${brandName}`;
+
   return (
     <ProductListingPage
-      title={brandName}
-      subtitle={`${products.length} products from ${brandName}`}
+      title={title}
+      subtitle={subtitle}
       products={products}
       heroImage="/images/hero-banner/hero-brand-detail.png"
+      breadcrumbParent={{ label: "Brands", href: "/brands" }}
     />
   );
 }

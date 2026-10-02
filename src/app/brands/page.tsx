@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -6,10 +7,40 @@ import Newsletter from '../../components/Newsletter';
 import PageFaq from '../../components/PageFaq';
 import { getPageFaqs } from '../../lib/seo-faqs';
 
-export const metadata = {
-  title: 'Shop by Brand — Ansary Footwear',
-  description: 'Explore footwear from Heritage, UrbanStep, FlexWalk, Grace, TrailMate, LittleSteps, Classic, and ComfortPro.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/brands`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "Shoe Brands | Branded Shoes for Men & Women Online";
+  const description =
+    seoDesc ||
+    "Explore shoe brands and branded shoes for men and women. Discover footwear from different brands across formal, casual, sports and everyday styles.";
+  const canonicalUrl = "https://www.ansarifootwear.com/brands/";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: canonicalUrl,
+    },
+    alternates: { canonical: canonicalUrl },
+  };
+}
 
 const defaultBrandsFaqs = [
   { question: 'Are all products from these brands 100% genuine?', answer: 'Yes, we source directly from each brand or their authorized distributors — every product listed is genuine.' },
@@ -49,9 +80,9 @@ export default async function BrandsPage() {
               <li className="text-white font-medium">Brands</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Shop by Brand</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Shoe Brands</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Trusted brands for every need and budget — from heritage leathercraft to everyday comfort.
+            Explore shoe brands and branded shoes for men and women. Discover footwear from different brands across formal, casual, sports and everyday styles.
           </p>
         </div>
       </section>
