@@ -115,19 +115,19 @@ export function findPriceTierForProduct(product: Product): { key: string; label:
 export const categories = [
   {
     name: 'Men',
-    href: '/men',
+    href: '/mens-shoes',
     image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
     count: '320+ Styles',
   },
   {
     name: 'Women',
-    href: '/women',
+    href: '/womens-shoes',
     image: 'https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
     count: '450+ Styles',
   },
   {
     name: 'Kids',
-    href: '/kids',
+    href: '/kids-shoes',
     image: 'https://images.pexels.com/photos/5275375/pexels-photo-5275375.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1500&fit=crop',
     count: '180+ Styles',
   },
@@ -143,19 +143,19 @@ export const categories = [
 export const collections = [
   {
     name: 'Office Wear',
-    href: '/men/formal-shoes',
+    href: '/mens-shoes/formal-shoes-for-men',
     image: '/images/featured/featured-1.png',
     description: 'Polished & professional',
   },
   {
     name: 'Everyday Flats',
-    href: '/women/flats',
+    href: '/womens-shoes/womens-flats',
     image: '/images/featured/featured-2.png',
     description: 'All-day comfort',
   },
   {
     name: 'Sports Collection',
-    href: '/men/sports-shoes',
+    href: '/mens-shoes/sports-shoes-for-men',
     image: '/images/featured/featured-3.png',
     description: 'Performance ready',
   },
@@ -167,7 +167,7 @@ export const collections = [
   },
   {
     name: 'School Shoes',
-    href: '/kids/school-shoes',
+    href: '/kids-shoes/school-shoes',
     image: '/images/featured/featured-5.png',
     description: 'Durable & smart',
   },
