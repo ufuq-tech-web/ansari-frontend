@@ -28,9 +28,11 @@ interface Props {
     // instead of a loading spinner.
     initialProducts?: ProductWithCategory[];
     initialTotal?: number;
+    pageTitle?: string;
+    pageDescription?: string;
 }
 
-export default function CategoryPage({ category, activeSubcategory, onCategoryChange, presetPriceRange, presetPriceLabel, onClearPresetPrice, initialProducts, initialTotal }: Props) {
+export default function CategoryPage({ category, activeSubcategory, onCategoryChange, presetPriceRange, presetPriceLabel, onClearPresetPrice, initialProducts, initialTotal, pageTitle, pageDescription }: Props) {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
@@ -57,7 +59,7 @@ export default function CategoryPage({ category, activeSubcategory, onCategoryCh
 
     return (
         <div className="min-h-screen bg-brand-ivory">
-            <CategoryHero category={category} activeSubcategory={activeSubcategory} />
+            <CategoryHero category={category} activeSubcategory={activeSubcategory} title={pageTitle} description={pageDescription} />
 
             <SubcategoryGrid
                 category={category}

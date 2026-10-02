@@ -8,17 +8,19 @@ import type { CategoryConfig } from '../../lib/catalog-helpers';
 interface Props {
     category: CategoryConfig;
     activeSubcategory?: string;
+    title?: string;
+    description?: string;
 }
 
-export default function CategoryHero({ category, activeSubcategory }: Props) {
+export default function CategoryHero({ category, activeSubcategory, title, description }: Props) {
     // Intelligently parse the gender/audience prefix (e.g., "Men's Footwear" -> "Men's")
     const genderPrefix = category.name.includes(' ') ? category.name.split(' ')[0] : category.name;
     const audience = genderPrefix.replace(/'s|'/g, "").toLowerCase();
 
-    const dynamicTitle = activeSubcategory ? `${genderPrefix} ${activeSubcategory}` : category.name;
-    const dynamicDescription = activeSubcategory
+    const dynamicTitle = title || (activeSubcategory ? activeSubcategory : category.name);
+    const dynamicDescription = description || (activeSubcategory
         ? `Explore our latest collection of ${activeSubcategory.toLowerCase()} for ${audience}. Engineered for perfect comfort and effortless style.`
-        : category.description;
+        : category.description);
 
     return (
         <section
@@ -59,7 +61,7 @@ export default function CategoryHero({ category, activeSubcategory }: Props) {
                             <li aria-hidden><span className="text-white/30">/</span></li>
                             {activeSubcategory ? (
                                 <>
-                                    <li><Link href={`/${category.key}`} className="hover:text-white transition-colors">{category.name}</Link></li>
+                                    <li><Link href={category.key === 'men' ? '/mens-shoes/' : category.key === 'women' ? '/womens-shoes/' : category.key === 'kids' ? '/kids-shoes/' : `/${category.key}`} className="hover:text-white transition-colors">{category.name}</Link></li>
                                     <li aria-hidden><span className="text-white/30">/</span></li>
                                     <li className="text-white font-medium">{activeSubcategory}</li>
                                 </>
