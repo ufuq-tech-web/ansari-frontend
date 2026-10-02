@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Clock, FileText } from 'lucide-react';
@@ -6,11 +7,35 @@ import Newsletter from '../../components/Newsletter';
 import PageFaq from '../../components/PageFaq';
 import { getPageFaqs } from '../../lib/seo-faqs';
 
-export const metadata = {
-  title: 'Journal — Ansary Footwear',
-  description: 'Editorial insights, style guides, and journal entries from the Ansary Footwear team.',
-  alternates: { canonical: '/journal' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/journal`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "Footwear Journal | Shoe Guides, Trends & Style Tips";
+  const description =
+    seoDesc ||
+    "Discover footwear trends, shoe guides, styling tips and helpful advice in the Ansari Footwear Journal. Learn how to choose, wear and care for your shoes.";
+  const canonicalUrl = "https://www.ansarifootwear.com/footwears-journal/";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", url: canonicalUrl },
+    alternates: { canonical: canonicalUrl },
+  };
+}
 
 const defaultJournalFaqs = [
   { question: 'How often do you publish new articles?', answer: 'We add new guides and style tips regularly — check back often or subscribe to our newsletter to get notified.' },
@@ -49,12 +74,12 @@ export default async function JournalPage() {
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">Journal</li>
+              <li className="text-white font-medium">Footwear Journal</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight text-shadow-sm">{seo?.title || 'The Journal'}</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight text-shadow-sm">Footwear Journal</h1>
           <p className="mt-4 text-white/90 text-base sm:text-lg font-inter leading-relaxed max-w-xl text-shadow-sm">
-            {seo?.description || 'Tips, trends, and tutorials from the Ansary Footwear team.'}
+            {seo?.description || 'Discover footwear trends, shoe guides, styling tips and helpful advice in the Ansari Footwear Journal. Learn how to choose, wear and care for your shoes.'}
           </p>
         </div>
       </section>
@@ -67,7 +92,7 @@ export default async function JournalPage() {
             {posts.map((post) => (
               <Link
                 key={post.id}
-                href={`/journal/${post.slug}`}
+                href={`/footwears-journal/${post.slug}`}
                 className="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover border border-charcoal-200 hover:border-brand-orange/30 transition-all duration-300 group flex flex-col"
               >
                 <div className="relative h-52 bg-charcoal-100 overflow-hidden">

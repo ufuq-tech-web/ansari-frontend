@@ -26,7 +26,7 @@ export async function generateMetadata({
     title,
     description: post.excerpt,
     openGraph: { title, description: post.excerpt, type: "article" },
-    alternates: { canonical: `/journal/${post.slug}` },
+    alternates: { canonical: `${BASE_URL}/footwears-journal/${post.slug}/` },
   };
 }
 
@@ -54,8 +54,8 @@ export default async function ArticlePage({
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: BASE_URL },
-          { name: "Journal", url: `${BASE_URL}/journal` },
-          { name: post.title, url: `${BASE_URL}/journal/${post.slug}` },
+          { name: "Footwear Journal", url: `${BASE_URL}/footwears-journal/` },
+          { name: post.title, url: `${BASE_URL}/footwears-journal/${post.slug}/` },
         ]}
       />
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Article hero">
@@ -68,7 +68,7 @@ export default async function ArticlePage({
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter flex-wrap">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li><Link href="/journal" className="hover:text-white transition-colors">Journal</Link></li>
+              <li><Link href="/footwears-journal" className="hover:text-white transition-colors">Footwear Journal</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
               <li className="text-white font-medium">{post.title}</li>
             </ol>
@@ -99,7 +99,7 @@ export default async function ArticlePage({
               <h3 className="font-poppins font-semibold text-charcoal-900 text-sm mb-4">More Articles</h3>
               <div className="space-y-3">
                 {relatedPosts.map((p) => (
-                  <Link key={p.slug} href={`/journal/${p.slug}`} className="flex items-start gap-3 group">
+                  <Link key={p.slug} href={`/footwears-journal/${p.slug}`} className="flex items-start gap-3 group">
                     <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-brand-orange/10">
                       <Image src={p.image} alt="" fill sizes="56px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>
@@ -110,7 +110,7 @@ export default async function ArticlePage({
                   </Link>
                 ))}
               </div>
-              <Link href="/journal" className="mt-4 inline-flex items-center gap-1.5 text-brand-orange font-poppins font-semibold text-xs hover:gap-2.5 transition-all">
+              <Link href="/footwears-journal" className="mt-4 inline-flex items-center gap-1.5 text-brand-orange font-poppins font-semibold text-xs hover:gap-2.5 transition-all">
                 All Articles <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
