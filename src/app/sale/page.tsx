@@ -30,7 +30,7 @@ export default async function SalePage() {
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800 aspect-auto min-h-[320px] sm:min-h-[400px] lg:aspect-[21/9] lg:min-h-0" aria-label="Sale hero">
         <div className="absolute inset-0">
-          <Image src="/images/hero-banner/hero-sale.png" alt="Sale" fill priority sizes="100vw" className="object-cover opacity-40" />
+          <Image src="/images/hero-banner/hero-sale-hub.png" alt="Sale" fill priority sizes="100vw" className="object-cover opacity-60" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
         </div>
         <div className="relative container-main py-10 sm:py-14 lg:py-20 h-full flex flex-col justify-center">
