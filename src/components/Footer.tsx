@@ -86,7 +86,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
+            <Link href="/HomePage" className="flex items-center gap-2 mb-4">
               <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center">
                 <span className="font-poppins font-bold text-charcoal-900 text-lg">A</span>
               </div>
