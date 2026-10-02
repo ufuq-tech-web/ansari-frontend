@@ -37,7 +37,7 @@ export default function BestSellers({ products }: { products: ProductWithCategor
             <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">Best <span className="text-secondary">Sellers</span></h2>
             <p className="mt-4 text-black font-inter text-base md:text-lg">Top-rated styles loved by thousands of customers</p>
           </div>
-          <Link href="/best-sellers" className="inline-flex items-center gap-1.5 text-brand-orange font-manrope font-semibold text-sm hover:gap-2.5 transition-all mt-2">
+          <Link href="/shoes-collection/best-selling-shoes" className="inline-flex items-center gap-1.5 text-brand-orange font-manrope font-semibold text-sm hover:gap-2.5 transition-all mt-2">
             View All <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
