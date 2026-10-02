@@ -11,10 +11,10 @@ import PageFaq from '../../../components/PageFaq';
 import { getPageFaqs } from '../../../lib/seo-faqs';
 
 const genderConfig: Record<string, { label: string; possessive: string; hero: string }> = {
-  men: { label: 'Men', possessive: "Men's", hero: '/images/hero-banner/hero-sale.png' },
-  women: { label: 'Women', possessive: "Women's", hero: '/images/hero-banner/hero-sale.png' },
-  kids: { label: 'Kids', possessive: "Kids'", hero: '/images/hero-banner/hero-sale.png' },
-  accessories: { label: 'Accessories', possessive: 'Accessories', hero: '/images/hero-banner/hero-sale.png' },
+  men: { label: 'Men', possessive: "Men's", hero: '/images/sale.png' },
+  women: { label: 'Women', possessive: "Women's", hero: '/images/sale.png' },
+  kids: { label: 'Kids', possessive: "Kids'", hero: '/images/sale.png' },
+  accessories: { label: 'Accessories', possessive: 'Accessories', hero: '/images/sale.png' },
 };
 
 const defaultSaleGenderFaqs = (config: { label: string; possessive: string }) => [
@@ -62,13 +62,13 @@ export default async function SaleGenderPage({ params }: { params: Promise<{ gen
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800 aspect-auto min-h-[280px] sm:min-h-[360px] lg:aspect-[21/9] lg:min-h-0" aria-label={`${config.label} sale hero`}>
         <div className="absolute inset-0">
-          <Image src={config.hero} alt={`Sale for ${config.label}`} fill priority sizes="100vw" className="object-cover opacity-40" />
+          <Image src={config.hero} alt={`Sale for ${config.label}`} fill priority sizes="100vw" className="object-cover opacity-60" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/90 via-charcoal-900/60 to-transparent" />
         </div>
         <div className="relative container-main py-10 sm:py-14 lg:py-20 h-full flex flex-col justify-center">
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
-              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
+              <li><Link href="/HomePage" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
               <li><Link href="/sale" className="hover:text-white transition-colors">Sale</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
@@ -94,7 +94,7 @@ export default async function SaleGenderPage({ params }: { params: Promise<{ gen
               key={s.name}
               title={`${config.possessive} ${s.name} Sale`}
               heading={
-                <div className="mb-6 sm:mb-8">
+                <div key={`heading-${s.name}`} className="mb-6 sm:mb-8">
                   <SalePromoStrip
                     title={`${config.possessive} ${s.name} Sale — Up to 40% Off`}
                     subtitle={`Save on ${s.name.toLowerCase()} this season`}
