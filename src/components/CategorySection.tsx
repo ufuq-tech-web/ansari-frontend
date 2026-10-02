@@ -45,6 +45,47 @@ const subcategoriesData: Record<string, { name: string; image: string }[]> = {
   ],
 };
 
+const CUSTOM_SUBCAT_LINKS: Record<string, string> = {
+  "men/formal-shoes": "/mens-shoes/formal-shoes-for-men",
+  "men/casual-shoes": "/mens-shoes/casual-shoes-for-men",
+  "men/sneakers": "/mens-shoes/sneakers-for-men",
+  "men/sports-shoes": "/mens-shoes/sports-shoes-for-men",
+  "men/sandals": "/mens-shoes/mens-sandals",
+  "men/slippers-flip-flops": "/mens-shoes/slippers-flip-flops-for-men",
+  "men/loafers": "/mens-shoes/loafers-for-men",
+  "men/boots": "/mens-shoes/mens-boots",
+  "women/flats": "/womens-shoes/womens-flats",
+  "women/mojari-shoes": "/womens-shoes/mojari-shoes-for-women",
+  "women/sandals": "/womens-shoes/sandals-for-women",
+  "women/slippers": "/womens-shoes/slippers-for-women",
+  "women/kolhapuri-chappal": "/womens-shoes/kolhapuri-chappal-for-women",
+  "kids/boys": "/kids-shoes/boys-shoes",
+  "kids/girls": "/kids-shoes/girls-shoes",
+  "kids/new-born-baby": "/kids-shoes/baby-shoes",
+  "kids/toddler-2-5-years": "/kids-shoes/toddler-shoes",
+  "kids/big-kids-shoes-10-14-years": "/kids-shoes/junior-shoes",
+  "kids/school-shoes": "/kids-shoes/school-shoes",
+  "kids/casual-shoes": "/kids-shoes/kids-casual-shoes",
+  "kids/sneakers": "/kids-shoes/kids-sneakers",
+  "kids/sandals": "/kids-shoes/kids-sandals",
+  "kids/slippers": "/kids-shoes/kids-slippers",
+  "accessories/socks": "/accessories/shoe-accessories/socks",
+  "accessories/shoe-care-products": "/accessories/shoe-accessories/shoes-care-products",
+  "accessories/shoes-care-products": "/accessories/shoe-accessories/shoes-care-products",
+  "accessories/shoes-polish": "/accessories/shoe-accessories/shoe-polish",
+  "accessories/shoe-polish": "/accessories/shoe-accessories/shoe-polish",
+  "accessories/shoes-brush": "/accessories/shoe-accessories/shoe-brush",
+  "accessories/shoe-brush": "/accessories/shoe-accessories/shoe-brush",
+};
+
+const getSubcategoryLink = (category: string, subName: string) => {
+  const slug = slugify(subName);
+  const custom = CUSTOM_SUBCAT_LINKS[`${category}/${slug}`];
+  if (custom) return custom;
+  const catBase = category === "men" ? "/mens-shoes" : category === "women" ? "/womens-shoes" : category === "kids" ? "/kids-shoes" : `/${category}`;
+  return `${catBase}/${slug}`;
+};
+
 export default function CategorySection() {
   const [activeTab, setActiveTab] = useState('men');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -116,7 +157,7 @@ export default function CategorySection() {
             {currentSubcategories.map((sub) => (
               <Link
                 key={sub.name}
-                href={`/${activeTab}/${slugify(sub.name)}`}
+                href={getSubcategoryLink(activeTab, sub.name)}
                 className="group relative flex flex-col justify-end shrink-0 snap-start w-[240px] md:w-[280px] lg:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500"
               >
                 {/* Image with Parallax-like scale effect */}
