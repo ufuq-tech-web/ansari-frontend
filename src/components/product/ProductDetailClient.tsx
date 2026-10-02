@@ -407,7 +407,7 @@ export default function ProductDetailClient({ product, categoryConfig, reviews }
               <span className="flex items-center gap-1.5 text-xs text-charcoal-900 font-inter">
                 <Truck className="w-3.5 h-3.5 text-brand-green" strokeWidth={2} /> Nationwide delivery
               </span>
-              <Link href="/return-exchange" className="flex items-center gap-1.5 text-xs text-charcoal-900 font-inter hover:text-brand-orange transition-colors">
+              <Link href="/returns-exchanges" className="flex items-center gap-1.5 text-xs text-charcoal-900 font-inter hover:text-brand-orange transition-colors">
                 <RefreshCw className="w-3.5 h-3.5 text-brand-green" strokeWidth={2} /> 7-day easy returns
               </Link>
               <span className="flex items-center gap-1.5 text-xs text-charcoal-900 font-inter">
