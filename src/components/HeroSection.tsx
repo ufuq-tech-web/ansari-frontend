@@ -43,7 +43,7 @@ const heroSlides = [
     secondaryLink: { href: '/best-sellers', label: 'Best Sellers' },
   },
   {
-    image: '/images/hero-banner/hero-slide-sale.png',
+    image: '/images/sale.png',
     badge: 'Limited-Time Offer',
     badgeIcon: Star,
     title: <>The Family <span className="text-secondary">Sale</span>{' '}<br className="hidden sm:block" />Everyone&apos;s Been Waiting For</>,
