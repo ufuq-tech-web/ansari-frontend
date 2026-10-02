@@ -1,12 +1,43 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
-export const metadata = {
-  title: 'Terms & Conditions — Ansary Footwear',
-  description: 'The terms and conditions governing your use of the Ansary Footwear website and your orders with us.',
-  alternates: { canonical: '/terms-and-conditions' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let seoTitle: string | undefined;
+  let seoDesc: string | undefined;
 
-export default function TermsPage() {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/terms-and-conditions`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) seoTitle = data.title;
+      if (data.description) seoDesc = data.description;
+    }
+  } catch (err) {
+    // Ignore on SSR fail
+  }
+
+  const title = seoTitle || "Terms & Conditions | Ansari Footwear";
+  const description =
+    seoDesc ||
+    "Review the Ansari Footwear Terms & Conditions covering website use, purchases, payments, orders, shipping, returns and other applicable policies.";
+  const canonicalUrl = "https://www.ansarifootwear.com/terms-conditions/";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website", url: canonicalUrl },
+    alternates: { canonical: canonicalUrl },
+  };
+}
+
+export default async function TermsPage() {
+  let seo = null;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api"}/seo/terms-and-conditions`, { next: { revalidate: 60 } });
+    if (res.ok) seo = await res.json();
+  } catch (err) {}
+
   return (
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Terms and conditions hero">
@@ -20,7 +51,7 @@ export default function TermsPage() {
           </nav>
           <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Terms & Conditions</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Last updated: July 2026
+            {seo?.description || "Review the Ansari Footwear Terms & Conditions covering website use, purchases, payments, orders, shipping, returns and other applicable policies."}
           </p>
         </div>
       </section>
@@ -56,9 +87,9 @@ export default function TermsPage() {
           <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Returns, Exchanges & Shipping</h2>
           <p>
             Orders are governed by our{' '}
-            <Link href="/return-exchange" className="text-brand-orange hover:underline">Returns & Exchanges</Link>{' '}
+            <Link href="/returns-exchanges" className="text-brand-orange hover:underline">Returns & Exchanges</Link>{' '}
             and{' '}
-            <Link href="/shipping-policy" className="text-brand-orange hover:underline">Shipping Policy</Link>,
+            <Link href="/shipping-information" className="text-brand-orange hover:underline">Shipping Policy</Link>,
             which form part of these terms.
           </p>
 
