@@ -21,7 +21,7 @@ const socials = [
   { icon: MessageCircle, href: "#", label: "WhatsApp" },
 ];
 
-export default function ContactUsClient() {
+export default function ContactUsClient({ heroDescription }: { heroDescription?: string } = {}) {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
 
@@ -48,9 +48,9 @@ export default function ContactUsClient() {
             </ol>
           </nav>
           <span className="text-brand-orange font-manrope font-semibold text-sm uppercase tracking-widest">We're Here To Help</span>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-2">Get in Touch</h1>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-2">Contact Us</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            Questions about an order, sizing, or anything else — we're here to help.
+            {heroDescription || "Contact Ansari Footwear for product enquiries, orders, support and assistance. Find our shoes shop contact details and get in touch with our team."}
           </p>
         </div>
       </section>
