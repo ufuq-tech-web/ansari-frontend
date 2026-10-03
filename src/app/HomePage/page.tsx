@@ -62,7 +62,7 @@ export default async function HomePage() {
   let homeSeo: any = null;
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-    const res = await fetch(`${API_URL}/seo/home`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_URL}/seo/home`, { cache: "no-store" });
     if (res.ok) homeSeo = await res.json();
   } catch (err) {}
 
