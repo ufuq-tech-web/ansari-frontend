@@ -68,7 +68,7 @@ export default async function SaleGenderPage({ params }: { params: Promise<{ gen
         <div className="relative container-main py-10 sm:py-14 lg:py-20 h-full flex flex-col justify-center">
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
-              <li><Link href="/HomePage" className="hover:text-white transition-colors">Home</Link></li>
+              <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
               <li><Link href="/sale" className="hover:text-white transition-colors">Sale</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>

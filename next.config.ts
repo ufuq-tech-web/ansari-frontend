@@ -313,6 +313,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/HomePage",
+        destination: "/",
+        permanent: true,
+      },
+      {
         source: "/about-us",
         destination: "/shoes-shop-in-india",
         permanent: true,
