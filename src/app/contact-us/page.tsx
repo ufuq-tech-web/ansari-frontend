@@ -51,7 +51,7 @@ export default async function ContactUsPage() {
 
   return (
     <>
-      <ContactUsClient heroDescription={seo?.description} />
+      <ContactUsClient heroDescription={seo?.description} pageData={seo} />
       <PageFaq faqs={faqs} subtitle="Quick answers before you reach out." />
       <Newsletter />
     </>

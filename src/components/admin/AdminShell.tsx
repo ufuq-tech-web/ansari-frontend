@@ -13,6 +13,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/brands": "Brands",
   "/admin/guides": "Buying Guides",
   "/admin/orders": "Orders",
+  "/admin/seo": "Pages & SEO Content Manager",
 };
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {

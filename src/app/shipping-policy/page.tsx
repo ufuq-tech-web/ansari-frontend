@@ -49,15 +49,24 @@ export default async function ShippingPolicyPage() {
   return (
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Shipping policy hero">
+        {seo?.heroImage && (
+          <div className="absolute inset-0">
+            <img src={seo.heroImage} alt="" aria-hidden="true" className="w-full h-full object-cover opacity-30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900 via-charcoal-900/85 to-charcoal-900/50" />
+          </div>
+        )}
         <div className="relative container-main py-10 sm:py-14 lg:py-16">
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">Shipping Info</li>
+              <li className="text-white font-medium">{seo?.h1 || "Shipping Info"}</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Shipping Info</h1>
+          {seo?.heroEyebrow && (
+            <span className="text-brand-orange font-manrope font-semibold text-sm uppercase tracking-widest">{seo.heroEyebrow}</span>
+          )}
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-1">{seo?.h1 || "Shipping Info"}</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             {seo?.description || "Find shipping information for Ansari Footwear, including delivery timelines, order processing and important details about receiving your footwear order."}
           </p>
@@ -79,35 +88,53 @@ export default async function ShippingPolicyPage() {
           ))}
         </div>
 
-        <div className="space-y-5 text-charcoal-700 font-inter leading-relaxed">
-          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Delivery Timelines</h2>
-          <p>
-            Most orders arrive within 4-6 business days of dispatch for metro cities, and 6-9 business days for
-            other locations. Delivery estimates shown at checkout and on product pages are based on your pincode
-            and current stock availability.
-          </p>
-          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Order Tracking</h2>
-          <p>
-            Once your order ships, you'll be able to follow its status from the{' '}
-            <Link href="/order-tracking" className="text-brand-orange hover:underline">Track Order</Link> page using
-            your order number, or from{' '}
-            <Link href="/orders" className="text-brand-orange hover:underline">My Orders</Link> if you're on the
-            same device you ordered from.
-          </p>
-          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Shipping Charges</h2>
-          <p>
-            Shipping cost is calculated live at checkout based on your delivery location and order weight — enter
-            your address to see the exact cost before you pay. There are no hidden charges added afterward — the
-            total you see in your cart at checkout is what you pay, plus COD charges only if you choose Cash on
-            Delivery on select high-value orders.
-          </p>
-          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Delays & Exceptions</h2>
-          <p>
-            Deliveries may occasionally take longer during festive seasons, extreme weather, or in remote areas
-            with limited courier coverage. We'll always notify you if your order is expected to take longer than
-            the standard timeline.
-          </p>
-        </div>
+        {seo?.sections && Array.isArray(seo.sections) && seo.sections.length > 0 ? (
+          <div className="space-y-8 text-charcoal-700 font-inter leading-relaxed">
+            {seo.sections.map((sec: any, idx: number) => (
+              <div key={idx} className="bg-white rounded-2xl border border-charcoal-200 p-6 sm:p-8 shadow-card">
+                {sec.subtitle && (
+                  <span className="text-accent font-manrope font-semibold text-xs uppercase tracking-wide">{sec.subtitle}</span>
+                )}
+                {sec.title && (
+                  <h2 className="font-poppins font-bold text-charcoal-900 text-xl sm:text-2xl mt-1 mb-3">{sec.title}</h2>
+                )}
+                {sec.content && (
+                  <div className="whitespace-pre-line leading-relaxed">{sec.content}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-5 text-charcoal-700 font-inter leading-relaxed">
+            <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Delivery Timelines</h2>
+            <p>
+              Most orders arrive within 4-6 business days of dispatch for metro cities, and 6-9 business days for
+              other locations. Delivery estimates shown at checkout and on product pages are based on your pincode
+              and current stock availability.
+            </p>
+            <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Order Tracking</h2>
+            <p>
+              Once your order ships, you&apos;ll be able to follow its status from the{' '}
+              <Link href="/order-tracking" className="text-brand-orange hover:underline">Track Order</Link> page using
+              your order number, or from{' '}
+              <Link href="/orders" className="text-brand-orange hover:underline">My Orders</Link> if you&apos;re on the
+              same device you ordered from.
+            </p>
+            <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Shipping Charges</h2>
+            <p>
+              Shipping cost is calculated live at checkout based on your delivery location and order weight — enter
+              your address to see the exact cost before you pay. There are no hidden charges added afterward — the
+              total you see in your cart at checkout is what you pay, plus COD charges only if you choose Cash on
+              Delivery on select high-value orders.
+            </p>
+            <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Delays & Exceptions</h2>
+            <p>
+              Deliveries may occasionally take longer during festive seasons, extreme weather, or in remote areas
+              with limited courier coverage. We&apos;ll always notify you if your order is expected to take longer than
+              the standard timeline.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

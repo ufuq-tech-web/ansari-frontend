@@ -37,7 +37,7 @@ const NAV_ITEMS = [
   { href: "/admin/guides", label: "Buying Guides", icon: BookOpen },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
   { href: "/admin/banner", label: "Promo Banner", icon: Tag },
-  { href: "/admin/seo", label: "SEO Config", icon: Search },
+  { href: "/admin/seo", label: "Pages & SEO", icon: Search },
 ];
 
 export default function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean, onClose?: () => void }) {

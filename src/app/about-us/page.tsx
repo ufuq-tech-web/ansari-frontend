@@ -77,7 +77,7 @@ export default async function AboutUsPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-charcoal-900" aria-label="About us hero">
         <div className="absolute inset-0">
-          <Image src="/images/hero-banner/hero-about-us.png" alt="" aria-hidden="true" fill priority sizes="100vw" className="object-cover opacity-40" />
+          <Image src={seo?.heroImage || "/images/hero-banner/hero-about-us.png"} alt="" aria-hidden="true" fill priority sizes="100vw" className="object-cover opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900 via-charcoal-900/85 to-charcoal-900/50" />
         </div>
         {/* Decorative blurs, consistent with other dark sections on the site */}
@@ -89,11 +89,11 @@ export default async function AboutUsPage() {
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">About Us</li>
+              <li className="text-white font-medium">{seo?.h1 || "About Us"}</li>
             </ol>
           </nav>
-          <span className="text-brand-orange font-manrope font-semibold text-sm uppercase tracking-widest">Our Heritage</span>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-2 max-w-2xl">About Us</h1>
+          <span className="text-brand-orange font-manrope font-semibold text-sm uppercase tracking-widest">{seo?.heroEyebrow || "Our Heritage"}</span>
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-2 max-w-2xl">{seo?.h1 || "About Us"}</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             {seo?.description || "Learn about Ansari Footwear, our journey, footwear collections and commitment to serving customers across India with quality shoes and footwear."}
           </p>
@@ -148,28 +148,59 @@ export default async function AboutUsPage() {
 
           <div className="order-1 lg:order-2">
             <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide">Since 1998</span>
-            <h2 className="section-heading text-2xl sm:text-3xl mt-1 mb-5">Our Story</h2>
+            <h2 className="section-heading text-2xl sm:text-3xl mt-1 mb-5">{seo?.content?.storyTitle || "Our Story"}</h2>
             <div className="space-y-4 text-charcoal-700 font-inter leading-relaxed">
-              <p>
-                Ansary Footwear started as a single family-run footwear shop on Fashion Street, Mumbai, at a time when
-                buying a good pair of shoes meant trusting the shopkeeper to tell you the truth about fit, material, and
-                durability — not just make a sale. That principle is still the one thing we've refused to compromise on
-                as the business has grown.
-              </p>
-              <p>
-                Over the past 25 years, we've grown from that one storefront into a footwear destination for men, women,
-                kids, and everything in between — formal shoes for the office, school shoes that survive a full term of
-                playground use, festive sandals for wedding season, and the shoe-care essentials that make a good pair
-                last even longer.
-              </p>
-              <p>
-                What hasn't changed is who we're building this for: families who want footwear that's honestly priced,
-                genuinely durable, and backed by a store that stands behind what it sells. That's the same promise our
-                founders made across the counter two and a half decades ago, and it's the one we're carrying online today.
-              </p>
+              {seo?.content?.storyText ? (
+                typeof seo.content.storyText === "string" ? (
+                  seo.content.storyText.split("\n\n").map((p: string, idx: number) => <p key={idx}>{p}</p>)
+                ) : Array.isArray(seo.content.storyText) ? (
+                  seo.content.storyText.map((p: string, idx: number) => <p key={idx}>{p}</p>)
+                ) : (
+                  <p>{String(seo.content.storyText)}</p>
+                )
+              ) : (
+                <>
+                  <p>
+                    Ansary Footwear started as a single family-run footwear shop on Fashion Street, Mumbai, at a time when
+                    buying a good pair of shoes meant trusting the shopkeeper to tell you the truth about fit, material, and
+                    durability — not just make a sale. That principle is still the one thing we&apos;ve refused to compromise on
+                    as the business has grown.
+                  </p>
+                  <p>
+                    Over the past 25 years, we&apos;ve grown from that one storefront into a footwear destination for men, women,
+                    kids, and everything in between — formal shoes for the office, school shoes that survive a full term of
+                    playground use, festive sandals for wedding season, and the shoe-care essentials that make a good pair
+                    last even longer.
+                  </p>
+                  <p>
+                    What hasn&apos;t changed is who we&apos;re building this for: families who want footwear that&apos;s honestly priced,
+                    genuinely durable, and backed by a store that stands behind what it sells. That&apos;s the same promise our
+                    founders made across the counter two and a half decades ago, and it&apos;s the one we&apos;re carrying online today.
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Custom Body Sections from Backend CMS */}
+        {seo?.sections && Array.isArray(seo.sections) && seo.sections.length > 0 && (
+          <div className="max-w-4xl mx-auto space-y-8 mb-20">
+            {seo.sections.map((sec: any, idx: number) => (
+              <div key={idx} className="bg-white rounded-2xl border border-charcoal-200 p-6 sm:p-8 shadow-card">
+                {sec.subtitle && (
+                  <span className="text-accent font-manrope font-semibold text-xs uppercase tracking-wide">{sec.subtitle}</span>
+                )}
+                {sec.title && (
+                  <h3 className="font-poppins font-bold text-xl sm:text-2xl text-charcoal-900 mt-1 mb-3">{sec.title}</h3>
+                )}
+                {sec.content && (
+                  <div className="text-charcoal-700 font-inter leading-relaxed whitespace-pre-line">{sec.content}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Shop the family — photo band */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">

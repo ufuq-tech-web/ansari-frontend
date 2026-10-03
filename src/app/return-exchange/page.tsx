@@ -63,15 +63,24 @@ export default async function ReturnExchangePage() {
   return (
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="Returns and exchanges hero">
+        {seo?.heroImage && (
+          <div className="absolute inset-0">
+            <img src={seo.heroImage} alt="" aria-hidden="true" className="w-full h-full object-cover opacity-30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900 via-charcoal-900/85 to-charcoal-900/50" />
+          </div>
+        )}
         <div className="relative container-main py-10 sm:py-14 lg:py-16">
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">Returns & Exchanges</li>
+              <li className="text-white font-medium">{seo?.h1 || "Returns & Exchanges"}</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">Returns & Exchanges</h1>
+          {seo?.heroEyebrow && (
+            <span className="text-brand-orange font-manrope font-semibold text-sm uppercase tracking-widest">{seo.heroEyebrow}</span>
+          )}
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-1">{seo?.h1 || "Returns & Exchanges"}</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
             {seo?.description || "Learn about Ansari Footwear’s returns and exchanges process, eligibility requirements and steps for requesting a return or product exchange."}
           </p>
@@ -121,25 +130,43 @@ export default async function ReturnExchangePage() {
           </div>
         </div>
 
-        <div className="space-y-5 text-charcoal-700 font-inter leading-relaxed">
-          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Refunds</h2>
-          <p>
-            Once we receive and inspect your returned item, refunds are issued to your original payment method
-            within 5-7 business days. Cash on Delivery orders are refunded via bank transfer or store credit —
-            you'll be asked for your preference when the return is picked up.
-          </p>
-          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Exchanges</h2>
-          <p>
-            Need a different size or color instead of a refund? Select "Exchange" when starting your return and
-            choose the replacement item. We'll ship the new pair as soon as the original is picked up, so you're
-            not left waiting on a refund to place a fresh order.
-          </p>
-          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Damaged or Incorrect Items</h2>
-          <p>
-            If an item arrives damaged or isn't what you ordered, contact us within 48 hours of delivery and we'll
-            arrange a free replacement or full refund — no need to cover return shipping in that case.
-          </p>
-        </div>
+        {seo?.sections && Array.isArray(seo.sections) && seo.sections.length > 0 ? (
+          <div className="space-y-8 text-charcoal-700 font-inter leading-relaxed">
+            {seo.sections.map((sec: any, idx: number) => (
+              <div key={idx} className="bg-white rounded-2xl border border-charcoal-200 p-6 sm:p-8 shadow-card">
+                {sec.subtitle && (
+                  <span className="text-accent font-manrope font-semibold text-xs uppercase tracking-wide">{sec.subtitle}</span>
+                )}
+                {sec.title && (
+                  <h2 className="font-poppins font-bold text-charcoal-900 text-xl sm:text-2xl mt-1 mb-3">{sec.title}</h2>
+                )}
+                {sec.content && (
+                  <div className="whitespace-pre-line leading-relaxed">{sec.content}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-5 text-charcoal-700 font-inter leading-relaxed">
+            <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Refunds</h2>
+            <p>
+              Once we receive and inspect your returned item, refunds are issued to your original payment method
+              within 5-7 business days. Cash on Delivery orders are refunded via bank transfer or store credit —
+              you&apos;ll be asked for your preference when the return is picked up.
+            </p>
+            <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Exchanges</h2>
+            <p>
+              Need a different size or color instead of a refund? Select &quot;Exchange&quot; when starting your return and
+              choose the replacement item. We&apos;ll ship the new pair as soon as the original is picked up, so you&apos;re
+              not left waiting on a refund to place a fresh order.
+            </p>
+            <h2 className="font-poppins font-bold text-charcoal-900 text-2xl">Damaged or Incorrect Items</h2>
+            <p>
+              If an item arrives damaged or isn&apos;t what you ordered, contact us within 48 hours of delivery and we&apos;ll
+              arrange a free replacement or full refund — no need to cover return shipping in that case.
+            </p>
+          </div>
+        )}
 
         <div className="mt-12 bg-charcoal-900 rounded-2xl p-8 text-center">
           <RefreshCw className="w-8 h-8 text-brand-orange mx-auto mb-3" strokeWidth={2} />

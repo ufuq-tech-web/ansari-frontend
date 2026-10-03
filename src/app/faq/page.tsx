@@ -33,10 +33,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function FaqPage() {
   let seo = null;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api"}/seo/faq`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_URL}/seo/faqs`, { next: { revalidate: 60 } });
     if (res.ok) seo = await res.json();
+    else {
+      const fallbackRes = await fetch(`${API_URL}/seo/faq`, { next: { revalidate: 60 } });
+      if (fallbackRes.ok) seo = await fallbackRes.json();
+    }
   } catch (err) {}
 
-  return <FaqClient heroDescription={seo?.description} />;
+  return <FaqClient heroDescription={seo?.description} pageData={seo} />;
 }

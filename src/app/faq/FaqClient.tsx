@@ -71,7 +71,13 @@ function FaqSection({ id, title, subtitle, faqs }: FaqSectionProps) {
   );
 }
 
-export default function FaqClient({ heroDescription }: { heroDescription?: string } = {}) {
+export default function FaqClient({
+  heroDescription,
+  pageData,
+}: {
+  heroDescription?: string;
+  pageData?: any;
+} = {}) {
   const [categories, setCategories] = useState<CategoryConfig[]>([]);
 
   useEffect(() => {
@@ -85,25 +91,40 @@ export default function FaqClient({ heroDescription }: { heroDescription?: strin
     });
   }, []);
 
+  const customFaqs = Array.isArray(pageData?.faqs) && pageData.faqs.length > 0 ? pageData.faqs : null;
+
   return (
     <div className="min-h-screen bg-brand-ivory">
       <section className="relative overflow-hidden bg-charcoal-800" aria-label="FAQ hero">
+        {pageData?.heroImage && (
+          <div className="absolute inset-0">
+            <img src={pageData.heroImage} alt="" aria-hidden="true" className="w-full h-full object-cover opacity-30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900 via-charcoal-900/85 to-charcoal-900/50" />
+          </div>
+        )}
         <div className="relative container-main py-10 sm:py-14 lg:py-16">
           <nav aria-label="Breadcrumb" className="mb-5">
             <ol className="flex items-center gap-2 text-sm text-white/60 font-inter">
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
               <li aria-hidden><span className="text-white/30">/</span></li>
-              <li className="text-white font-medium">FAQs</li>
+              <li className="text-white font-medium">{pageData?.h1 || "FAQs"}</li>
             </ol>
           </nav>
-          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight">FAQs</h1>
+          {pageData?.heroEyebrow && (
+            <span className="text-brand-orange font-manrope font-semibold text-sm uppercase tracking-widest">{pageData.heroEyebrow}</span>
+          )}
+          <h1 className="font-poppins font-semibold text-white text-xl sm:text-2xl lg:text-3xl leading-tight mt-1">{pageData?.h1 || "FAQs"}</h1>
           <p className="mt-4 text-white/75 text-base sm:text-lg font-inter leading-relaxed max-w-xl">
-            {heroDescription || "Find answers to frequently asked questions about Ansari Footwear products, orders, payments, shipping, returns and exchanges."}
+            {pageData?.description || heroDescription || "Find answers to frequently asked questions about Ansari Footwear products, orders, payments, shipping, returns and exchanges."}
           </p>
         </div>
       </section>
 
       <div className="container-main py-10 sm:py-12 max-w-3xl space-y-12">
+        {customFaqs && (
+          <FaqSection id="custom" title="Frequently Asked Questions" subtitle="Top answers from our customer care team" faqs={customFaqs} />
+        )}
+
         <FaqSection id="general" title="General Questions" subtitle="Shipping, payment, and order basics" faqs={generalFaqs} />
 
         {categories.map((config) => (
@@ -115,6 +136,24 @@ export default function FaqClient({ heroDescription }: { heroDescription?: strin
             faqs={config.faqs}
           />
         ))}
+
+        {pageData?.sections && Array.isArray(pageData.sections) && pageData.sections.length > 0 && (
+          <div className="space-y-8 pt-4">
+            {pageData.sections.map((sec: any, idx: number) => (
+              <div key={idx} className="bg-white rounded-2xl border border-charcoal-200 p-6 sm:p-8 shadow-card">
+                {sec.subtitle && (
+                  <span className="text-accent font-manrope font-semibold text-xs uppercase tracking-wide">{sec.subtitle}</span>
+                )}
+                {sec.title && (
+                  <h2 className="font-poppins font-bold text-charcoal-900 text-xl sm:text-2xl mt-1 mb-3">{sec.title}</h2>
+                )}
+                {sec.content && (
+                  <div className="whitespace-pre-line leading-relaxed text-charcoal-700 font-inter">{sec.content}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="rounded-2xl bg-charcoal-900 p-8 text-center">
           <h2 className="font-poppins font-bold text-white text-xl mb-2">Still have questions?</h2>

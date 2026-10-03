@@ -123,6 +123,13 @@ export default async function Page({
     }))
   } : null;
 
+  let seoData: any = null;
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+    const res = await fetch(`${API_URL}/seo/category-${categoryKey}`, { next: { revalidate: 60 } });
+    if (res.ok) seoData = await res.json();
+  } catch (err) {}
+
   return (
     <>
       {config && (
@@ -153,9 +160,10 @@ export default async function Page({
         initialConfig={config}
         initialProducts={productsRes.items}
         initialTotal={productsRes.total}
-        pageTitle={categoryKey === "accessories" ? "Shoes Accessories" : undefined}
+        pageTitle={seoData?.h1 || (categoryKey === "accessories" ? "Shoes Accessories" : undefined)}
         pageDescription={
-          categoryKey === "men"
+          seoData?.description ||
+          (categoryKey === "men"
             ? "Browse different types of shoes for men online at Ansari Footwear. Shop stylish formal shoes, sneakers, loafers, boots, casual shoes, sandals & more. Order Now."
             : categoryKey === "women"
             ? "Explore women’s shoes online, from stylish everyday footwear to comfortable designs for every occasion. Find versatile shoes for women in the latest styles."
@@ -163,7 +171,7 @@ export default async function Page({
             ? "Explore kids shoes for boys and girls in comfortable, lightweight and stylish designs. Find sports, skating, LED and everyday footwear for kids online."
             : categoryKey === "accessories"
             ? "Find shoe cleaning kits and accessories for everyday footwear care. Explore leather, white shoe and sneaker cleaning essentials to keep your footwear looking fresh."
-            : config.description
+            : config.description)
         }
       />
     </>
