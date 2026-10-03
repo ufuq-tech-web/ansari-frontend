@@ -17,7 +17,19 @@ const stories = [
   { title: 'New season edit', description: "What's new this week.", cta: 'Shop new', href: '/new-arrivals' },
 ];
 
-export default function InstagramGallery() {
+export interface InstagramGalleryProps {
+  hook?: string;
+  heading?: string;
+  headingHighlight?: string;
+  subheading?: string;
+}
+
+export default function InstagramGallery({
+  hook,
+  heading,
+  headingHighlight,
+  subheading,
+}: InstagramGalleryProps = {}) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -50,12 +62,33 @@ export default function InstagramGallery() {
           <span className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-amber-400 via-brand-orange to-leather-400 shadow-lg shadow-brand-orange/20">
             <Instagram className="w-5 h-5 text-white" strokeWidth={2.5} />
           </span>
-          <p className="mt-3 text-brand-orange font-manrope font-semibold text-xs uppercase tracking-[0.2em]">The Ansari Community</p>
-          <h2 className="font-poppins font-bold text-3xl sm:text-4xl text-charcoal-900 mt-1">See how our <span className="text-secondary">community</span> wears it</h2>
+          <p className="mt-3 text-brand-orange font-manrope font-semibold text-xs uppercase tracking-[0.2em]">
+            {hook || 'The Ansari Community'}
+          </p>
+          <h2 className="font-poppins font-bold text-3xl sm:text-4xl text-charcoal-900 mt-1">
+            {heading ? (
+              <>
+                {heading}{' '}
+                {headingHighlight ? (
+                  <span className="text-secondary">{headingHighlight}</span>
+                ) : null}
+              </>
+            ) : (
+              <>
+                See how our <span className="text-secondary">community</span> wears it
+              </>
+            )}
+          </h2>
           <p className="mt-2 text-charcoal-500 font-inter">
-            <span className="font-poppins font-semibold text-brand-orange">@ansarifootwear</span> · Tag us to be featured
-            <span className="mx-2 text-charcoal-300">·</span>
-            Watch, discover, shop.
+            {subheading ? (
+              subheading
+            ) : (
+              <>
+                <span className="font-poppins font-semibold text-brand-orange">@ansarifootwear</span> · Tag us to be featured
+                <span className="mx-2 text-charcoal-300">·</span>
+                Watch, discover, shop.
+              </>
+            )}
           </p>
         </div>
 

@@ -5,7 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Shield, Award, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const heroSlides = [
+export interface HeroSlideItem {
+  image: string;
+  badge?: string;
+  badgeIcon?: any;
+  title: string | React.ReactNode;
+  description: string;
+  primaryLink?: { href: string; label: string };
+  secondaryLink?: { href: string; label: string };
+}
+
+const heroSlides: HeroSlideItem[] = [
   {
     image: '/images/hero-banner/hero-family.png',
     badge: '25+ Years of Trusted Service',
@@ -53,7 +63,52 @@ const heroSlides = [
   },
 ];
 
-export default function HeroSection() {
+export interface HeroSectionProps {
+  slides?: HeroSlideItem[];
+  heroImage?: string | null;
+  h1?: string | null;
+  heroEyebrow?: string | null;
+  description?: string | null;
+  primaryLinkHref?: string;
+  primaryLinkLabel?: string;
+  secondaryLinkHref?: string;
+  secondaryLinkLabel?: string;
+}
+
+export default function HeroSection({
+  slides,
+  heroImage,
+  h1,
+  heroEyebrow,
+  description,
+  primaryLinkHref,
+  primaryLinkLabel,
+  secondaryLinkHref,
+  secondaryLinkLabel,
+}: HeroSectionProps = {}) {
+  let activeSlides: HeroSlideItem[] = heroSlides;
+
+  if (slides && slides.length > 0) {
+    activeSlides = slides;
+  } else if (heroImage || h1 || heroEyebrow || description) {
+    activeSlides = [
+      {
+        image: heroImage || heroSlides[0].image,
+        badge: heroEyebrow || heroSlides[0].badge,
+        badgeIcon: Award,
+        title: h1 || heroSlides[0].title,
+        description: description || heroSlides[0].description,
+        primaryLink: {
+          href: primaryLinkHref || '/mens-shoes',
+          label: primaryLinkLabel || 'Shop Men',
+        },
+        secondaryLink: {
+          href: secondaryLinkHref || '/womens-shoes',
+          label: secondaryLinkLabel || 'Shop Women',
+        },
+      },
+    ];
+  }
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
@@ -67,12 +122,12 @@ export default function HeroSection() {
   }, [isTransitioning]);
 
   const nextSlide = useCallback(() => {
-    goToSlide((currentSlide + 1) % heroSlides.length, 'right');
-  }, [currentSlide, goToSlide]);
+    goToSlide((currentSlide + 1) % activeSlides.length, 'right');
+  }, [currentSlide, goToSlide, activeSlides.length]);
 
   const prevSlide = useCallback(() => {
-    goToSlide((currentSlide - 1 + heroSlides.length) % heroSlides.length, 'left');
-  }, [currentSlide, goToSlide]);
+    goToSlide((currentSlide - 1 + activeSlides.length) % activeSlides.length, 'left');
+  }, [currentSlide, goToSlide, activeSlides.length]);
 
   // Auto-play
   useEffect(() => {
@@ -80,14 +135,14 @@ export default function HeroSection() {
     return () => clearInterval(timer);
   }, [nextSlide]);
 
-  const slide = heroSlides[currentSlide];
-  const BadgeIcon = slide.badgeIcon;
+  const slide = activeSlides[currentSlide] || activeSlides[0];
+  const BadgeIcon = slide.badgeIcon || Award;
 
   return (
     <section className="relative bg-charcoal-900 overflow-hidden" aria-label="Hero">
       <div className="relative aspect-auto min-h-[560px] sm:min-h-[620px] lg:aspect-[21/9] lg:min-h-0 w-full">
         {/* Slide images with crossfade and Ken Burns effect */}
-        {heroSlides.map((s, i) => (
+        {activeSlides.map((s, i) => (
           <Image
             key={i}
             src={s.image}
@@ -137,17 +192,23 @@ export default function HeroSection() {
               {slide.description}
             </p>
 
-            <div
-              key={`btns-${currentSlide}`}
-              className="mt-7 flex flex-col sm:flex-row gap-3 animate-[fadeSlideUp_0.6s_ease-out_0.5s_both]"
-            >
-              <Link href={slide.primaryLink.href} className="btn-primary justify-center">
-                {slide.primaryLink.label} <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href={slide.secondaryLink.href} className="btn-secondary justify-center bg-white/10 border-white/20 text-white hover:bg-white/20">
-                {slide.secondaryLink.label}
-              </Link>
-            </div>
+            {(slide.primaryLink || slide.secondaryLink) && (
+              <div
+                key={`btns-${currentSlide}`}
+                className="mt-7 flex flex-col sm:flex-row gap-3 animate-[fadeSlideUp_0.6s_ease-out_0.5s_both]"
+              >
+                {slide.primaryLink && (
+                  <Link href={slide.primaryLink.href} className="btn-primary justify-center">
+                    {slide.primaryLink.label} <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )}
+                {slide.secondaryLink && (
+                  <Link href={slide.secondaryLink.href} className="btn-secondary justify-center bg-white/10 border-white/20 text-white hover:bg-white/20">
+                    {slide.secondaryLink.label}
+                  </Link>
+                )}
+              </div>
+            )}
 
             {/* Trust points */}
             <div
@@ -188,7 +249,7 @@ export default function HeroSection() {
 
         {/* Dot indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10">
-          {heroSlides.map((_, i) => (
+          {activeSlides.map((_, i) => (
             <button
               key={i}
               onClick={() => goToSlide(i, i > currentSlide ? 'right' : 'left')}

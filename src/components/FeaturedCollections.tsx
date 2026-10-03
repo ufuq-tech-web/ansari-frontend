@@ -6,7 +6,19 @@ import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { collections } from '../lib/catalog-helpers';
 
-export default function FeaturedCollections() {
+export interface FeaturedCollectionsProps {
+  hook?: string;
+  heading?: string;
+  headingHighlight?: string;
+  description?: string;
+}
+
+export default function FeaturedCollections({
+  hook,
+  heading,
+  headingHighlight,
+  description,
+}: FeaturedCollectionsProps = {}) {
   const trackRef = useRef<HTMLDivElement>(null);
 
   const scroll = (dir: 'left' | 'right') => {
@@ -21,9 +33,26 @@ export default function FeaturedCollections() {
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
         <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <div>
-            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Curated for You</span>
-            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">Featured <span className="text-secondary">Collections</span></h2>
-            <p className="mt-4 text-black font-inter text-base md:text-lg">Handpicked styles for every occasion — from office to wedding day</p>
+            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">
+              {hook || 'Curated for You'}
+            </span>
+            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">
+              {heading ? (
+                <>
+                  {heading}{' '}
+                  {headingHighlight ? (
+                    <span className="text-secondary">{headingHighlight}</span>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  Featured <span className="text-secondary">Collections</span>
+                </>
+              )}
+            </h2>
+            <p className="mt-4 text-black font-inter text-base md:text-lg">
+              {description || 'Handpicked styles for every occasion — from office to wedding day'}
+            </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 mt-4">
             <button

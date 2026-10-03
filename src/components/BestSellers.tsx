@@ -6,7 +6,25 @@ import { ArrowRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import type { ProductWithCategory } from '../lib/catalog-helpers';
 
-export default function BestSellers({ products }: { products: ProductWithCategory[] }) {
+export interface BestSellersProps {
+  products: ProductWithCategory[];
+  hook?: string;
+  heading?: string;
+  headingHighlight?: string;
+  description?: string;
+  viewAllHref?: string;
+  viewAllLabel?: string;
+}
+
+export default function BestSellers({
+  products,
+  hook,
+  heading,
+  headingHighlight,
+  description,
+  viewAllHref,
+  viewAllLabel,
+}: BestSellersProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -33,12 +51,32 @@ export default function BestSellers({ products }: { products: ProductWithCategor
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto relative">
         <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <div>
-            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Customer Favorites</span>
-            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">Best <span className="text-secondary">Sellers</span></h2>
-            <p className="mt-4 text-black font-inter text-base md:text-lg">Top-rated styles loved by thousands of customers</p>
+            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">
+              {hook || 'Customer Favorites'}
+            </span>
+            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">
+              {heading ? (
+                <>
+                  {heading}{' '}
+                  {headingHighlight ? (
+                    <span className="text-secondary">{headingHighlight}</span>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  Best <span className="text-secondary">Sellers</span>
+                </>
+              )}
+            </h2>
+            <p className="mt-4 text-black font-inter text-base md:text-lg">
+              {description || 'Top-rated styles loved by thousands of customers'}
+            </p>
           </div>
-          <Link href="/shoes-collection/best-selling-shoes" className="inline-flex items-center gap-1.5 text-brand-orange font-manrope font-semibold text-sm hover:gap-2.5 transition-all mt-2">
-            View All <ArrowRight className="w-4 h-4" />
+          <Link
+            href={viewAllHref || '/shoes-collection/best-selling-shoes'}
+            className="inline-flex items-center gap-1.5 text-brand-orange font-manrope font-semibold text-sm hover:gap-2.5 transition-all mt-2"
+          >
+            {viewAllLabel || 'View All'} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 

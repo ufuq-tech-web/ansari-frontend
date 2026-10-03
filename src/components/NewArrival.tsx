@@ -5,7 +5,19 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import type { ProductWithCategory } from '../lib/catalog-helpers';
 
-export default function NewArrivals({ products }: { products: ProductWithCategory[] }) {
+export interface NewArrivalsProps {
+  products: ProductWithCategory[];
+  hook?: string;
+  heading?: string;
+  headingHighlight?: string;
+}
+
+export default function NewArrivals({
+  products,
+  hook,
+  heading,
+  headingHighlight,
+}: NewArrivalsProps) {
   const trackRef = useRef<HTMLDivElement>(null);
 
   const scroll = (dir: 'left' | 'right') => {
@@ -20,8 +32,23 @@ export default function NewArrivals({ products }: { products: ProductWithCategor
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
         <div className="flex flex-col items-center text-center gap-4 mb-10">
           <div>
-            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Just In</span>
-            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">New <span className="text-secondary">Arrivals</span></h2>
+            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">
+              {hook || 'Just In'}
+            </span>
+            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">
+              {heading ? (
+                <>
+                  {heading}{' '}
+                  {headingHighlight ? (
+                    <span className="text-secondary">{headingHighlight}</span>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  New <span className="text-secondary">Arrivals</span>
+                </>
+              )}
+            </h2>
           </div>
 
           {/* Carousel controls */}

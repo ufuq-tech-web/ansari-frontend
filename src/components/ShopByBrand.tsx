@@ -4,7 +4,19 @@ import Link from 'next/link';
 
 type Brand = { id: string; name: string; slug: string; productCount: number };
 
-export default function ShopByBrand({ brands }: { brands: Brand[] }) {
+export interface ShopByBrandProps {
+  brands: Brand[];
+  hook?: string;
+  heading?: string;
+  headingHighlight?: string;
+}
+
+export default function ShopByBrand({
+  brands,
+  hook,
+  heading,
+  headingHighlight,
+}: ShopByBrandProps) {
   if (!brands.length) return null;
 
   // Quadruple the list to ensure the marquee spans the screen and loops seamlessly
@@ -14,8 +26,23 @@ export default function ShopByBrand({ brands }: { brands: Brand[] }) {
     <section id="brands" className="py-16 sm:py-24 bg-white border-y border-gray-100 overflow-hidden" aria-label="Shop by brand">
       <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
         <div>
-          <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Premium Partners</span>
-          <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">Discover <span className="text-secondary">Brands</span></h2>
+          <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">
+            {hook || 'Premium Partners'}
+          </span>
+          <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary">
+            {heading ? (
+              <>
+                {heading}{' '}
+                {headingHighlight ? (
+                  <span className="text-secondary">{headingHighlight}</span>
+                ) : null}
+              </>
+            ) : (
+              <>
+                Discover <span className="text-secondary">Brands</span>
+              </>
+            )}
+          </h2>
         </div>
       </div>
       

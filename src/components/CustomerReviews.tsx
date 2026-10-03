@@ -4,10 +4,27 @@ import { useRef } from 'react';
 import { Star, BadgeCheck, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import type { Review } from '../lib/catalog-helpers';
 
-export default function CustomerReviews({ reviews = [] }: { reviews?: Review[] }) {
+export interface CustomerReviewsProps {
+  reviews?: Review[];
+  customReviews?: Review[];
+  hook?: string;
+  heading?: string;
+  headingHighlight?: string;
+  ratingSummary?: string;
+}
+
+export default function CustomerReviews({
+  reviews = [],
+  customReviews,
+  hook,
+  heading,
+  headingHighlight,
+  ratingSummary,
+}: CustomerReviewsProps) {
+  const activeReviews = customReviews && customReviews.length > 0 ? customReviews : reviews;
   const trackRef = useRef<HTMLDivElement>(null);
 
-  if (!reviews.length) return null;
+  if (!activeReviews.length) return null;
 
   const scroll = (dir: 'left' | 'right') => {
     const track = trackRef.current;
@@ -22,15 +39,32 @@ export default function CustomerReviews({ reviews = [] }: { reviews?: Review[] }
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
         <div className="flex flex-col items-center text-center gap-4 mb-10 max-w-2xl mx-auto">
           <div>
-            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">Loved by Families</span>
-            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary whitespace-nowrap">What Our <span className="text-secondary">Customers Say</span></h2>
+            <span className="text-accent font-manrope font-semibold text-sm uppercase tracking-wide block mb-2">
+              {hook || 'Loved by Families'}
+            </span>
+            <h2 className="section-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-tight text-primary whitespace-nowrap">
+              {heading ? (
+                <>
+                  {heading}{' '}
+                  {headingHighlight ? (
+                    <span className="text-secondary">{headingHighlight}</span>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  What Our <span className="text-secondary">Customers Say</span>
+                </>
+              )}
+            </h2>
             <div className="mt-4 flex items-center justify-center gap-2">
               <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star key={i} className="w-4 h-4 text-brand-orange fill-brand-orange" strokeWidth={2} />
                 ))}
               </div>
-              <span className="text-sm text-primary/70 font-inter">4.6 out of 5 · 12,000+ reviews</span>
+              <span className="text-sm text-primary/70 font-inter">
+                {ratingSummary || '4.6 out of 5 · 12,000+ reviews'}
+              </span>
             </div>
           </div>
 
@@ -56,7 +90,7 @@ export default function CustomerReviews({ reviews = [] }: { reviews?: Review[] }
           ref={trackRef}
           className="flex gap-4 sm:gap-5 overflow-x-auto scrollbar-hide snap-x -mx-4 px-4 sm:mx-0 sm:px-0"
         >
-          {reviews.map((r) => (
+          {activeReviews.map((r) => (
             <div
               key={r.id}
               data-review-card

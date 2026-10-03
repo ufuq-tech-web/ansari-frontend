@@ -38,7 +38,36 @@ const stats = [
   { icon: Star, value: '4.9/5', label: 'Avg. Rating' },
 ];
 
-export default function WhyChooseUs() {
+export interface WhyChooseFeature {
+  title: string;
+  description: string;
+  gradient?: string;
+}
+
+export interface WhyChooseStat {
+  value: string;
+  label: string;
+}
+
+export interface WhyChooseUsProps {
+  hook?: string;
+  heading?: string;
+  headingHighlight?: string;
+  description?: string;
+  image?: string;
+  features?: WhyChooseFeature[];
+  stats?: WhyChooseStat[];
+}
+
+export default function WhyChooseUs({
+  hook,
+  heading,
+  headingHighlight,
+  description: descProp,
+  image: imgProp,
+  features: customFeatures,
+  stats: customStats,
+}: WhyChooseUsProps = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -56,6 +85,23 @@ export default function WhyChooseUs() {
     return () => observer.disconnect();
   }, []);
 
+  const activeFeatures =
+    customFeatures && customFeatures.length > 0
+      ? customFeatures.map((f, i) => ({
+          ...f,
+          icon: features[i % features.length].icon,
+          gradient: f.gradient || features[i % features.length].gradient,
+        }))
+      : features;
+
+  const activeStats =
+    customStats && customStats.length > 0
+      ? customStats.map((s, i) => ({
+          ...s,
+          icon: stats[i % stats.length].icon,
+        }))
+      : stats;
+
   return (
     <section
       ref={sectionRef}
@@ -71,9 +117,26 @@ export default function WhyChooseUs() {
 
       <div className="container-main relative">
         <div className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
-          <span className="text-brand-orange font-poppins font-semibold text-sm uppercase tracking-wide">Our Promise</span>
-          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl sm:text-3xl lg:text-4xl mt-1">Why Choose <span className="text-secondary">Ansary Footwear</span></h2>
-          <p className="mt-3 text-charcoal-500 font-inter">A heritage of trust built on quality, value, and customer care</p>
+          <span className="text-brand-orange font-poppins font-semibold text-sm uppercase tracking-wide">
+            {hook || 'Our Promise'}
+          </span>
+          <h2 className="font-poppins font-bold text-charcoal-900 text-2xl sm:text-3xl lg:text-4xl mt-1">
+            {heading ? (
+              <>
+                {heading}{' '}
+                {headingHighlight ? (
+                  <span className="text-secondary">{headingHighlight}</span>
+                ) : null}
+              </>
+            ) : (
+              <>
+                Why Choose <span className="text-secondary">Ansary Footwear</span>
+              </>
+            )}
+          </h2>
+          <p className="mt-3 text-charcoal-500 font-inter">
+            {descProp || 'A heritage of trust built on quality, value, and customer care'}
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 mb-8 lg:mb-10">
@@ -84,7 +147,7 @@ export default function WhyChooseUs() {
             }`}
           >
             <Image
-              src="/images/why-choose.png"
+              src={imgProp || '/images/why-choose.png'}
               alt="A family fitting shoes together at Ansary Footwear"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
@@ -94,7 +157,7 @@ export default function WhyChooseUs() {
 
           {/* Feature cards */}
           <div className="grid grid-cols-2 gap-4 sm:gap-6">
-            {features.map((f, index) => (
+            {activeFeatures.map((f, index) => (
               <div
                 key={f.title}
                 className={`group bg-white rounded-2xl p-5 sm:p-6 border border-charcoal-100 shadow-card hover:shadow-card-hover hover:border-charcoal-200 transition-all duration-500 text-center flex flex-col ${
@@ -115,7 +178,7 @@ export default function WhyChooseUs() {
         {/* Stats bar */}
         <div className="bg-charcoal-900 rounded-2xl p-6 sm:p-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-6 lg:gap-y-0 lg:divide-x lg:divide-white/10">
-            {stats.map((stat, index) => (
+            {activeStats.map((stat, index) => (
               <div
                 key={stat.label}
                 className={`text-center ${

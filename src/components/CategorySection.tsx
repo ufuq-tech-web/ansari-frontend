@@ -86,7 +86,17 @@ const getSubcategoryLink = (category: string, subName: string) => {
   return `${catBase}/${slug}`;
 };
 
-export default function CategorySection() {
+export interface CategorySectionProps {
+  heading?: string;
+  headingHighlight?: string;
+  description?: string;
+}
+
+export default function CategorySection({
+  heading,
+  headingHighlight,
+  description,
+}: CategorySectionProps = {}) {
   const [activeTab, setActiveTab] = useState('men');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -116,10 +126,21 @@ export default function CategorySection() {
         <div className="flex flex-col items-center text-center gap-8 mb-12 max-w-4xl mx-auto">
           <div>
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-sora font-semibold tracking-tight text-primary mb-4 whitespace-nowrap">
-              Explore <span className="text-secondary">Collections</span>
+              {heading ? (
+                <>
+                  {heading}{' '}
+                  {headingHighlight ? (
+                    <span className="text-secondary">{headingHighlight}</span>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  Explore <span className="text-secondary">Collections</span>
+                </>
+              )}
             </h2>
             <p className="text-black font-inter text-sm md:text-base whitespace-normal max-w-2xl mx-auto">
-              Discover our meticulously curated selection of premium footwear and accessories, designed for every occasion.
+              {description || 'Discover our meticulously curated selection of premium footwear and accessories, designed for every occasion.'}
             </p>
           </div>
           
